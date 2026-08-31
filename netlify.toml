@@ -1,0 +1,4 @@
+[build]
+  publish = "."
+
+# Site statique — aucun build. Netlify sert le dépôt tel quel.
