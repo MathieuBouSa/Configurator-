@@ -5,8 +5,8 @@ Two families of visuals, handled in two different ways:
 - **Pictograms** (questions, situations, rooms, profiles) - **done**: they are now real vector icons
   from [Iconify](https://iconify.design) (Material Design Icons set, Apache-2.0), bundled offline.
   Nothing to supply. See [Pictograms](#pictograms-done---no-file-to-supply) below.
-- **Product photos** - **done**, except one: 23 of the 24 slots hold the genuine Salus cut-outs.
-  `el600f.png` and the logo are all that is left. See section 1.
+- **Product photos** - **done**: all 24 slots hold genuine Salus cut-outs. The logo is the only
+  file left. See section 1.
 
 General rule for the photos: light or cut-out background, no text burnt into the image (labels live
 in the interface). Paths are **fixed**: to drop a real visual in, place the file at the same path with
@@ -17,18 +17,23 @@ it is saved / renamed as `.png`).
 
 Product cut out on a white or transparent background, three-quarter view, screen lit where there is one.
 
-**Status: real photos in place, except `el600f.png`.** The 23 other files are the genuine Salus
-cut-outs: transparent background, cropped on the product bounding box with a constant 5 % margin,
-800 x 800, every one under 200 KB - verified with `node build/product-photos.mjs --check`, which
-also confirms no code path points at a missing file and no file sits unreferenced.
-Four entries still need a look:
+**Status: done.** All 24 slots hold genuine Salus cut-outs: transparent background, cropped on the
+product bounding box with a constant 5 % margin, 800 x 800, every one under 200 KB - verified with
+`node build/product-photos.mjs --check`, which also confirms no code path points at a missing file
+and no file sits unreferenced.
 
-| File | What is pending |
-|---|---|
-| `el600f.png` | Still the placeholder. The photo supplied showed the round iT800 thermostat, not a pilot-wire EL600F. |
-| `rx30rf.png` | The photo supplied is an RX10RF. Confirm which reference the tool should carry. |
-| `sq610b.png` | Uses the SQ610BRF photo: no wired-black shot was supplied, and the two are identical from the front. |
-| `trv3rf-ab.png` | Uses the TRV3RF photo: no auto-balancing shot was supplied. |
+Four of them deliberately reuse a neighbouring product's shot, because the two products share the
+same body. Confirmed product-side, so these are settled rather than pending:
+
+| File | Reuses | Why |
+|---|---|---|
+| `el600f.png` | the iT800 shot | Same design. The frame keeps the iT800's receiver behind the dial: the receiver sits physically behind the thermostat, so no rectangular crop removes it without leaving a worse artefact. |
+| `rx30rf.png` | an RX10 shot | Same design. |
+| `sq610b.png` | the SQ610BRF shot | Same design; the two are identical from the front. |
+| `trv3rf-ab.png` | the TRV3RF shot | Same design as the auto-balancing head. |
+
+Replacing any of them later is a drop-in: same path, same name, then
+`node build/product-photos.mjs` if the source needs conforming.
 
 | File | Product | Seen on |
 |---|---|---|

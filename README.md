@@ -29,7 +29,7 @@ Site configuration -> Site details -> Change site name.)
 | **Club Pro installers / distributors** | Fictional names, simulated area. | Real directory geolocated by postcode, Club Pro members served first. |
 | **Estimated savings** | A range calculated with **fictional coefficients and energy prices** (method inspired by EN 15232, readable in the tool). | Validated EN 15232 coefficients, current energy prices. |
 | **Videos** | Placeholders positioned at the right moments of the journey. | Real videos: short ones to choose (<= 1 min), step-by-step ones to install. |
-| **Visuals** | **Real**, on both fronts: 23 of the 24 product photos are the genuine Salus cut-outs, and every pictogram is an Iconify vector icon bundled offline. Two files left: `el600f.png` and the logo (see [VISUALS.md](VISUALS.md)). | The last two files, plus the official Salus icon library for the system diagram. |
+| **Visuals** | **Real**, on both fronts: all 24 product photos are genuine Salus cut-outs, and every pictogram is an Iconify vector icon bundled offline. The logo is the only file left (see [VISUALS.md](VISUALS.md)). | The logo, plus the official Salus icon library for the system diagram. |
 | **System diagram** | Genuinely generated as SVG from the configuration (fixed rules, solid = wired / dotted = radio) with **placeholder icons**. | The same generator with the official vector icon library plus a dozen reference drawings. |
 | **Label recognition** (replacement module) | Button present, function simulated. Equivalence table limited to 10 entries (Delta Dore, Netatmo, Honeywell, Tado, legacy Salus). | OCR of the label, full equivalence table enriched by the requests that come back empty. |
 
@@ -77,12 +77,11 @@ Carried over, in priority order:
 1. **Three product references need validating.** Shown in the tool as "ref. to confirm":
    `TRV3RF-AB` (auto-balancing head), `T30NC` (loop actuator), `THB` (auto-balancing actuator).
    Every other reference comes from the existing Salus configurators.
-2. **Visuals - two files left.** 23 of the 24 product photos are the real cut-outs, and the 41
+2. **Visuals - one file left.** All 24 product photos are the real cut-outs, and the 41
    question / situation / room / profile placeholders are gone: those are Iconify vector icons now.
-   What remains is `el600f.png` (still a placeholder - the photo supplied was the round iT800) and
-   `assets/hero/logo-salus.png`. See [VISUALS.md](VISUALS.md).
-   Three photos are stand-ins worth revisiting: `rx30rf.png` holds an RX10RF, while `sq610b.png`
-   and `trv3rf-ab.png` reuse a neighbouring product's shot.
+   What remains is `assets/hero/logo-salus.png`. See [VISUALS.md](VISUALS.md), which also lists the
+   four photos that deliberately reuse a neighbouring product's shot for a shared body
+   (`el600f`, `rx30rf`, `sq610b`, `trv3rf-ab`) - confirmed product-side, not gaps.
 3. **Two assets that have no placeholder**: the vector icon library for the system diagram
    (plus ~10 hand-drawn reference diagrams) - the Iconify route used for the pictograms is a
    candidate here too - and the videos. Also in VISUALS.md.
