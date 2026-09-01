@@ -8,6 +8,10 @@ One journey only: **My home -> My heating -> My habits -> My solution.**
 Every feature traces back to the Problems / Solutions workshop - see [WORKSHOP-MAPPING.md](WORKSHOP-MAPPING.md)
 and the "About" page inside the tool.
 
+**Live demo:** https://effulgent-pie-e51188.netlify.app/
+(Netlify auto-deploys `main`. The site name is still Netlify's generated one - rename it under
+Site configuration -> Site details -> Change site name.)
+
 > Interface language: **English**. The original French build is preserved in git history at commit `e2b2935`.
 
 ## Simulated vs real - in black and white
