@@ -17,6 +17,17 @@ it is saved / renamed as `.png`).
 
 Product cut out on a white or transparent background, three-quarter view, screen lit where there is one.
 
+**Status: real photos in place, except `el600f.png`.** The 23 other files are the genuine Salus
+cut-outs: transparent background, cropped on the product bounding box with a constant 5 % margin,
+800 x 800, every one under 200 KB. Four entries still need a look:
+
+| File | What is pending |
+|---|---|
+| `el600f.png` | Still the placeholder. The photo supplied showed the round iT800 thermostat, not a pilot-wire EL600F. |
+| `rx30rf.png` | The photo supplied is an RX10RF. Confirm which reference the tool should carry. |
+| `sq610b.png` | Uses the SQ610BRF photo: no wired-black shot was supplied, and the two are identical from the front. |
+| `trv3rf-ab.png` | Uses the TRV3RF photo: no auto-balancing shot was supplied. |
+
 | File | Product | Seen on |
 |---|---|---|
 | `ug800.png` | UG800 gateway with its network cable | Solution list, Other choice, documents |
@@ -33,8 +44,8 @@ Product cut out on a white or transparent background, three-quarter view, screen
 | `re600.png` | RE600 repeater plugged into a socket | idem |
 | `sr600.png` | SR600 relay held between two fingers (for scale) | idem |
 | `rs600.png` | RS600 shutter module | idem |
-| `os600.png` | Opening sensor fitted on a window | Packs |
-| `ms600.png` | Presence sensor | Packs |
+| `sw600.png` | Opening sensor fitted on a window | Packs |
+| `ms610.png` | Presence sensor | Packs |
 | `rt520.png` / `rt520rf.png` | RT520 alone / RT520RF kit with receiver | Solution list (single-zone journey) |
 | `wq610.png` | WQ610 thermostat | idem |
 | `it700.png` | iT700 kit: thermostat + receiver with built-in gateway | idem |
