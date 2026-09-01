@@ -1,7 +1,13 @@
-# Publishes the static BETA configurator to GitHub Pages.
-# The site needs no build step: netlify.toml and this workflow both
-# serve the repository root as-is.
-name: Deploy to GitHub Pages
+# CI for the static BETA configurator.
+#
+# job "test"  : always runs the engine test suite.
+# job "pages" : optional GitHub Pages deployment. It only succeeds once
+#               Pages has been switched on for the repository
+#               (Settings -> Pages -> Source: GitHub Actions), because a
+#               workflow token is not allowed to enable Pages the first
+#               time. Until then it is marked non-blocking so the run
+#               still reflects the real state of the build.
+name: CI
 
 on:
   push:
@@ -18,24 +24,27 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  test:
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Engine test suite
+        run: node tests/test-engine.js
+
+  pages:
+    needs: test
+    runs-on: ubuntu-latest
+    continue-on-error: true
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-
-      - name: Run the engine tests
-        run: node tests/test-engine.js
-
       - uses: actions/configure-pages@v5
         with:
           enablement: true
-
       - uses: actions/upload-pages-artifact@v3
         with:
           path: .
-
       - id: deployment
         uses: actions/deploy-pages@v4
