@@ -320,21 +320,6 @@
   td{ color:var(--ink-2); }
   td .mono{ font-size:12.5px; color:var(--ink); }
 
-  ol.open{ margin:0; padding-left:22px; color:var(--ink-2); }
-  ol.open li{ margin-bottom:9px; }
-  ol.open li strong{ color:var(--ink); font-weight:600; }
-
-  .kicker{
-    border:1px solid var(--line);
-    border-left:3px solid var(--cyan-flat);
-    background:var(--surface);
-    padding:16px 18px;
-    border-radius:0 3px 3px 0;
-    color:var(--ink-2);
-    font-size:14.5px;
-  }
-  .kicker strong{ color:var(--ink); font-weight:600; }
-
   footer{
     border-top:1px solid var(--line);
     padding-top:18px;
@@ -364,8 +349,6 @@
     </div>
     <div class="meta">
       <b>Journey</b><span>My&nbsp;home &rarr; My&nbsp;heating &rarr; My&nbsp;habits &rarr; My&nbsp;solution</span>
-      <b>Build</b><span>static site, no server, runs offline</span>
-      <b>Repo</b><span>mathieubousa/configurator-</span>
       <b>Demo</b><span><a href="https://effulgent-pie-e51188.netlify.app/">effulgent-pie-e51188.netlify.app</a></span>
     </div>
   </header>
@@ -1147,29 +1130,6 @@
       </table>
     </div>
 
-    <h3 style="margin:34px 0 12px;font-size:17px">What is actually blocking, in order</h3>
-    <ol class="open">
-      <li><strong>Four product references to validate</strong> &mdash;
-      <span class="mono">TRV3RF-AB</span> (auto-balancing head), <span class="mono">T30NC</span> (loop
-      actuator), <span class="mono">THB</span> (auto-balancing actuator), <span class="mono">MS600</span>
-      (presence sensor). Everything else comes from the existing Salus configurators.</li>
-      <li><strong>Visuals</strong> &mdash; 64 placeholders are in place at final dimensions and swap in by
-      dropping a file, with no code change. Highest impact first: the four situation images and the three
-      landing visuals.</li>
-      <li><strong>Two assets with no placeholder at all</strong> &mdash; the vector icon library for the
-      system diagram (plus around ten reference drawings) and the videos.</li>
-      <li><strong>One product decision to confirm</strong> &mdash; the Premium level for underfloor heating
-      currently adds auto-balancing actuators. That is an interpretation: the workshop rule only mentioned
-      TRVs.</li>
-    </ol>
-
-    <div class="kicker" style="margin-top:26px">
-      <strong>The five-minute version.</strong> Open the demo, click
-      &ldquo;Demo scenario &mdash; mixed house&rdquo; on the landing page: underfloor downstairs, radiators
-      upstairs, gas boiler, pre-filled in one click. Then walk the result screen top to bottom &mdash; levels,
-      rooms, diagram, documents &mdash; and finish in the CRM backstage panel. That single path touches
-      every problem in section 06.
-    </div>
   </section>
 
   <footer>
