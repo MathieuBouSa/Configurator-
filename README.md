@@ -8,6 +8,12 @@ One journey only: **My home -> My heating -> My habits -> My solution.**
 Every feature traces back to the Problems / Solutions workshop - see [WORKSHOP-MAPPING.md](WORKSHOP-MAPPING.md)
 and the "About" page inside the tool.
 
+**Explaining it to someone else:** [how-it-works.html](how-it-works.html) is a standalone walkthrough -
+five diagrams (the engine's needs-to-products seam, the three-state compatibility check, the journey with
+its human takeover, the outputs of one configuration, the CRM loop) plus the 26 problems grouped by the
+part of the mechanism that answers them, each tagged live / test content / simulated / placeholder.
+Open the file directly, or reach it on the deployed site at `/how-it-works.html`.
+
 **Live demo:** https://effulgent-pie-e51188.netlify.app/
 (Netlify auto-deploys `main`. The site name is still Netlify's generated one - rename it under
 Site configuration -> Site details -> Change site name.)
@@ -54,6 +60,7 @@ A 100% static site - no build, no dependencies.
 
 ```
 index.html            Entry point (permanent BETA banner)
+how-it-works.html     Standalone walkthrough: 5 diagrams + the 26 problems, tagged by status
 js/data/catalog.js    Product catalogue (real) + prices (fictional) + rules
 js/data/markets.js    Heat sources & emitters across FR / UK / DE / RO / DK
 js/data/copy.js       Copy, room benefits, equivalences, demo scenario

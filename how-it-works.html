@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="description" content="How the Salus configurator BETA works, and where each of the 26 workshop problems is answered. Internal walkthrough." />
+<meta name="robots" content="noindex, nofollow" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231D2858'/><circle cx='50' cy='50' r='26' fill='none' stroke='%2300AEEF' stroke-width='8'/><circle cx='50' cy='50' r='8' fill='%2300AEEF'/></svg>" />
+<style>
+  html,body{ margin:0; padding:0; }
+  img{ max-width:100%; }
+  [hidden]{ display:none !important; }
+</style>
+<title>Inside the Salus Configurator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&family=Open+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+  :root{
+    --paper:#F2F7FC;
+    --surface:#FFFFFF;
+    --surface-2:#E8F1FA;
+    --ink:#131B3D;
+    --ink-2:#414E78;
+    --ink-3:#6B779E;
+    --line:#D1DDEC;
+    --line-2:#B4C6DC;
+    --cyan:#0089BE;
+    --cyan-flat:#00AEEF;
+    --navy:#1D2858;
+    --ok-fg:#146F63;   --ok-bg:#DFF3EF;   --ok-line:#8FCFC3;
+    --warn-fg:#8A5A05; --warn-bg:#FBF1DB; --warn-line:#DDBA76;
+    --sim-fg:#65449F;  --sim-bg:#EEE8FA;  --sim-line:#B9A5E2;
+    --ph-fg:#535D80;   --ph-bg:#ECEFF6;   --ph-line:#BCC5DA;
+    --btn-on-bg:#1D2858; --btn-on-fg:#F2F7FC;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#0A1027;
+      --surface:#121A39;
+      --surface-2:#1A2348;
+      --ink:#E7EDF9;
+      --ink-2:#B0BDDB;
+      --ink-3:#8592B6;
+      --line:#293461;
+      --line-2:#3A4779;
+      --cyan:#54CCFF;
+      --cyan-flat:#3ABDF5;
+      --navy:#C9D6F2;
+      --ok-fg:#63D6BE;   --ok-bg:#103936;   --ok-line:#2A6C63;
+      --warn-fg:#EDB65E; --warn-bg:#3A2C10; --warn-line:#7A5A20;
+      --sim-fg:#BBA2F2;  --sim-bg:#251B42;  --sim-line:#4C3C7C;
+      --ph-fg:#9BA7C7;   --ph-bg:#1C2446;   --ph-line:#39436E;
+      --btn-on-bg:#54CCFF; --btn-on-fg:#0A1027;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0A1027;
+    --surface:#121A39;
+    --surface-2:#1A2348;
+    --ink:#E7EDF9;
+    --ink-2:#B0BDDB;
+    --ink-3:#8592B6;
+    --line:#293461;
+    --line-2:#3A4779;
+    --cyan:#54CCFF;
+    --cyan-flat:#3ABDF5;
+    --navy:#C9D6F2;
+    --ok-fg:#63D6BE;   --ok-bg:#103936;   --ok-line:#2A6C63;
+    --warn-fg:#EDB65E; --warn-bg:#3A2C10; --warn-line:#7A5A20;
+    --sim-fg:#BBA2F2;  --sim-bg:#251B42;  --sim-line:#4C3C7C;
+    --ph-fg:#9BA7C7;   --ph-bg:#1C2446;   --ph-line:#39436E;
+    --btn-on-bg:#54CCFF; --btn-on-fg:#0A1027;
+  }
+
+  *{ box-sizing:border-box; }
+
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Open Sans','Segoe UI',system-ui,sans-serif;
+    font-size:15px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .wrap{
+    max-width:1120px;
+    margin:0 auto;
+    padding:0 22px 88px;
+  }
+
+  h1,h2,h3,h4{ font-family:'Ubuntu','Open Sans',system-ui,sans-serif; text-wrap:balance; margin:0; }
+
+  .mono{ font-family:'IBM Plex Mono',ui-monospace,'SFMono-Regular',Menlo,monospace; }
+
+  .eyebrow{
+    font-family:'IBM Plex Mono',ui-monospace,monospace;
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--ink-3);
+  }
+
+  /* ---------- masthead ---------- */
+
+  .mast{
+    display:grid;
+    grid-template-columns:minmax(0,1.5fr) minmax(260px,.9fr);
+    gap:34px;
+    align-items:end;
+    padding:52px 0 22px;
+  }
+  .mast h1{
+    font-size:clamp(30px,4.4vw,46px);
+    line-height:1.08;
+    font-weight:700;
+    letter-spacing:-.015em;
+  }
+  .mast h1 em{ font-style:normal; color:var(--cyan); }
+  .mast .lede{
+    margin:16px 0 0;
+    font-size:16.5px;
+    color:var(--ink-2);
+    max-width:60ch;
+  }
+  .meta{
+    border:1px solid var(--line);
+    background:var(--surface);
+    padding:14px 16px;
+    font-family:'IBM Plex Mono',ui-monospace,monospace;
+    font-size:11.5px;
+    line-height:1.85;
+    color:var(--ink-2);
+  }
+  .meta b{ color:var(--ink); font-weight:500; }
+  .meta a{ color:var(--cyan); text-decoration:none; word-break:break-all; }
+  .meta a:hover{ text-decoration:underline; }
+  .meta div + div{ margin-top:2px; }
+
+  .rules{ margin:0 0 40px; }
+  .rules .r1{ height:2px; background:var(--navy); opacity:.75; }
+  .rules .r2{ height:0; border-top:1px dashed var(--line-2); margin-top:3px; }
+
+  /* ---------- sections ---------- */
+
+  section{ margin:0 0 62px; }
+  .shead{ display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-bottom:8px; }
+  .shead h2{
+    font-size:clamp(21px,2.5vw,27px);
+    font-weight:700;
+    letter-spacing:-.01em;
+  }
+  .snum{
+    font-family:'IBM Plex Mono',ui-monospace,monospace;
+    font-size:12px;
+    color:var(--cyan);
+    letter-spacing:.08em;
+    padding-top:2px;
+  }
+  .sintro{ color:var(--ink-2); max-width:74ch; margin:6px 0 26px; }
+  .sintro strong{ color:var(--ink); font-weight:600; }
+
+  /* ---------- plates ---------- */
+
+  .plate{
+    border:1px solid var(--line);
+    background:var(--surface);
+    border-radius:3px;
+    padding:20px 22px;
+  }
+  .plate > .eyebrow{ display:block; margin-bottom:10px; }
+
+  .grid2{ display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; }
+  .grid3{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; }
+
+  /* ---------- legend ---------- */
+
+  .legend{
+    display:flex; flex-wrap:wrap; gap:10px 30px;
+    align-items:center;
+    border:1px solid var(--line);
+    border-left:none; border-right:none;
+    padding:14px 0;
+    margin:0 0 30px;
+  }
+  .legend .li{ display:flex; align-items:center; gap:10px; font-size:13.5px; color:var(--ink-2); }
+  .legend svg{ flex:none; }
+  .legend b{ color:var(--ink); font-weight:600; }
+
+  /* ---------- figures ---------- */
+
+  figure{ margin:0 0 22px; }
+  .figbox{
+    border:1px solid var(--line);
+    background:var(--surface);
+    border-radius:3px;
+    padding:18px 14px 10px;
+    overflow-x:auto;
+  }
+  figure svg{ display:block; width:100%; min-width:660px; height:auto; }
+  figcaption{
+    margin-top:10px;
+    font-size:13px;
+    color:var(--ink-3);
+    max-width:82ch;
+  }
+  figcaption b{ color:var(--ink-2); font-weight:600; }
+
+  /* svg primitives */
+  .bx{ fill:var(--surface-2); stroke:var(--line-2); stroke-width:1.2; }
+  .bx-key{ fill:none; stroke:var(--cyan-flat); stroke-width:2; }
+  .bx-sim{ fill:none; stroke:var(--sim-line); stroke-width:1.4; stroke-dasharray:5 4; }
+  .bx-plain{ fill:none; stroke:var(--line-2); stroke-width:1.2; }
+  .ln{ stroke:var(--ink-3); stroke-width:1.4; fill:none; }
+  .ln-key{ stroke:var(--cyan-flat); stroke-width:2; fill:none; }
+  .ln-sim{ stroke:var(--sim-fg); stroke-width:1.4; fill:none; stroke-dasharray:5 4; }
+  .seam{ stroke:var(--cyan-flat); stroke-width:1.4; stroke-dasharray:2 5; }
+  .dth{ font-family:'Ubuntu',sans-serif; font-size:13.5px; font-weight:700; fill:var(--ink); }
+  .dt{ font-family:'Open Sans',sans-serif; font-size:12px; fill:var(--ink-2); }
+  .dtm{ font-family:'IBM Plex Mono',monospace; font-size:11px; fill:var(--ink-2); }
+  .dts{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; fill:var(--ink-3); }
+  .dts-key{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; fill:var(--cyan); }
+  .dts-sim{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; fill:var(--sim-fg); }
+  .dt-ok{ fill:var(--ok-fg); }
+  .dt-warn{ fill:var(--warn-fg); }
+  .fill-ok{ fill:var(--ok-bg); stroke:var(--ok-line); stroke-width:1.2; }
+  .fill-warn{ fill:var(--warn-bg); stroke:var(--warn-line); stroke-width:1.2; }
+  .fill-ph{ fill:var(--ph-bg); stroke:var(--ph-line); stroke-width:1.2; }
+
+  /* ---------- filter ---------- */
+
+  .filter{
+    display:flex; flex-wrap:wrap; gap:8px;
+    margin:0 0 24px;
+  }
+  .filter button{
+    font-family:'IBM Plex Mono',ui-monospace,monospace;
+    font-size:11.5px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    padding:8px 13px;
+    border:1px solid var(--line-2);
+    background:transparent;
+    color:var(--ink-2);
+    border-radius:2px;
+    cursor:pointer;
+  }
+  .filter button:hover{ border-color:var(--cyan-flat); color:var(--ink); }
+  .filter button:focus-visible{ outline:2px solid var(--cyan-flat); outline-offset:2px; }
+  .filter button[aria-pressed="true"]{
+    background:var(--btn-on-bg);
+    border-color:var(--btn-on-bg);
+    color:var(--btn-on-fg);
+  }
+
+  /* ---------- clusters + problem cards ---------- */
+
+  .cluster{ margin:0 0 34px; }
+  .cluster h3{
+    font-size:17px;
+    font-weight:700;
+    display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;
+    padding-bottom:8px;
+    border-bottom:1px solid var(--line);
+  }
+  .cluster h3 .cnt{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--ink-3); font-weight:400;
+  }
+  .cluster .cwhy{ color:var(--ink-2); font-size:14px; margin:10px 0 16px; max-width:80ch; }
+  .cards{ display:grid; grid-template-columns:repeat(auto-fill,minmax(288px,1fr)); gap:12px; }
+
+  .pcard{
+    border:1px solid var(--line);
+    background:var(--surface);
+    border-radius:3px;
+    padding:14px 15px 13px;
+    display:flex; flex-direction:column; gap:7px;
+  }
+  .pcard .top{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .pid{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px; font-weight:500;
+    letter-spacing:.06em;
+    color:var(--cyan);
+  }
+  .pcard h4{ font-size:14.5px; font-weight:500; line-height:1.35; color:var(--ink); }
+  .pcard p{ margin:0; font-size:13.2px; color:var(--ink-2); line-height:1.55; }
+  .pcard p .ref{ font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink); }
+  .pcard .note{ font-size:12.3px; color:var(--ink-3); }
+
+  .pill{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+    padding:3px 7px; border-radius:2px; white-space:nowrap;
+    border:1px solid transparent;
+  }
+  .pill.live{ color:var(--ok-fg); background:var(--ok-bg); border-color:var(--ok-line); }
+  .pill.test{ color:var(--warn-fg); background:var(--warn-bg); border-color:var(--warn-line); }
+  .pill.sim{ color:var(--sim-fg); background:var(--sim-bg); border-color:var(--sim-line); }
+  .pill.ph{ color:var(--ph-fg); background:var(--ph-bg); border-color:var(--ph-line); }
+
+  /* ---------- honesty table ---------- */
+
+  .tbl-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:3px; background:var(--surface); }
+  table{ border-collapse:collapse; width:100%; min-width:640px; font-size:13.5px; }
+  th,td{ text-align:left; padding:11px 14px; border-bottom:1px solid var(--line); vertical-align:top; }
+  thead th{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--ink-3); font-weight:400;
+    background:var(--surface-2);
+  }
+  tbody tr:last-child td{ border-bottom:none; }
+  td:first-child{ font-weight:600; color:var(--ink); white-space:nowrap; }
+  td{ color:var(--ink-2); }
+  td .mono{ font-size:12.5px; color:var(--ink); }
+
+  ol.open{ margin:0; padding-left:22px; color:var(--ink-2); }
+  ol.open li{ margin-bottom:9px; }
+  ol.open li strong{ color:var(--ink); font-weight:600; }
+
+  .kicker{
+    border:1px solid var(--line);
+    border-left:3px solid var(--cyan-flat);
+    background:var(--surface);
+    padding:16px 18px;
+    border-radius:0 3px 3px 0;
+    color:var(--ink-2);
+    font-size:14.5px;
+  }
+  .kicker strong{ color:var(--ink); font-weight:600; }
+
+  footer{
+    border-top:1px solid var(--line);
+    padding-top:18px;
+    font-size:12.5px;
+    color:var(--ink-3);
+    display:flex; justify-content:space-between; gap:20px; flex-wrap:wrap;
+  }
+  footer .mono{ font-size:11.5px; }
+
+  @media (max-width:760px){
+    .mast{ grid-template-columns:1fr; align-items:start; padding-top:34px; }
+    .mast .meta{ width:100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="mast">
+    <div>
+      <span class="eyebrow">Salus Controls &middot; internal BETA walkthrough</span>
+      <h1>Inside the <em>Salus Configurator</em></h1>
+      <p class="lede">How the demo build actually works &mdash; the engine, the journey, the outputs &mdash;
+      and where each of the 26 workshop problems is answered. Read the four diagrams and you can
+      demo the tool without opening the code.</p>
+    </div>
+    <div class="meta">
+      <div><b>Journey</b> My home &rarr; My heating &rarr; My habits &rarr; My solution</div>
+      <div><b>Build</b> static site, no server, runs offline</div>
+      <div><b>Repo</b> mathieubousa/configurator-</div>
+      <div><b>Demo</b> <a href="https://effulgent-pie-e51188.netlify.app/">effulgent-pie-e51188.netlify.app</a></div>
+    </div>
+  </header>
+
+  <div class="rules"><div class="r1"></div><div class="r2"></div></div>
+
+  <section>
+    <div class="shead"><span class="snum">01</span><h2>Read this first</h2></div>
+    <p class="sintro">This is a <strong>demonstration build</strong>, not a product. The decision logic is
+    real and runs in the browser; everything that would leave the browser in production is simulated on
+    screen. Throughout this page and inside the tool, one convention holds:</p>
+
+    <div class="legend">
+      <div class="li">
+        <svg width="52" height="12" viewBox="0 0 52 12" aria-hidden="true"><line class="ln" x1="1" y1="6" x2="51" y2="6"></line></svg>
+        <span><b>Solid</b> &mdash; logic that really runs in the BETA</span>
+      </div>
+      <div class="li">
+        <svg width="52" height="12" viewBox="0 0 52 12" aria-hidden="true"><line class="ln-sim" x1="1" y1="6" x2="51" y2="6"></line></svg>
+        <span><b>Dotted</b> &mdash; simulated: the payload is shown, nothing is sent</span>
+      </div>
+      <div class="li">
+        <svg width="52" height="12" viewBox="0 0 52 12" aria-hidden="true"><line class="ln-key" x1="1" y1="6" x2="51" y2="6"></line></svg>
+        <span><b>Cyan</b> &mdash; the part of the mechanism under discussion</span>
+      </div>
+    </div>
+
+    <div class="grid3">
+      <div class="plate">
+        <span class="eyebrow">Real</span>
+        <p style="margin:0;color:var(--ink-2);font-size:14px">Product references, the compatibility and
+        composition rules, the room-by-room logic, the generated system diagram, the savings method,
+        the project resume, the CRM payloads.</p>
+      </div>
+      <div class="plate">
+        <span class="eyebrow">Fictional but labelled</span>
+        <p style="margin:0;color:var(--ink-2);font-size:14px">Every price (a &ldquo;fictional price&rdquo; tag
+        sits next to it), the savings coefficients, and every PDF &mdash; watermarked
+        <span class="mono">TEST DOCUMENT</span>.</p>
+      </div>
+      <div class="plate">
+        <span class="eyebrow">Not connected</span>
+        <p style="margin:0;color:var(--ink-2);font-size:14px">Zoho CRM, emails and SMS, the pre-visit link,
+        the installer directory. The &ldquo;CRM backstage&rdquo; panel shows exactly what would go out.
+        Nothing leaves the browser.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="shead"><span class="snum">02</span><h2>The one idea: the questionnaire never names a product</h2></div>
+    <p class="sintro">Every earlier configurator asked the customer to pick from a catalogue. This one asks
+    about the <strong>home</strong>, turns the answers into a system described in <strong>roles</strong>
+    (&ldquo;one head per radiator&rdquo;, &ldquo;one actuator per loop&rdquo;), and only resolves those roles
+    into product codes at the last possible moment. That seam is what makes the rest possible.</p>
+
+    <figure>
+      <div class="figbox">
+        <svg viewBox="0 0 1060 372" role="img" aria-label="Four stages: questions fill attributes, attributes compose an abstract system of roles, and only then are roles resolved into catalogue product codes. A dashed seam separates the roles from the catalogue.">
+          <defs>
+            <marker id="a1-ink" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+              <polygon points="0 0, 9 3.5, 0 7" fill="var(--ink-3)"></polygon>
+            </marker>
+            <marker id="a1-key" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+              <polygon points="0 0, 9 3.5, 0 7" fill="var(--cyan-flat)"></polygon>
+            </marker>
+          </defs>
+
+          <!-- stage 1 -->
+          <rect class="bx" x="30" y="64" width="190" height="140" rx="2"></rect>
+          <text class="dts" x="46" y="86">stage 1</text>
+          <text class="dth" x="46" y="107">Questions</text>
+          <text class="dt" x="46" y="130">One per screen,</text>
+          <text class="dt" x="46" y="148">illustrated cards.</text>
+          <text class="dtm" x="46" y="172">under 10 questions</text>
+          <text class="dt" x="46" y="192">No catalogue in sight.</text>
+
+          <!-- stage 2 -->
+          <rect class="bx" x="300" y="64" width="190" height="140" rx="2"></rect>
+          <text class="dts" x="316" y="86">stage 2</text>
+          <text class="dth" x="316" y="107">Attributes</text>
+          <text class="dtm" x="316" y="130">homeType, surface,</text>
+          <text class="dtm" x="316" y="147">floors, walls, wifi,</text>
+          <text class="dtm" x="316" y="164">rooms[] + emitter,</text>
+          <text class="dtm" x="316" y="181">perRoomControl,</text>
+          <text class="dtm" x="316" y="198">remote / alerts / budget</text>
+
+          <!-- stage 3 -->
+          <rect class="bx-key" x="570" y="64" width="190" height="140" rx="2"></rect>
+          <text class="dts-key" x="586" y="86">stage 3</text>
+          <text class="dth" x="586" y="107">Abstract system</text>
+          <text class="dt" x="586" y="130">Roles + quantities:</text>
+          <text class="dtm" x="586" y="152">trv &times;4</text>
+          <text class="dtm" x="586" y="169">zonestat &times;1</text>
+          <text class="dtm" x="586" y="186">actuator &times;2</text>
+          <text class="dtm" x="586" y="200">gateway &times;1</text>
+
+          <!-- stage 4 -->
+          <rect class="bx" x="840" y="64" width="190" height="140" rx="2"></rect>
+          <text class="dts" x="856" y="86">stage 4</text>
+          <text class="dth" x="856" y="107">Catalogue</text>
+          <text class="dtm" x="856" y="130">TRV3RF &middot; SQ610RF</text>
+          <text class="dtm" x="856" y="147">T30NC &middot; UG800</text>
+          <text class="dt" x="856" y="170">Price, protocol, power,</text>
+          <text class="dt" x="856" y="188">documents, limits.</text>
+
+          <!-- arrows -->
+          <line class="ln" x1="222" y1="134" x2="292" y2="134" marker-end="url(#a1-ink)"></line>
+          <line class="ln" x1="492" y1="134" x2="562" y2="134" marker-end="url(#a1-ink)"></line>
+          <line class="ln-key" x1="762" y1="134" x2="832" y2="134" marker-end="url(#a1-key)"></line>
+          <text class="dts" x="257" y="124" text-anchor="middle">fills</text>
+          <text class="dts" x="527" y="124" text-anchor="middle">composes</text>
+          <text class="dts-key" x="797" y="124" text-anchor="middle">resolves</text>
+
+          <!-- seam -->
+          <line class="seam" x1="800" y1="34" x2="800" y2="262"></line>
+          <text class="dts-key" x="800" y="26" text-anchor="middle">the seam &mdash; the only place a product code appears</text>
+
+          <!-- catalogue edits -->
+          <rect class="bx-plain" x="840" y="278" width="190" height="62" rx="2"></rect>
+          <text class="dt" x="856" y="300">New product, new price,</text>
+          <text class="dt" x="856" y="318">country availability:</text>
+          <text class="dtm" x="856" y="334">edited here only</text>
+          <line class="ln" x1="935" y1="278" x2="935" y2="212" marker-end="url(#a1-ink)"></line>
+
+          <!-- untouched note -->
+          <text class="dts" x="30" y="300">stages 1&ndash;3 are untouched by a catalogue change</text>
+          <line class="ln" x1="30" y1="312" x2="760" y2="312" stroke-dasharray="1 4"></line>
+        </svg>
+      </div>
+      <figcaption><b>Answers &rarr; attributes &rarr; roles &rarr; products.</b> A price change, a new
+      reference or a country restriction is a catalogue edit on the right of the seam; the questionnaire,
+      the wording and the composition rules on the left never move. This is what answers
+      &ldquo;matching needs with available devices&rdquo; (P2) structurally rather than by hand.</figcaption>
+    </figure>
+
+    <figure>
+      <div class="figbox">
+        <svg viewBox="0 0 660 268" role="img" aria-label="Any candidate product is checked against the current configuration and comes out in one of three states: OK, offered with a stated limitation, or refused with the reason in one sentence and the missing product on an add button.">
+          <defs>
+            <marker id="a2-ink" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+              <polygon points="0 0, 9 3.5, 0 7" fill="var(--ink-3)"></polygon>
+            </marker>
+          </defs>
+          <rect class="bx" x="20" y="98" width="152" height="72" rx="2"></rect>
+          <text class="dth" x="36" y="126">Any product</text>
+          <text class="dt" x="36" y="146">you might add or</text>
+          <text class="dt" x="36" y="162">swap in</text>
+
+          <rect class="bx-key" x="222" y="78" width="146" height="112" rx="2"></rect>
+          <text class="dts-key" x="238" y="100">checked against</text>
+          <text class="dt" x="238" y="122">Gateway present?</text>
+          <text class="dt" x="238" y="140">230 V at the wall?</text>
+          <text class="dt" x="238" y="158">Conduits there?</text>
+          <text class="dt" x="238" y="176">Zone count?</text>
+
+          <line class="ln" x1="174" y1="134" x2="214" y2="134" marker-end="url(#a2-ink)"></line>
+          <line class="ln" x1="370" y1="120" x2="424" y2="58" marker-end="url(#a2-ink)"></line>
+          <line class="ln" x1="370" y1="134" x2="424" y2="134" marker-end="url(#a2-ink)"></line>
+          <line class="ln" x1="370" y1="150" x2="424" y2="212" marker-end="url(#a2-ink)"></line>
+
+          <rect class="fill-ok" x="432" y="26" width="208" height="62" rx="2"></rect>
+          <text class="dts" x="446" y="46" style="fill:var(--ok-fg)">state 1 &middot; ok</text>
+          <text class="dt" x="446" y="68">Offered, nothing to say.</text>
+
+          <rect class="fill-warn" x="432" y="104" width="208" height="62" rx="2"></rect>
+          <text class="dts" x="446" y="124" style="fill:var(--warn-fg)">state 2 &middot; limit</text>
+          <text class="dt" x="446" y="145">Offered, with the limitation</text>
+          <text class="dt" x="446" y="161">written out on the line.</text>
+
+          <rect class="fill-ph" x="432" y="182" width="208" height="72" rx="2"></rect>
+          <text class="dts" x="446" y="202" style="fill:var(--ph-fg)">state 3 &middot; no</text>
+          <text class="dt" x="446" y="222">Greyed, reason in one</text>
+          <text class="dt" x="446" y="238">sentence, missing part</text>
+          <text class="dt" x="446" y="254">on an add button.</text>
+        </svg>
+      </div>
+      <figcaption><b>Three states, never a silent dead end.</b> The third state is the one that matters: a
+      customer who picks a phone-controlled head with no gateway does not get an error, they get the
+      sentence &ldquo;this needs a gateway&rdquo; and a button that adds the <span class="mono">UG800</span>.
+      A separate completeness pass runs on the whole basket, so a missing wiring centre is caught even if
+      nobody clicked anything.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <div class="shead"><span class="snum">03</span><h2>One journey, one exit for humans, three side doors</h2></div>
+    <p class="sintro">There is a single path, four named steps, and a bar that is always visible so nobody
+    wonders how far they are. Going back loses nothing. The two questions customers get wrong on their own
+    &mdash; <strong>&ldquo;do I need connected?&rdquo;</strong> and <strong>&ldquo;what will it cost?&rdquo;</strong>
+    &mdash; are never asked: one becomes a conclusion, the other appears as a live total from step 2.</p>
+
+    <figure>
+      <div class="figbox">
+        <svg viewBox="0 0 1060 478" role="img" aria-label="The main journey runs from the landing page through four steps to three final actions. Three side doors enter the path: replacement search, installer pre-visit and project resume. One branch leaves the automatic path towards a qualified file handled by a human, and the three final actions feed a simulated CRM.">
+          <defs>
+            <marker id="a3-ink" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+              <polygon points="0 0, 9 3.5, 0 7" fill="var(--ink-3)"></polygon>
+            </marker>
+            <marker id="a3-key" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+              <polygon points="0 0, 9 3.5, 0 7" fill="var(--cyan-flat)"></polygon>
+            </marker>
+            <marker id="a3-sim" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+              <polygon points="0 0, 9 3.5, 0 7" fill="var(--sim-fg)"></polygon>
+            </marker>
+          </defs>
+
+          <!-- side doors -->
+          <rect class="bx-plain" x="42" y="24" width="196" height="60" rx="2"></rect>
+          <text class="dts" x="56" y="44">side door</text>
+          <text class="dt" x="56" y="63">Replacement search</text>
+          <text class="dtm" x="56" y="78">typo-tolerant</text>
+
+          <rect class="bx-sim" x="322" y="24" width="196" height="60" rx="2"></rect>
+          <text class="dts-sim" x="336" y="44">side door</text>
+          <text class="dt" x="336" y="63">Installer pre-visit</text>
+          <text class="dtm" x="336" y="78">link + 3 photos</text>
+
+          <rect class="bx-plain" x="602" y="24" width="196" height="60" rx="2"></rect>
+          <text class="dts" x="616" y="44">side door</text>
+          <text class="dt" x="616" y="63">Resume a project</text>
+          <text class="dtm" x="616" y="78">project code</text>
+
+          <line class="ln" x1="140" y1="86" x2="88" y2="164" marker-end="url(#a3-ink)"></line>
+          <line class="ln" x1="700" y1="86" x2="640" y2="164" marker-end="url(#a3-ink)"></line>
+          <line class="ln-sim" x1="420" y1="86" x2="262" y2="164" marker-end="url(#a3-sim)"></line>
+          <text class="dts" x="672" y="128" text-anchor="end">at the exact step left</text>
+          <text class="dts-sim" x="350" y="110" text-anchor="end">pre-fills the answers</text>
+
+          <!-- main path -->
+          <rect class="bx" x="20" y="172" width="120" height="80" rx="2"></rect>
+          <text class="dts" x="34" y="194">landing</text>
+          <text class="dt" x="34" y="214">Homeowner</text>
+          <text class="dt" x="34" y="230">or installer</text>
+          <text class="dtm" x="34" y="246">wording adapts</text>
+
+          <rect class="bx" x="175" y="172" width="155" height="80" rx="2"></rect>
+          <text class="dts" x="189" y="194">step 1</text>
+          <text class="dth" x="189" y="214">My home</text>
+          <text class="dt" x="189" y="234">Type, area, floors,</text>
+          <text class="dt" x="189" y="248">walls, rooms, wi-fi</text>
+
+          <rect class="bx" x="355" y="172" width="155" height="80" rx="2"></rect>
+          <text class="dts" x="369" y="194">step 2</text>
+          <text class="dth" x="369" y="214">My heating</text>
+          <text class="dt" x="369" y="234">Heat source, emitters,</text>
+          <text class="dt" x="369" y="248">cables, zoning</text>
+
+          <rect class="bx" x="535" y="172" width="155" height="80" rx="2"></rect>
+          <text class="dts" x="549" y="194">step 3</text>
+          <text class="dth" x="549" y="214">My habits</text>
+          <text class="dt" x="549" y="234">Remote, alerts,</text>
+          <text class="dt" x="549" y="248">sharing, budget</text>
+
+          <rect class="bx-key" x="715" y="172" width="155" height="80" rx="2"></rect>
+          <text class="dts-key" x="729" y="194">step 4</text>
+          <text class="dth" x="729" y="214">My solution</text>
+          <text class="dt" x="729" y="234">Three levels, packs,</text>
+          <text class="dt" x="729" y="248">diagram, documents</text>
+
+          <rect class="bx-plain" x="895" y="172" width="145" height="80" rx="2"></rect>
+          <text class="dts" x="909" y="194">three actions</text>
+          <text class="dt" x="909" y="213">Email my list</text>
+          <text class="dt" x="909" y="229">Get a quote</text>
+          <text class="dt" x="909" y="245">Put me in touch</text>
+
+          <line class="ln" x1="142" y1="212" x2="167" y2="212" marker-end="url(#a3-ink)"></line>
+          <line class="ln" x1="332" y1="212" x2="347" y2="212" marker-end="url(#a3-ink)"></line>
+          <line class="ln" x1="512" y1="212" x2="527" y2="212" marker-end="url(#a3-ink)"></line>
+          <line class="ln" x1="692" y1="212" x2="707" y2="212" marker-end="url(#a3-ink)"></line>
+          <line class="ln" x1="872" y1="212" x2="887" y2="212" marker-end="url(#a3-ink)"></line>
+
+          <!-- callouts -->
+          <rect class="bx-key" x="355" y="292" width="155" height="72" rx="2"></rect>
+          <text class="dts-key" x="369" y="314">never a question</text>
+          <text class="dt" x="369" y="333">The total appears</text>
+          <text class="dt" x="369" y="348">here and updates</text>
+          <text class="dt" x="369" y="360">with every answer.</text>
+          <line class="ln-key" x1="432" y1="292" x2="432" y2="256" marker-end="url(#a3-key)"></line>
+
+          <rect class="bx-key" x="535" y="292" width="155" height="72" rx="2"></rect>
+          <text class="dts-key" x="549" y="314">never a question</text>
+          <text class="dt" x="549" y="333">&ldquo;Connected&rdquo; is the</text>
+          <text class="dt" x="549" y="348">conclusion of three</text>
+          <text class="dt" x="549" y="360">usage questions.</text>
+          <line class="ln-key" x1="612" y1="292" x2="612" y2="256" marker-end="url(#a3-key)"></line>
+
+          <!-- qualified file branch -->
+          <line class="ln-sim" x1="200" y1="254" x2="200" y2="386" marker-end="url(#a3-sim)"></line>
+          <text class="dts-sim" x="212" y="300">leaves the</text>
+          <text class="dts-sim" x="212" y="316">automatic path</text>
+
+          <rect class="bx-sim" x="20" y="392" width="310" height="72" rx="2"></rect>
+          <text class="dts-sim" x="36" y="412">human takeover</text>
+          <text class="dt" x="36" y="431">Commercial building, &gt;12 zones, uncovered</text>
+          <text class="dt" x="36" y="447">heat source, BMS &rarr; partial recommendation</text>
+          <text class="dt" x="36" y="461">sent to the area rep, call back within 48 h.</text>
+
+          <!-- crm -->
+          <line class="ln-sim" x1="967" y1="254" x2="967" y2="386" marker-end="url(#a3-sim)"></line>
+          <rect class="bx-sim" x="860" y="392" width="180" height="72" rx="2"></rect>
+          <text class="dts-sim" x="874" y="412">simulated</text>
+          <text class="dt" x="874" y="431">Zoho CRM: Lead,</text>
+          <text class="dt" x="874" y="447">Quote, Deal &mdash; the</text>
+          <text class="dt" x="874" y="461">payload is on screen.</text>
+        </svg>
+      </div>
+      <figcaption><b>The shape of the journey, including its ways out.</b> Note what the branch does: a
+      project the tool cannot size does not hit a wall &mdash; the configurator keeps the recommendation it
+      managed to build and hands the file to a person. That is the answer to
+      &ldquo;existing configurators are too limited&rdquo; (P15): the limit becomes a handover, not a refusal.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <div class="shead"><span class="snum">04</span><h2>One configuration, every output</h2></div>
+    <p class="sintro">The &ldquo;My solution&rdquo; screen is not a page of results, it is
+    <strong>eight views of the same object</strong>. Nobody re-enters anything to get a diagram, a quote or
+    an installation guide &mdash; which is precisely why the price, the guide and the drawing can never
+    disagree with each other.</p>
+
+    <figure>
+      <div class="figbox">
+        <svg viewBox="0 0 1000 452" role="img" aria-label="A single configuration object feeds eight outputs through a shared spine: three levels, optional packs, room-by-room benefits, alternatives on every line, the generated system diagram, the savings range, the document matrix, and the quote and installation guide.">
+          <defs>
+            <marker id="a4-key" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+              <polygon points="0 0, 9 3.5, 0 7" fill="var(--cyan-flat)"></polygon>
+            </marker>
+          </defs>
+          <rect class="bx-key" x="370" y="14" width="260" height="58" rx="2"></rect>
+          <text class="dts-key" x="500" y="36" text-anchor="middle">the single source</text>
+          <text class="dth" x="500" y="58" text-anchor="middle">Your configuration</text>
+
+          <line class="ln-key" x1="500" y1="72" x2="500" y2="410"></line>
+
+          <!-- row 1 -->
+          <rect class="bx" x="40" y="86" width="430" height="70" rx="2"></rect>
+          <text class="dth" x="56" y="110">Three levels</text>
+          <text class="dt" x="56" y="130">Essential / Comfort / Premium, computed from your rooms.</text>
+          <text class="dt" x="56" y="147">A level above budget stays visible, greyed, with the gap shown.</text>
+
+          <rect class="bx" x="530" y="86" width="430" height="70" rx="2"></rect>
+          <text class="dth" x="546" y="110">&ldquo;Other choice&rdquo; on every line</text>
+          <text class="dt" x="546" y="130">Only products with the same role, compatible with the rest,</text>
+          <text class="dt" x="546" y="147">with the price and the function difference on one line.</text>
+
+          <!-- row 2 -->
+          <rect class="bx" x="40" y="171" width="430" height="70" rx="2"></rect>
+          <text class="dth" x="56" y="195">Optional packs</text>
+          <text class="dt" x="56" y="215">Heat-source receiver, security, roller shutters, smart socket.</text>
+          <text class="dt" x="56" y="232">Priced separately &mdash; never folded into a level.</text>
+
+          <rect class="bx" x="530" y="171" width="430" height="70" rx="2"></rect>
+          <text class="dth" x="546" y="195">Room by room</text>
+          <text class="dt" x="546" y="215">Every room you entered, its devices, and what changes day to day</text>
+          <text class="dt" x="546" y="232">&mdash; benefits written from your rooms, not from a brochure.</text>
+
+          <!-- row 3 -->
+          <rect class="bx" x="40" y="256" width="430" height="70" rx="2"></rect>
+          <text class="dth" x="56" y="280">The system diagram</text>
+          <text class="dt" x="56" y="300">Generated as SVG from your configuration: heat source, then</text>
+          <text class="dt" x="56" y="317">distribution, then rooms. Solid wired, dotted radio.</text>
+
+          <rect class="bx" x="530" y="256" width="430" height="70" rx="2"></rect>
+          <text class="dth" x="546" y="280">Savings, as a range</text>
+          <text class="dt" x="546" y="300">Four inputs the customer knows &rarr; a % and &euro;/year <tspan font-weight="600">range</tspan>, never</text>
+          <text class="dt" x="546" y="317">a single figure. &ldquo;See the method&rdquo; is on screen. EN 15232 basis.</text>
+
+          <!-- row 4 -->
+          <rect class="bx" x="40" y="341" width="430" height="70" rx="2"></rect>
+          <text class="dth" x="56" y="365">Documents, filtered</text>
+          <text class="dt" x="56" y="385">The matrix queried with <tspan font-weight="600">your</tspan> products only. A document that</text>
+          <text class="dt" x="56" y="402">does not exist is shown as missing. Full pack in one click.</text>
+
+          <rect class="bx" x="530" y="341" width="430" height="70" rx="2"></rect>
+          <text class="dth" x="546" y="365">Quote + one installation guide</text>
+          <text class="dt" x="546" y="385">One guide in job order: prepare, wire, pair, commission, test.</text>
+          <text class="dt" x="546" y="402">Retail price only &mdash; the distributor's role stays protected.</text>
+
+          <line class="ln-key" x1="500" y1="121" x2="478" y2="121" marker-end="url(#a4-key)"></line>
+          <line class="ln-key" x1="500" y1="121" x2="522" y2="121" marker-end="url(#a4-key)"></line>
+          <line class="ln-key" x1="500" y1="206" x2="478" y2="206" marker-end="url(#a4-key)"></line>
+          <line class="ln-key" x1="500" y1="206" x2="522" y2="206" marker-end="url(#a4-key)"></line>
+          <line class="ln-key" x1="500" y1="291" x2="478" y2="291" marker-end="url(#a4-key)"></line>
+          <line class="ln-key" x1="500" y1="291" x2="522" y2="291" marker-end="url(#a4-key)"></line>
+          <line class="ln-key" x1="500" y1="376" x2="478" y2="376" marker-end="url(#a4-key)"></line>
+          <line class="ln-key" x1="500" y1="376" x2="522" y2="376" marker-end="url(#a4-key)"></line>
+        </svg>
+      </div>
+      <figcaption><b>Eight outputs, one object, no re-entry.</b> The PDFs carry a
+      <span class="mono">TEST DOCUMENT</span> watermark and fictional content in this build &mdash; the
+      structure and the filtering are real, the words in them are not.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <div class="shead"><span class="snum">05</span><h2>The loop that makes the tool get better</h2></div>
+    <p class="sintro">This is the part with the most commercial value and the least code: a configuration is
+    a <strong>qualified lead the moment it starts</strong>, and every correction a sales rep makes to a
+    handed-over file is a rule the engine is missing. Simulated end to end in the BETA &mdash; the payloads
+    are visible in the &ldquo;CRM backstage&rdquo; panel.</p>
+
+    <figure>
+      <div class="figbox">
+        <svg viewBox="0 0 920 330" role="img" aria-label="The configurator engine creates a lead in the CRM at the first answer; the lead is assigned by postcode to an area sales rep; the rep's correction on a handed-over file becomes a new rule fed back into the engine. A separate branch sends a resume email after 48 hours of inactivity.">
+          <defs>
+            <marker id="a5-key" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+              <polygon points="0 0, 9 3.5, 0 7" fill="var(--cyan-flat)"></polygon>
+            </marker>
+            <marker id="a5-sim" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+              <polygon points="0 0, 9 3.5, 0 7" fill="var(--sim-fg)"></polygon>
+            </marker>
+          </defs>
+          <rect class="bx-key" x="22" y="112" width="156" height="84" rx="2"></rect>
+          <text class="dts-key" x="38" y="134">runs for real</text>
+          <text class="dth" x="38" y="156">Configurator</text>
+          <text class="dth" x="38" y="174">engine</text>
+
+          <rect class="bx-sim" x="236" y="104" width="196" height="100" rx="2"></rect>
+          <text class="dts-sim" x="252" y="126">simulated</text>
+          <text class="dth" x="252" y="148">Lead in Zoho</text>
+          <text class="dt" x="252" y="168">Created at the first</text>
+          <text class="dt" x="252" y="184">answer, updated at</text>
+          <text class="dt" x="252" y="198">every step.</text>
+
+          <rect class="bx-sim" x="490" y="104" width="180" height="100" rx="2"></rect>
+          <text class="dts-sim" x="506" y="126">simulated</text>
+          <text class="dth" x="506" y="148">Area sales rep</text>
+          <text class="dt" x="506" y="168">Assigned by</text>
+          <text class="dt" x="506" y="184">postcode. Calls</text>
+          <text class="dt" x="506" y="198">back within 48 h.</text>
+
+          <rect class="bx-key" x="728" y="104" width="170" height="100" rx="2"></rect>
+          <text class="dts-key" x="744" y="126">the payoff</text>
+          <text class="dth" x="744" y="148">Every correction</text>
+          <text class="dt" x="744" y="168">becomes a rule the</text>
+          <text class="dt" x="744" y="184">configurator was</text>
+          <text class="dt" x="744" y="198">missing.</text>
+
+          <line class="ln-sim" x1="180" y1="154" x2="228" y2="154" marker-end="url(#a5-sim)"></line>
+          <line class="ln-sim" x1="434" y1="154" x2="482" y2="154" marker-end="url(#a5-sim)"></line>
+          <line class="ln-sim" x1="672" y1="154" x2="720" y2="154" marker-end="url(#a5-sim)"></line>
+          <line class="ln-sim" x1="336" y1="206" x2="336" y2="236" marker-end="url(#a5-sim)"></line>
+          <text class="dts-sim" x="204" y="144" text-anchor="middle">1st answer</text>
+          <text class="dts-sim" x="458" y="144" text-anchor="middle">postcode</text>
+          <text class="dts-sim" x="696" y="144" text-anchor="middle">handover</text>
+
+          <rect class="bx-sim" x="236" y="242" width="196" height="56" rx="2"></rect>
+          <text class="dt" x="252" y="264">No activity for 48 h &rarr;</text>
+          <text class="dt" x="252" y="282">resume email, project kept.</text>
+
+          <path class="ln-key" d="M 813 206 L 813 320 L 100 320 L 100 200" marker-end="url(#a5-key)"></path>
+          <text class="dts-key" x="456" y="312" text-anchor="middle">a new rule, not a one-off fix</text>
+        </svg>
+      </div>
+      <figcaption><b>The only closed loop in the system.</b> Everything the rep fixes by hand today is a
+      gap in the rules; feeding it back is what stops the configurator ageing. The 48 h branch is the same
+      idea applied to the customer: a project is never lost, only paused.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <div class="shead"><span class="snum">06</span><h2>The 26 problems, and where each one is answered</h2></div>
+    <p class="sintro">Every problem from the workshop, grouped by the part of the mechanism that answers it
+    &mdash; so you can point at a diagram above rather than describe a feature. The status says how much of
+    the answer really runs today.</p>
+
+    <div class="filter" role="group" aria-label="Filter problems by status">
+      <button type="button" data-f="all" aria-pressed="true">All 26</button>
+      <button type="button" data-f="live" aria-pressed="false">Live &middot; 16</button>
+      <button type="button" data-f="test" aria-pressed="false">Test content &middot; 5</button>
+      <button type="button" data-f="sim" aria-pressed="false">Simulated &middot; 4</button>
+      <button type="button" data-f="ph" aria-pressed="false">Placeholder &middot; 1</button>
+    </div>
+
+    <div class="cluster" data-cluster>
+      <h3>A &mdash; The engine decides, so the customer doesn't have to <span class="cnt">6 problems &middot; diagrams 02</span></h3>
+      <p class="cwhy">These six are all answered by the same thing: the seam between roles and the
+      catalogue, plus the three-state check on top of it.</p>
+      <div class="cards">
+
+        <div class="pcard" data-s="live">
+          <div class="top"><span class="pid">P1</span><span class="pill live">Live</span></div>
+          <h4>Identifying all compatible devices</h4>
+          <p>Three states instead of a yes/no: compatible, compatible with a stated limitation, or greyed
+          with the reason in one sentence and the missing product on an add button. A completeness pass
+          checks the whole basket.</p>
+        </div>
+
+        <div class="pcard" data-s="live">
+          <div class="top"><span class="pid">P2</span><span class="pill live">Live</span></div>
+          <h4>Matching needs with available devices</h4>
+          <p>Answers fill attributes, attributes compose roles, roles resolve into products last. No
+          catalogue is shown before the recommendation.</p>
+        </div>
+
+        <div class="pcard" data-s="live">
+          <div class="top"><span class="pid">P4</span><span class="pill live">Live</span></div>
+          <h4>Customers unsure which devices suit them</h4>
+          <p>Nobody picks devices. The tool proposes <strong>Essential / Comfort / Premium</strong>,
+          computed from composition rules: 0 thermostats, 1 in the main living room, or 1 per room.</p>
+        </div>
+
+        <div class="pcard" data-s="live">
+          <div class="top"><span class="pid">P6</span><span class="pill live">Live</span></div>
+          <h4>Seeing and understanding all the options</h4>
+          <p>The result screen shows the home room by room on top and the list below, with
+          &ldquo;Other choice&rdquo; on every line &mdash; same role, compatible, price and function
+          difference in one line.</p>
+        </div>
+
+        <div class="pcard" data-s="live">
+          <div class="top"><span class="pid">P10</span><span class="pill live">Live</span></div>
+          <h4>The system may not suit the location</h4>
+          <p>Walls, floors, area and a wi-fi proxy question feed radio-range rules: an
+          <span class="ref">RE600</span> repeater is added by default with the reason, and can be removed.
+          A warning, never a block.</p>
+        </div>
+
+        <div class="pcard" data-s="live">
+          <div class="top"><span class="pid">P24</span><span class="pill live">Live</span></div>
+          <h4>The right system within a budget</h4>
+          <p>A budget slider. A level above budget stays <strong>visible and greyed with the gap shown</strong>
+          rather than disappearing &mdash; and packs are never mixed into the levels to make one fit.</p>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="cluster" data-cluster>
+      <h3>B &mdash; The shape of the journey <span class="cnt">5 problems &middot; diagram 03</span></h3>
+      <p class="cwhy">One path, four named steps, nothing lost on the way back &mdash; and the two hardest
+      questions turned into outputs instead of inputs.</p>
+      <div class="cards">
+
+        <div class="pcard" data-s="live">
+          <div class="top"><span class="pid">P3</span><span class="pill live">Live</span></div>
+          <h4>Unclear customer journey</h4>
+          <p>Four named steps, a bar that is always visible, and going back costs nothing.</p>
+        </div>
+
+        <div class="pcard" data-s="live">
+          <div class="top"><span class="pid">P5</span><span class="pill live">Live</span></div>
+          <h4>The journey is not intuitive</h4>
+          <p>One question per screen, illustrated clickable cards, and a homeowner/installer profile chosen
+          up front &mdash; with the reason explained &mdash; so the vocabulary and the level of detail adapt.</p>
+        </div>
+
+        <div class="pcard" data-s="live">
+          <div class="top"><span class="pid">P7</span><span class="pill live">Live</span></div>
+          <h4>Too many steps before buying</h4>
+          <p>A proposal appears from the end of &ldquo;My heating&rdquo; and updates with every answer, then
+          three actions at the end.</p>
+          <p class="note">The three final actions are simulated.</p>
+        </div>
+
+        <div class="pcard" data-s="live">
+          <div class="top"><span class="pid">P11</span><span class="pill live">Live</span></div>
+          <h4>Online or offline?</h4>
+          <p>Never asked. Three usage questions, then the conclusion &mdash; &ldquo;your solution will be
+          connected&rdquo; &mdash; and a comparison card shown exactly once.</p>
+        </div>
+
+        <div class="pcard" data-s="live">
+          <div class="top"><span class="pid">P23</span><span class="pill live">Live</span></div>
+          <h4>Starting the questions over every time</h4>
+          <p>A project code from the first answer, the exact step restored from the browser, and a resume
+          link by email &mdash; the same email that feeds the CRM.</p>
+          <p class="note">The email itself is simulated.</p>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="cluster" data-cluster>
+      <h3>C &mdash; Making the system understandable <span class="cnt">8 problems &middot; diagram 04</span></h3>
+      <p class="cwhy">Eight problems about the same thing: a customer who cannot picture the system, price
+      it, or say what it will do for them. All eight are answered by outputs generated from the
+      configuration rather than by content written in advance.</p>
+      <div class="cards">
+
+        <div class="pcard" data-s="live">
+          <div class="top"><span class="pid">P12</span><span class="pill live">Live</span></div>
+          <h4>Benefits of remote access unclear</h4>
+          <p>Four real-life situations, one sentence and one image each, placed exactly at the connectivity
+          questions &mdash; not on a features page.</p>
+        </div>
+
+        <div class="pcard" data-s="live">
+          <div class="top"><span class="pid">P17</span><span class="pill live">Live</span></div>
+          <h4>The system is hard to visualise</h4>
+          <p>A diagram generated from the configuration: heat source bottom left, distribution in the
+          middle, rooms on top; solid lines wired, dotted radio, colour for water.</p>
+          <p class="note">Placeholder icons &mdash; the vector library is still to come.</p>
+        </div>
+
+        <div class="pcard" data-s="live">
+          <div class="top"><span class="pid">P21</span><span class="pill live">Live</span></div>
+          <h4>Benefits poorly explained</h4>
+          <p>Benefits written room by room, generated from the rooms the customer actually declared.</p>
+        </div>
+
+        <div class="pcard" data-s="live">
+          <div class="top"><span class="pid">P22</span><span class="pill live">Live</span></div>
+          <h4>Comparing options on savings</h4>
+          <p>The three levels side by side: price, devices, savings, remote control.</p>
+          <p class="note">Added outside the workshop file &mdash; the one problem with no solution row.</p>
+        </div>
+
+        <div class="pcard" data-s="test">
+          <div class="top"><span class="pid">P18</span><span class="pill test">Test content</span></div>
+          <h4>Working out the total price</h4>
+          <p>A live total, line-by-line detail, recommended retail price everywhere, and Club Pro installers
+          by postcode with members served first.</p>
+          <p class="note">Prices are fictional and labelled as such on every line.</p>
+        </div>
+
+        <div class="pcard" data-s="test">
+          <div class="top"><span class="pid">P19</span><span class="pill test">Test content</span></div>
+          <h4>Estimating the savings</h4>
+          <p>Four inputs the customer knows, a result as a range in % and &euro;/year, the method readable
+          on screen, and the calculation stored with the configuration.</p>
+          <p class="note">Fictional coefficients and energy prices; the EN 15232 method is real.</p>
+        </div>
+
+        <div class="pcard" data-s="test">
+          <div class="top"><span class="pid">P20</span><span class="pill test">Test content</span></div>
+          <h4>No step-by-step guide for the whole system</h4>
+          <p>A single PDF in the real order of the job &mdash; preparation, wiring of the wired products
+          only, ordered pairing, commissioning, final test &mdash; with the diagram on page 1.</p>
+          <p class="note">Real structure, test content, <span class="ref">TEST DOCUMENT</span> watermark.</p>
+        </div>
+
+        <div class="pcard" data-s="ph">
+          <div class="top"><span class="pid">P16</span><span class="pill ph">Placeholder</span></div>
+          <h4>No guided videos</h4>
+          <p>Videos are attached to a product <em>and</em> to a moment &mdash; understand before, install
+          after &mdash; never dropped in an isolated library.</p>
+          <p class="note">The slots are positioned; the videos do not exist yet.</p>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="cluster" data-cluster>
+      <h3>D &mdash; The installer's own tools <span class="cnt">4 problems &middot; diagrams 03 &amp; 04</span></h3>
+      <p class="cwhy">The installer is a second user with different problems: getting to site prepared,
+      finding the one document that matters, and turning a configuration into something a customer can
+      sign.</p>
+      <div class="cards">
+
+        <div class="pcard" data-s="sim">
+          <div class="top"><span class="pid">P8</span><span class="pill sim">Simulated</span></div>
+          <h4>Having to be on site to specify</h4>
+          <p>A pre-visit link goes to the customer, who answers the homeowner questions and sends three
+          photos asked for explicitly: heat source, radiator with its valve, electrical panel. The installer
+          arrives with the configuration pre-filled and priced.</p>
+          <p class="note">Fictional link and simulated customer reply.</p>
+        </div>
+
+        <div class="pcard" data-s="test">
+          <div class="top"><span class="pid">P13</span><span class="pill test">Test content</span></div>
+          <h4>Drowning in documentation</h4>
+          <p>The documentation matrix is queried with the selected products only: one block per product, a
+          missing document shown as missing, the full pack in one click.</p>
+          <p class="note">Placeholder PDFs.</p>
+        </div>
+
+        <div class="pcard" data-s="live">
+          <div class="top"><span class="pid">P14</span><span class="pill live">Live</span></div>
+          <h4>Finding a replacement for an existing device</h4>
+          <p>Typo-tolerant search covering competitors &mdash; Delta Dore, Netatmo, Honeywell, Tado &mdash;
+          plus legacy Salus, listing the additional products the swap needs.</p>
+          <p class="note">Table limited to 10 entries; the label photo is simulated. A search that comes
+          back empty is what enriches the table.</p>
+        </div>
+
+        <div class="pcard" data-s="test">
+          <div class="top"><span class="pid">P25</span><span class="pill test">Test content</span></div>
+          <h4>Turning a configuration into a quote</h4>
+          <p>A quote at recommended retail price with the exact product codes, plus the message
+          &ldquo;present this quote to your Salus distributor&rdquo; &mdash; no net price in the tool, so the
+          distributor's role is protected and nothing is retyped.</p>
+          <p class="note">Test PDF, simulated national numbering.</p>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="cluster" data-cluster>
+      <h3>E &mdash; When the tool can't decide, and how it learns <span class="cnt">3 problems &middot; diagrams 03 &amp; 05</span></h3>
+      <p class="cwhy">The three problems that are not about the interface at all. They are the reason the
+      configurator has commercial value beyond the demo.</p>
+      <div class="cards">
+
+        <div class="pcard" data-s="sim">
+          <div class="top"><span class="pid">P9</span><span class="pill sim">Simulated</span></div>
+          <h4>No single supplier for everything</h4>
+          <p>The postcode routes the project to the area sales rep, with a clear message: this is a service,
+          not a dead end. The rep points it at the distributor able to supply the whole system.</p>
+          <p class="note">Payload visible in the backstage panel.</p>
+        </div>
+
+        <div class="pcard" data-s="sim">
+          <div class="top"><span class="pid">P15</span><span class="pill sim">Simulated</span></div>
+          <h4>Market configurators are too limited</h4>
+          <p>Instead of refusing an out-of-scope project, the tool prepares a qualified file with its
+          partial recommendation, its assumptions and the points to check, and promises a call back in
+          48 h. Every human correction becomes a rule to add.</p>
+          <p class="note">Zoho Deals simulated.</p>
+        </div>
+
+        <div class="pcard" data-s="sim">
+          <div class="top"><span class="pid">P26</span><span class="pill sim">Simulated</span></div>
+          <h4>Not connected to the CRM / data lake</h4>
+          <p>Every configuration creates or updates a Lead &mdash; profile, postcode, project, zones, level,
+          amount, and the step where the customer dropped off &mdash; which is what makes retargeting and
+          the 48 h reminder possible.</p>
+          <p class="note">Fully simulated by design: the &ldquo;CRM backstage&rdquo; panel shows the exact
+          payloads, the records created and what follows for the rep.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="shead"><span class="snum">07</span><h2>What a demo must not claim</h2></div>
+    <p class="sintro">If you show this to anyone outside the team, these are the lines to hold. The tool
+    labels all of it on screen, but it is easier to say it before someone asks.</p>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>Item</th><th>In this BETA</th><th>In production</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Prices</td>
+            <td>Fictional, generated for the demo. Every price carries a &ldquo;fictional price&rdquo; tag.</td>
+            <td>Recommended retail prices from the ERP price list.</td>
+          </tr>
+          <tr>
+            <td>Product references</td>
+            <td>Real, except four marked <span class="mono">ref. to confirm</span>.</td>
+            <td>Full catalogue with availability per country.</td>
+          </tr>
+          <tr>
+            <td>Compatibility</td>
+            <td>Limited to the BETA catalogue &mdash; three states, completeness checked.</td>
+            <td>Full matrix: protocol, power, role, quantities, firmware, country.</td>
+          </tr>
+          <tr>
+            <td>Documents</td>
+            <td>Generated as real PDFs from the configuration &mdash; real structure, fictional content,
+            <span class="mono">TEST DOCUMENT</span> watermark.</td>
+            <td>Documentation matrix fed by the real manuals, wiring diagrams and videos.</td>
+          </tr>
+          <tr>
+            <td>Zoho CRM</td>
+            <td>No connection. The backstage panel shows the JSON payloads, the records and the
+            notifications. Nothing leaves the browser.</td>
+            <td>Real Leads, Quotes and Deals, assignment by postcode, 48 h reminder, dashboard.</td>
+          </tr>
+          <tr>
+            <td>Emails / SMS</td>
+            <td>A preview of the message on screen.</td>
+            <td>Real sends through the CRM.</td>
+          </tr>
+          <tr>
+            <td>Savings</td>
+            <td>A range from fictional coefficients and energy prices; the method is readable in the tool.</td>
+            <td>Validated EN 15232 coefficients, current energy prices.</td>
+          </tr>
+          <tr>
+            <td>Installers / distributors</td>
+            <td>Fictional names, simulated area.</td>
+            <td>Real directory geolocated by postcode, Club Pro members first.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin:34px 0 12px;font-size:17px">What is actually blocking, in order</h3>
+    <ol class="open">
+      <li><strong>Four product references to validate</strong> &mdash;
+      <span class="mono">TRV3RF-AB</span> (auto-balancing head), <span class="mono">T30NC</span> (loop
+      actuator), <span class="mono">THB</span> (auto-balancing actuator), <span class="mono">MS600</span>
+      (presence sensor). Everything else comes from the existing Salus configurators.</li>
+      <li><strong>Visuals</strong> &mdash; 64 placeholders are in place at final dimensions and swap in by
+      dropping a file, with no code change. Highest impact first: the four situation images and the three
+      landing visuals.</li>
+      <li><strong>Two assets with no placeholder at all</strong> &mdash; the vector icon library for the
+      system diagram (plus around ten reference drawings) and the videos.</li>
+      <li><strong>One product decision to confirm</strong> &mdash; the Premium level for underfloor heating
+      currently adds auto-balancing actuators. That is an interpretation: the workshop rule only mentioned
+      TRVs.</li>
+    </ol>
+
+    <div class="kicker" style="margin-top:26px">
+      <strong>The five-minute version.</strong> Open the demo, click
+      &ldquo;Demo scenario &mdash; mixed house&rdquo; on the landing page: underfloor downstairs, radiators
+      upstairs, gas boiler, pre-filled in one click. Then walk the result screen top to bottom &mdash; levels,
+      rooms, diagram, documents &mdash; and finish in the CRM backstage panel. That single path touches
+      every problem in section 06.
+    </div>
+  </section>
+
+  <footer>
+    <span>Salus Configurator &mdash; BETA walkthrough for internal use. Traceability per problem lives in
+    <span class="mono">WORKSHOP-MAPPING.md</span>.</span>
+    <span class="mono">26 problems &middot; 16 live &middot; 5 test content &middot; 4 simulated &middot; 1 placeholder</span>
+  </footer>
+
+</div>
+
+<script>
+  (function () {
+    var buttons = Array.prototype.slice.call(document.querySelectorAll('.filter button'));
+    var cards = Array.prototype.slice.call(document.querySelectorAll('.pcard'));
+    var clusters = Array.prototype.slice.call(document.querySelectorAll('[data-cluster]'));
+
+    function apply(f) {
+      cards.forEach(function (c) {
+        c.hidden = (f !== 'all' && c.getAttribute('data-s') !== f);
+      });
+      clusters.forEach(function (cl) {
+        var any = Array.prototype.some.call(cl.querySelectorAll('.pcard'), function (c) { return !c.hidden; });
+        cl.hidden = !any;
+      });
+      buttons.forEach(function (b) {
+        b.setAttribute('aria-pressed', String(b.getAttribute('data-f') === f));
+      });
+    }
+
+    buttons.forEach(function (b) {
+      b.addEventListener('click', function () { apply(b.getAttribute('data-f')); });
+    });
+  })();
+</script>
+
+</body>
+</html>
