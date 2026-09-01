@@ -84,9 +84,9 @@ Carried over, in priority order:
 1. **Three product references need validating.** Shown in the tool as "ref. to confirm":
    `TRV3RF-AB` (auto-balancing head), `T30NC` (loop actuator), `THB` (auto-balancing actuator).
    Every other reference comes from the existing Salus configurators.
-2. **Visuals.** 23 of the 24 product photos are the real cut-outs; 41 placeholders remain at final
+2. **Visuals.** 23 of the 24 product photos and the logo are real; 40 placeholders remain at final
    dimensions - see [VISUALS.md](VISUALS.md).
-   Highest impact first: the 4 situation images and the 3 landing-page visuals, then `el600f.png`.
+   Highest impact first: the 4 situation images and the 2 remaining landing-page visuals, then `el600f.png`.
 3. **Two assets that have no placeholder**: the vector icon library for the system diagram
    (plus ~10 hand-drawn reference diagrams), and the videos. Also in VISUALS.md.
 4. **Netlify site name** is still the generated one. Rename under
