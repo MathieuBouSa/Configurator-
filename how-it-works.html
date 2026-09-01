@@ -134,10 +134,10 @@
     line-height:1.85;
     color:var(--ink-2);
   }
+  .meta{ display:grid; grid-template-columns:auto minmax(0,1fr); gap:3px 12px; }
   .meta b{ color:var(--ink); font-weight:500; }
   .meta a{ color:var(--cyan); text-decoration:none; word-break:break-all; }
   .meta a:hover{ text-decoration:underline; }
-  .meta div + div{ margin-top:2px; }
 
   .rules{ margin:0 0 40px; }
   .rules .r1{ height:2px; background:var(--navy); opacity:.75; }
@@ -200,6 +200,7 @@
     overflow-x:auto;
   }
   figure svg{ display:block; width:100%; min-width:660px; height:auto; }
+  figure.narrow svg{ max-width:680px; margin:0 auto; }
   figcaption{
     margin-top:10px;
     font-size:13px;
@@ -358,14 +359,14 @@
       <span class="eyebrow">Salus Controls &middot; internal BETA walkthrough</span>
       <h1>Inside the <em>Salus Configurator</em></h1>
       <p class="lede">How the demo build actually works &mdash; the engine, the journey, the outputs &mdash;
-      and where each of the 26 workshop problems is answered. Read the four diagrams and you can
+      and where each of the 26 workshop problems is answered. Read the five diagrams and you can
       demo the tool without opening the code.</p>
     </div>
     <div class="meta">
-      <div><b>Journey</b> My home &rarr; My heating &rarr; My habits &rarr; My solution</div>
-      <div><b>Build</b> static site, no server, runs offline</div>
-      <div><b>Repo</b> mathieubousa/configurator-</div>
-      <div><b>Demo</b> <a href="https://effulgent-pie-e51188.netlify.app/">effulgent-pie-e51188.netlify.app</a></div>
+      <b>Journey</b><span>My&nbsp;home &rarr; My&nbsp;heating &rarr; My&nbsp;habits &rarr; My&nbsp;solution</span>
+      <b>Build</b><span>static site, no server, runs offline</span>
+      <b>Repo</b><span>mathieubousa/configurator-</span>
+      <b>Demo</b><span><a href="https://effulgent-pie-e51188.netlify.app/">effulgent-pie-e51188.netlify.app</a></span>
     </div>
   </header>
 
@@ -457,10 +458,10 @@
           <text class="dts-key" x="586" y="86">stage 3</text>
           <text class="dth" x="586" y="107">Abstract system</text>
           <text class="dt" x="586" y="130">Roles + quantities:</text>
-          <text class="dtm" x="586" y="152">trv &times;4</text>
-          <text class="dtm" x="586" y="169">zonestat &times;1</text>
-          <text class="dtm" x="586" y="186">actuator &times;2</text>
-          <text class="dtm" x="586" y="200">gateway &times;1</text>
+          <text class="dtm" x="586" y="150">trv &times;4</text>
+          <text class="dtm" x="586" y="166">zonestat &times;1</text>
+          <text class="dtm" x="586" y="182">actuator &times;2</text>
+          <text class="dtm" x="586" y="198">gateway &times;1</text>
 
           <!-- stage 4 -->
           <rect class="bx" x="840" y="64" width="190" height="140" rx="2"></rect>
@@ -501,9 +502,9 @@
       &ldquo;matching needs with available devices&rdquo; (P2) structurally rather than by hand.</figcaption>
     </figure>
 
-    <figure>
+    <figure class="narrow">
       <div class="figbox">
-        <svg viewBox="0 0 660 268" role="img" aria-label="Any candidate product is checked against the current configuration and comes out in one of three states: OK, offered with a stated limitation, or refused with the reason in one sentence and the missing product on an add button.">
+        <svg viewBox="0 0 660 280" role="img" aria-label="Any candidate product is checked against the current configuration and comes out in one of three states: OK, offered with a stated limitation, or refused with the reason in one sentence and the missing product on an add button.">
           <defs>
             <marker id="a2-ink" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
               <polygon points="0 0, 9 3.5, 0 7" fill="var(--ink-3)"></polygon>
@@ -535,7 +536,7 @@
           <text class="dt" x="446" y="145">Offered, with the limitation</text>
           <text class="dt" x="446" y="161">written out on the line.</text>
 
-          <rect class="fill-ph" x="432" y="182" width="208" height="72" rx="2"></rect>
+          <rect class="fill-ph" x="432" y="182" width="208" height="84" rx="2"></rect>
           <text class="dts" x="446" y="202" style="fill:var(--ph-fg)">state 3 &middot; no</text>
           <text class="dt" x="446" y="222">Greyed, reason in one</text>
           <text class="dt" x="446" y="238">sentence, missing part</text>
@@ -559,7 +560,7 @@
 
     <figure>
       <div class="figbox">
-        <svg viewBox="0 0 1060 478" role="img" aria-label="The main journey runs from the landing page through four steps to three final actions. Three side doors enter the path: replacement search, installer pre-visit and project resume. One branch leaves the automatic path towards a qualified file handled by a human, and the three final actions feed a simulated CRM.">
+        <svg viewBox="0 0 1060 492" role="img" aria-label="The main journey runs from the landing page through four steps to three final actions. Three side doors enter the path: replacement search, installer pre-visit and project resume. One branch leaves the automatic path towards a qualified file handled by a human, and the three final actions feed a simulated CRM.">
           <defs>
             <marker id="a3-ink" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
               <polygon points="0 0, 9 3.5, 0 7" fill="var(--ink-3)"></polygon>
@@ -591,7 +592,7 @@
           <line class="ln" x1="140" y1="86" x2="88" y2="164" marker-end="url(#a3-ink)"></line>
           <line class="ln" x1="700" y1="86" x2="640" y2="164" marker-end="url(#a3-ink)"></line>
           <line class="ln-sim" x1="420" y1="86" x2="262" y2="164" marker-end="url(#a3-sim)"></line>
-          <text class="dts" x="672" y="128" text-anchor="end">at the exact step left</text>
+          <text class="dts" x="650" y="128" text-anchor="end">at the exact step left</text>
           <text class="dts-sim" x="350" y="110" text-anchor="end">pre-fills the answers</text>
 
           <!-- main path -->
@@ -657,7 +658,7 @@
           <text class="dts-sim" x="212" y="300">leaves the</text>
           <text class="dts-sim" x="212" y="316">automatic path</text>
 
-          <rect class="bx-sim" x="20" y="392" width="310" height="72" rx="2"></rect>
+          <rect class="bx-sim" x="20" y="392" width="310" height="80" rx="2"></rect>
           <text class="dts-sim" x="36" y="412">human takeover</text>
           <text class="dt" x="36" y="431">Commercial building, &gt;12 zones, uncovered</text>
           <text class="dt" x="36" y="447">heat source, BMS &rarr; partial recommendation</text>
@@ -665,7 +666,7 @@
 
           <!-- crm -->
           <line class="ln-sim" x1="967" y1="254" x2="967" y2="386" marker-end="url(#a3-sim)"></line>
-          <rect class="bx-sim" x="860" y="392" width="180" height="72" rx="2"></rect>
+          <rect class="bx-sim" x="860" y="392" width="180" height="80" rx="2"></rect>
           <text class="dts-sim" x="874" y="412">simulated</text>
           <text class="dt" x="874" y="431">Zoho CRM: Lead,</text>
           <text class="dt" x="874" y="447">Quote, Deal &mdash; the</text>
@@ -688,7 +689,7 @@
 
     <figure>
       <div class="figbox">
-        <svg viewBox="0 0 1000 452" role="img" aria-label="A single configuration object feeds eight outputs through a shared spine: three levels, optional packs, room-by-room benefits, alternatives on every line, the generated system diagram, the savings range, the document matrix, and the quote and installation guide.">
+        <svg viewBox="0 0 1000 424" role="img" aria-label="A single configuration object feeds eight outputs through a shared spine: three levels, optional packs, room-by-room benefits, alternatives on every line, the generated system diagram, the savings range, the document matrix, and the quote and installation guide.">
           <defs>
             <marker id="a4-key" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
               <polygon points="0 0, 9 3.5, 0 7" fill="var(--cyan-flat)"></polygon>
@@ -698,7 +699,7 @@
           <text class="dts-key" x="500" y="36" text-anchor="middle">the single source</text>
           <text class="dth" x="500" y="58" text-anchor="middle">Your configuration</text>
 
-          <line class="ln-key" x1="500" y1="72" x2="500" y2="410"></line>
+          <line class="ln-key" x1="500" y1="72" x2="500" y2="382"></line>
 
           <!-- row 1 -->
           <rect class="bx" x="40" y="86" width="430" height="70" rx="2"></rect>
@@ -769,7 +770,7 @@
 
     <figure>
       <div class="figbox">
-        <svg viewBox="0 0 920 330" role="img" aria-label="The configurator engine creates a lead in the CRM at the first answer; the lead is assigned by postcode to an area sales rep; the rep's correction on a handed-over file becomes a new rule fed back into the engine. A separate branch sends a resume email after 48 hours of inactivity.">
+        <svg viewBox="0 86 1000 254" role="img" aria-label="The configurator engine creates a lead in the CRM at the first answer; the lead is assigned by postcode to an area sales rep; the rep's correction on a handed-over file becomes a new rule fed back into the engine. A separate branch sends a resume email after 48 hours of inactivity.">
           <defs>
             <marker id="a5-key" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
               <polygon points="0 0, 9 3.5, 0 7" fill="var(--cyan-flat)"></polygon>
@@ -783,41 +784,39 @@
           <text class="dth" x="38" y="156">Configurator</text>
           <text class="dth" x="38" y="174">engine</text>
 
-          <rect class="bx-sim" x="236" y="104" width="196" height="100" rx="2"></rect>
-          <text class="dts-sim" x="252" y="126">simulated</text>
-          <text class="dth" x="252" y="148">Lead in Zoho</text>
-          <text class="dt" x="252" y="168">Created at the first</text>
-          <text class="dt" x="252" y="184">answer, updated at</text>
-          <text class="dt" x="252" y="198">every step.</text>
+          <rect class="bx-sim" x="258" y="104" width="196" height="100" rx="2"></rect>
+          <text class="dts-sim" x="274" y="126">simulated</text>
+          <text class="dth" x="274" y="148">Lead in Zoho</text>
+          <text class="dt" x="274" y="168">Created at the first</text>
+          <text class="dt" x="274" y="184">answer, updated at</text>
+          <text class="dt" x="274" y="198">every step.</text>
 
-          <rect class="bx-sim" x="490" y="104" width="180" height="100" rx="2"></rect>
-          <text class="dts-sim" x="506" y="126">simulated</text>
-          <text class="dth" x="506" y="148">Area sales rep</text>
-          <text class="dt" x="506" y="168">Assigned by</text>
-          <text class="dt" x="506" y="184">postcode. Calls</text>
-          <text class="dt" x="506" y="198">back within 48 h.</text>
+          <rect class="bx-sim" x="534" y="104" width="180" height="100" rx="2"></rect>
+          <text class="dts-sim" x="550" y="126">simulated</text>
+          <text class="dth" x="550" y="148">Area sales rep</text>
+          <text class="dt" x="550" y="168">Assigned by</text>
+          <text class="dt" x="550" y="184">postcode. Calls</text>
+          <text class="dt" x="550" y="198">back within 48 h.</text>
 
-          <rect class="bx-key" x="728" y="104" width="170" height="100" rx="2"></rect>
-          <text class="dts-key" x="744" y="126">the payoff</text>
-          <text class="dth" x="744" y="148">Every correction</text>
-          <text class="dt" x="744" y="168">becomes a rule the</text>
-          <text class="dt" x="744" y="184">configurator was</text>
-          <text class="dt" x="744" y="198">missing.</text>
+          <rect class="bx-key" x="794" y="104" width="170" height="100" rx="2"></rect>
+          <text class="dts-key" x="810" y="126">the payoff</text>
+          <text class="dth" x="810" y="148">Every correction</text>
+          <text class="dt" x="810" y="168">becomes a rule the</text>
+          <text class="dt" x="810" y="184">configurator was</text>
+          <text class="dt" x="810" y="198">missing.</text>
 
-          <line class="ln-sim" x1="180" y1="154" x2="228" y2="154" marker-end="url(#a5-sim)"></line>
-          <line class="ln-sim" x1="434" y1="154" x2="482" y2="154" marker-end="url(#a5-sim)"></line>
-          <line class="ln-sim" x1="672" y1="154" x2="720" y2="154" marker-end="url(#a5-sim)"></line>
-          <line class="ln-sim" x1="336" y1="206" x2="336" y2="236" marker-end="url(#a5-sim)"></line>
-          <text class="dts-sim" x="204" y="144" text-anchor="middle">1st answer</text>
-          <text class="dts-sim" x="458" y="144" text-anchor="middle">postcode</text>
-          <text class="dts-sim" x="696" y="144" text-anchor="middle">handover</text>
+          <line class="ln-sim" x1="180" y1="154" x2="250" y2="154" marker-end="url(#a5-sim)"></line>
+          <line class="ln-sim" x1="456" y1="154" x2="526" y2="154" marker-end="url(#a5-sim)"></line>
+          <line class="ln-sim" x1="716" y1="154" x2="786" y2="154" marker-end="url(#a5-sim)"></line>
+          <line class="ln-sim" x1="356" y1="206" x2="356" y2="236" marker-end="url(#a5-sim)"></line>
+          <text class="dts-sim" x="751" y="144" text-anchor="middle">handover</text>
 
-          <rect class="bx-sim" x="236" y="242" width="196" height="56" rx="2"></rect>
-          <text class="dt" x="252" y="264">No activity for 48 h &rarr;</text>
-          <text class="dt" x="252" y="282">resume email, project kept.</text>
+          <rect class="bx-sim" x="258" y="242" width="196" height="56" rx="2"></rect>
+          <text class="dt" x="274" y="264">No activity for 48 h &rarr;</text>
+          <text class="dt" x="274" y="282">resume email, project kept.</text>
 
-          <path class="ln-key" d="M 813 206 L 813 320 L 100 320 L 100 200" marker-end="url(#a5-key)"></path>
-          <text class="dts-key" x="456" y="312" text-anchor="middle">a new rule, not a one-off fix</text>
+          <path class="ln-key" d="M 879 206 L 879 322 L 100 322 L 100 200" marker-end="url(#a5-key)"></path>
+          <text class="dts-key" x="490" y="308" text-anchor="middle">a new rule, not a one-off fix</text>
         </svg>
       </div>
       <figcaption><b>The only closed loop in the system.</b> Everything the rep fixes by hand today is a
@@ -841,7 +840,7 @@
     </div>
 
     <div class="cluster" data-cluster>
-      <h3>A &mdash; The engine decides, so the customer doesn't have to <span class="cnt">6 problems &middot; diagrams 02</span></h3>
+      <h3>A &mdash; The engine decides, so the customer doesn't have to <span class="cnt">6 problems &middot; see section 02</span></h3>
       <p class="cwhy">These six are all answered by the same thing: the seam between roles and the
       catalogue, plus the three-state check on top of it.</p>
       <div class="cards">
@@ -895,7 +894,7 @@
     </div>
 
     <div class="cluster" data-cluster>
-      <h3>B &mdash; The shape of the journey <span class="cnt">5 problems &middot; diagram 03</span></h3>
+      <h3>B &mdash; The shape of the journey <span class="cnt">5 problems &middot; see section 03</span></h3>
       <p class="cwhy">One path, four named steps, nothing lost on the way back &mdash; and the two hardest
       questions turned into outputs instead of inputs.</p>
       <div class="cards">
@@ -940,7 +939,7 @@
     </div>
 
     <div class="cluster" data-cluster>
-      <h3>C &mdash; Making the system understandable <span class="cnt">8 problems &middot; diagram 04</span></h3>
+      <h3>C &mdash; Making the system understandable <span class="cnt">8 problems &middot; see section 04</span></h3>
       <p class="cwhy">Eight problems about the same thing: a customer who cannot picture the system, price
       it, or say what it will do for them. All eight are answered by outputs generated from the
       configuration rather than by content written in advance.</p>
@@ -1010,7 +1009,7 @@
     </div>
 
     <div class="cluster" data-cluster>
-      <h3>D &mdash; The installer's own tools <span class="cnt">4 problems &middot; diagrams 03 &amp; 04</span></h3>
+      <h3>D &mdash; The installer's own tools <span class="cnt">4 problems &middot; see sections 03 &amp; 04</span></h3>
       <p class="cwhy">The installer is a second user with different problems: getting to site prepared,
       finding the one document that matters, and turning a configuration into something a customer can
       sign.</p>
@@ -1055,7 +1054,7 @@
     </div>
 
     <div class="cluster" data-cluster>
-      <h3>E &mdash; When the tool can't decide, and how it learns <span class="cnt">3 problems &middot; diagrams 03 &amp; 05</span></h3>
+      <h3>E &mdash; When the tool can't decide, and how it learns <span class="cnt">3 problems &middot; see sections 03 &amp; 05</span></h3>
       <p class="cwhy">The three problems that are not about the interface at all. They are the reason the
       configurator has commercial value beyond the demo.</p>
       <div class="cards">
