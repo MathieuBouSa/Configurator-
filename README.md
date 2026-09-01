@@ -70,6 +70,25 @@ build/                CSS recompilation config (optional)
 tests/                Engine tests (plain node, no dependencies)
 ```
 
+## Open items
+
+Carried over, in priority order:
+
+1. **Four product references need validating.** Shown in the tool as "ref. to confirm":
+   `TRV3RF-AB` (auto-balancing head), `T30NC` (loop actuator), `THB` (auto-balancing actuator),
+   `MS600` (presence sensor). Every other reference comes from the existing Salus configurators.
+2. **Visuals.** 64 placeholders are in place at final dimensions - see [VISUALS.md](VISUALS.md).
+   Highest impact first: the 4 situation images and the 3 landing-page visuals.
+3. **Two assets that have no placeholder**: the vector icon library for the system diagram
+   (plus ~10 hand-drawn reference diagrams), and the videos. Also in VISUALS.md.
+4. **Netlify site name** is still the generated one. Rename under
+   Site configuration -> Site details -> Change site name.
+5. **GitHub Pages** is optional and one toggle away: Settings -> Pages -> Source: GitHub Actions.
+   The workflow is already committed; until then its Pages job is non-blocking and the test job is
+   the real build signal.
+6. **`main` is not the repository default branch** (the feature branch became default when it was
+   the only one). Switch it under Settings -> General -> Default branch if you want tidy PRs.
+
 ## Test
 
 - Engine: `node tests/test-engine.js` (33 assertions, nothing to install).
