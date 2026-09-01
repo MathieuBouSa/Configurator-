@@ -85,10 +85,14 @@ Carried over, in priority order:
    `TRV3RF-AB` (auto-balancing head), `T30NC` (loop actuator), `THB` (auto-balancing actuator).
    Every other reference comes from the existing Salus configurators.
 2. **Visuals - done.** No placeholder left. All 24 product photos are the real Salus cut-outs, the
-   landing page carries the real logo, and the 41 question / situation / room / profile placeholders
-   are gone: those are Iconify vector icons now. See [VISUALS.md](VISUALS.md), which also lists the
-   four photos that deliberately reuse a neighbouring product's shot for a shared body
-   (`el600f`, `rx30rf`, `sq610b`, `trv3rf-ab`) - confirmed product-side, not gaps.
+   landing page carries the real logo, and the 39 question / situation / room / profile placeholders
+   are gone: those are Iconify vector icons now (27 questions, 6 rooms, 4 situations, 2 profiles).
+   See [VISUALS.md](VISUALS.md), which also lists the four photos that deliberately reuse a
+   neighbouring product's shot for a shared body (`el600f`, `rx30rf`, `sq610b`, `trv3rf-ab`) -
+   confirmed product-side, not gaps.
+   Worth shooting anyway when there is budget: the 4 situations and the 2 profile visuals. Those six
+   carry emotion rather than information, which a glyph states but a photograph sells. The other 33
+   are diagrammatic and read faster as icons.
 3. **Two assets that have no placeholder**: the vector icon library for the system diagram
    (plus ~10 hand-drawn reference diagrams) - the Iconify route used for the pictograms is a
    candidate here too - and the videos. Also in VISUALS.md.

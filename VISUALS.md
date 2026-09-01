@@ -102,10 +102,18 @@ Keep height 120, let the width follow, stay under 50 KB.
 
 ## Pictograms (done - no file to supply)
 
-The question illustrations, the four real-life situations, the room pictograms and the two profile
-cards used to be placeholder PNGs. They are now Iconify vector icons, which gives one consistent
-stroke, the brand colour on every glyph (the SVG inherits `currentColor`), crispness at any size and
-about 13 KB in total instead of forty PNG files.
+The 27 question illustrations, the 4 real-life situations, the 6 room pictograms and the 2 profile
+cards - 39 files - used to be placeholder PNGs. They are now 38 Iconify vector icons (two screens
+share the question mark), which gives one consistent style, the brand colour on every glyph (the SVG
+inherits `currentColor`), crispness at any size and about 13 KB in total instead of 39 PNG files.
+
+**Worth shooting anyway.** Of the 39, the 4 situations and the 2 profile visuals are the ones the
+workshop wanted as photographs: they carry emotion rather than information, and a glyph states the
+sentence where a photograph sells it - "I start the heating from the train" next to a train icon
+reads as a label, not as a moment. They are also the visuals meant to be reused in sales material.
+The other 33 are diagrammatic and genuinely read faster as icons. So: not a blocker, but the six to
+commission first when there is budget. Dropping a photo back in is a one-line change per visual -
+swap the `icon:` back to an `img:` path in `js/data/copy.js` or `js/app.js`.
 
 **How it works**
 
