@@ -25,7 +25,7 @@ Site configuration -> Site details -> Change site name.)
 | Item | In this BETA | In production |
 |---|---|---|
 | **Prices** | **Fictional**, generated for the demo. Every price on screen carries a "fictional price / beta" label. | Recommended retail prices from the ERP / official price list. |
-| **Product references** | **Real** (UG800, TRV3RF, SQ610..., RT520, WQ610, iT700, iT800 WiFi, CB12RF, CB500CO, RX30RF, RE600, SR600, RS600, OS600, RSQ800WRF). Those marked "ref. to confirm" (TRV3RF-AB, T30NC, THB, MS600) still need validating. | Full catalogue maintained, with availability per country. |
+| **Product references** | **Real** (UG800, TRV3RF, SQ610..., RT520, WQ610, iT700, iT800 WiFi, CB12RF, CB500CO, RX30RF, RE600, SR600, RS600, SW600, MS610, RSQ800WRF). Those marked "ref. to confirm" (TRV3RF-AB, T30NC, THB) still need validating. | Full catalogue maintained, with availability per country. |
 | **Compatibility rules** | Limited to the BETA catalogue (3 states: compatible / greyed with the reason / with a limitation; completeness checked). | Full matrix: protocol, power supply, role, quantities, firmware, country availability. |
 | **Documents** (sheets, installation guide, quote, pack) | **Placeholder documents** generated dynamically as PDFs from the configuration: real structure, fictional content, "TEST DOCUMENT" watermark. | Documentation matrix fed by the real manuals, wiring diagrams and videos (a single owner of the file, a mandatory field whenever a product code is created). |
 | **Zoho CRM** | **No connection.** The "CRM backstage" panel shows the exact JSON payloads (Leads / Quotes / Deals), the target service, the records created, the notifications and what follows for the sales rep and the installer. Nothing leaves the browser. | Real creation / update of Leads, Zoho quotes with national numbering, assignment by postcode, automatic 48 h reminder, dashboard. |
@@ -81,11 +81,12 @@ tests/                Engine tests (plain node, no dependencies)
 
 Carried over, in priority order:
 
-1. **Four product references need validating.** Shown in the tool as "ref. to confirm":
-   `TRV3RF-AB` (auto-balancing head), `T30NC` (loop actuator), `THB` (auto-balancing actuator),
-   `MS600` (presence sensor). Every other reference comes from the existing Salus configurators.
-2. **Visuals.** 64 placeholders are in place at final dimensions - see [VISUALS.md](VISUALS.md).
-   Highest impact first: the 4 situation images and the 3 landing-page visuals.
+1. **Three product references need validating.** Shown in the tool as "ref. to confirm":
+   `TRV3RF-AB` (auto-balancing head), `T30NC` (loop actuator), `THB` (auto-balancing actuator).
+   Every other reference comes from the existing Salus configurators.
+2. **Visuals.** 23 of the 24 product photos are the real cut-outs; 41 placeholders remain at final
+   dimensions - see [VISUALS.md](VISUALS.md).
+   Highest impact first: the 4 situation images and the 3 landing-page visuals, then `el600f.png`.
 3. **Two assets that have no placeholder**: the vector icon library for the system diagram
    (plus ~10 hand-drawn reference diagrams), and the videos. Also in VISUALS.md.
 4. **Netlify site name** is still the generated one. Rename under
