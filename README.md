@@ -29,7 +29,7 @@ Site configuration -> Site details -> Change site name.)
 | **Club Pro installers / distributors** | Fictional names, simulated area. | Real directory geolocated by postcode, Club Pro members served first. |
 | **Estimated savings** | A range calculated with **fictional coefficients and energy prices** (method inspired by EN 15232, readable in the tool). | Validated EN 15232 coefficients, current energy prices. |
 | **Videos** | Placeholders positioned at the right moments of the journey. | Real videos: short ones to choose (<= 1 min), step-by-step ones to install. |
-| **Visuals** | Neutral placeholders at final dimensions (see [VISUALS.md](VISUALS.md)) - replaced by dropping a file in, with no code change. | Product photos, illustrations and the official icon library. |
+| **Visuals** | Pictograms are real Iconify vector icons (bundled offline). Product photos and the logo are still neutral placeholders at final dimensions (see [VISUALS.md](VISUALS.md)) - replaced by dropping a file in, with no code change. | Product photos and the official Salus icon library. |
 | **System diagram** | Genuinely generated as SVG from the configuration (fixed rules, solid = wired / dotted = radio) with **placeholder icons**. | The same generator with the official vector icon library plus a dozen reference drawings. |
 | **Label recognition** (replacement module) | Button present, function simulated. Equivalence table limited to 10 entries (Delta Dore, Netatmo, Honeywell, Tado, legacy Salus). | OCR of the label, full equivalence table enriched by the requests that come back empty. |
 
@@ -64,9 +64,9 @@ js/crm.js             Zoho CRM simulation: payloads, explained flows, log
 js/docs.js            Placeholder PDF documents (jsPDF)
 js/ui.js              Shared components  ·  js/result.js "My solution" screen
 js/app.js             Journey, landing, replacement, pre-visit, backstage
-assets/               Visual placeholders (fixed paths - see VISUALS.md)
-vendor/               React, jsPDF, compiled Tailwind CSS (self-contained)
-build/                CSS recompilation config (optional)
+assets/               Product photo placeholders + logo (fixed paths - see VISUALS.md)
+vendor/               React, jsPDF, compiled Tailwind CSS, Iconify icon bundle
+build/                CSS recompilation config + Iconify bundler (both optional)
 tests/                Engine tests (plain node, no dependencies)
 ```
 

@@ -1,10 +1,17 @@
 # Visuals needed - BETA configurator
 
-Neutral placeholders are already in place at the correct dimensions, with **fixed paths**: to drop a real
-visual in, just **place the file at the same path with the same name** - no code to change. Keep the exact
-name and extension listed below (a JPEG photo is fine if it is saved / renamed as `.png`).
+Two families of visuals, handled in two different ways:
 
-General rule: light or cut-out background, no text burnt into the image (labels live in the interface).
+- **Pictograms** (questions, situations, rooms, profiles) - **done**: they are now real vector icons
+  from [Iconify](https://iconify.design) (Material Design Icons set, Apache-2.0), bundled offline.
+  Nothing to supply. See [Pictograms](#pictograms-done---no-file-to-supply) below.
+- **Product photos and the logo** - **still to supply**, from the Salus site. That is the only
+  list left, and it is section 1.
+
+General rule for the photos: light or cut-out background, no text burnt into the image (labels live
+in the interface). Paths are **fixed**: to drop a real visual in, place the file at the same path with
+the same name - no code to change. Keep the exact name and extension listed (a JPEG photo is fine if
+it is saved / renamed as `.png`).
 
 ## 1. Product photos - `assets/products/` - PNG - **800 x 800** - ratio 1:1 - <= 200 KB
 
@@ -34,59 +41,50 @@ Product cut out on a white or transparent background, three-quarter view, screen
 | `it800wifi.png` | iT800 WiFi and its receiver | idem |
 | `rsq800wrf.png` | RSQ800WRF R-System thermostat | Ducted AC journey |
 
-## 2. Question illustrations - `assets/questions/` - PNG - **600 x 400** - ratio 3:2 - <= 150 KB
+## 2. Logo - `assets/hero/logo-salus.png`
 
-A photo or illustration that reads instantly: the customer must recognise THEIR situation in one second.
+Transparent PNG - **480 x 120** (4:1) - <= 50 KB - the official Salus Controls logo, landing page.
 
-| File | Screen (question) | What must be visible |
-|---|---|---|
-| `logement-maison.png` · `logement-appartement.png` · `logement-tertiaire.png` | My home - type | Detached house / residential block / office-retail building |
-| `niveaux-plainpied.png` · `niveaux-1etage.png` · `niveaux-2etages.png` | My home - floors | Section or facade suggesting 1, 2, 3+ levels |
-| `murs-standard.png` · `murs-epais.png` · `murs-inconnu.png` | My home - walls | Brick/plasterboard wall · thick stone wall · a plain question mark |
-| `gen-gaz.png` | My heating - heat source | Wall-hung gas boiler |
-| `gen-fioul.png` | idem | Floor-standing oil boiler with the tank suggested |
-| `gen-pac-eau.png` | idem | Heat pump outdoor unit + hydraulic connection |
-| `gen-pac-air.png` | idem | Outdoor unit + supply grille |
-| `gen-electrique.png` | idem | Electric radiator + consumer unit |
-| `gen-reseau.png` | idem | District heating substation / heat exchanger |
-| `gen-bois.png` | idem | Pellet stove |
-| `gen-inconnu.png` | idem | A plain question mark |
-| `emit-radiateur-eau.png` | My heating - emitters | Steel radiator with a thermostatic valve |
-| `emit-plancher-eau.png` | idem | Underfloor pipe loops + manifold |
-| `emit-plancher-elec.png` | idem | Electric mat under tiles |
-| `emit-radiateur-elec.png` | idem | Radiant panel on the wall |
-| `emit-gainable.png` | idem | Ceiling supply grille + duct |
-| `emit-ventilo.png` | idem | Fan coil console unit |
-| `cables-oui.png` · `cables-non.png` | My heating - existing cables | Wall box with wires showing / bare wall (the 2 photos from workshop solution P5) |
-| `zonage-multi.png` · `zonage-mono.png` | My heating - room by room | The "two houses" drawing: rooms at different temperatures / all the same (workshop solution P6) |
+## Pictograms (done - no file to supply)
 
-## 3. Real-life situations - `assets/situations/` - PNG - **800 x 500** - ratio 16:10 - <= 180 KB
+The question illustrations, the four real-life situations, the room pictograms and the two profile
+cards used to be placeholder PNGs. They are now Iconify vector icons, which gives one consistent
+stroke, the brand colour on every glyph (the SVG inherits `currentColor`), crispness at any size and
+about 13 KB in total instead of forty PNG files.
 
-Warm illustrations, one person in the situation (workshop solutions P12/P13).
+**How it works**
 
-| File | Situation illustrated |
+- `build/icons.mjs` scans `js/` for icon references written `"mdi:<name>"`, pulls the matching set
+  from npm (`@iconify-json/mdi`) and writes `vendor/icons.js` with **only the icons actually used**.
+- `vendor/icons.js` is committed, so the demo stays 100 % static and works offline. The build script
+  needs the network only on the run that regenerates it.
+- `UI.Icon` renders one glyph; `UI.IconTile` renders the framed pictogram that stands in for a photo.
+
+**Changing a pictogram**
+
+1. Find a name on [icon-sets.iconify.design/mdi](https://icon-sets.iconify.design/mdi/).
+2. Edit the `icon:` value in `js/data/markets.js`, `js/data/copy.js` or `js/app.js`.
+3. Run `node build/icons.mjs` (it fails loudly on an unknown name), then recompile the CSS only if
+   you also changed Tailwind classes - see `build/README-build.md`.
+
+**Current mapping**
+
+| Screen | Icons used |
 |---|---|
-| `situation-train.png` | Person on a train, phone in hand, home in the distance |
-| `situation-gel.png` | Holiday house under snow + an alert notification |
-| `situation-installateur.png` | Installer at a desk adjusting a system remotely |
-| `situation-voiture.png` | Driver parked, app open |
+| Home type | `home-variant` · `home-city` · `office-building` |
+| Floors | `home-floor-g` · `home-floor-1` · `home-floor-2` |
+| Walls | `bricks` · `wall` · `help-circle-outline` |
+| Heat source | `gas-water-boiler` · `oil-barrel` · `heat-pump` · `sun-snowflake` · `lightning-bolt` · `pipe-valve` · `fireplace` · `help-circle-outline` |
+| Emitters | `radiator` · `pipe` · `heating-coil` · `heat-wave` · `ventilation` · `fan` |
+| Existing cables | `power-plug` · `wifi` |
+| Room by room | `home-thermometer` · `thermostat` |
+| Situations | `train` · `snowflake-alert` · `remote-desktop` · `car-connected` |
+| Rooms | `sofa` · `stove` · `bed` · `desk` · `shower` · `door` |
+| Profiles | `account-group` · `account-hard-hat` |
 
-## 4. Room pictograms - `assets/pieces/` - PNG - **400 x 400** - ratio 1:1 - <= 80 KB
-
-One consistent pictogram style (same stroke, same brand colours).
-`piece-sejour.png`, `piece-cuisine.png`, `piece-chambre.png`, `piece-bureau.png`, `piece-sdb.png`, `piece-autre.png`.
-
-## 5. Landing page - `assets/hero/`
-
-| File | Format / dimensions | Max weight | Description |
-|---|---|---|---|
-| `logo-salus.png` | Transparent PNG - **480 x 120** (4:1) | 50 KB | Official Salus Controls logo |
-| `profil-particulier.png` | PNG/JPG - **800 x 450** (16:9) | 250 KB | A family in their living room, warm feel |
-| `profil-installateur.png` | PNG/JPG - **800 x 450** (16:9) | 250 KB | An installer working on a boiler |
-
-## 6. To plan for later (no placeholder file yet)
+## To plan for later (no placeholder file yet)
 
 | Item | Format | Use |
 |---|---|---|
-| Icon library for the system diagram | Vector SVG, one file per block: heat source, pump, valve, manifold, wiring centre, thermostat, TRV head, gateway, internet router, outdoor sensor | Replaces the placeholder icons drawn in `js/schematic.js` - also plan ~10 reference diagrams drawn by hand as models (workshop solution P18) |
+| Icon library for the system diagram | Vector SVG, one file per block: heat source, pump, valve, manifold, wiring centre, thermostat, TRV head, gateway, internet router, outdoor sensor | Replaces the placeholder icons drawn in `js/schematic.js` - the Iconify route above is a candidate here too. Also plan ~10 reference diagrams drawn by hand as models (workshop solution P18) |
 | Short choice videos (<= 1 min) and installation videos (per step) | MP4 H.264 960 x 540 + PNG thumbnail | Replace the "placeholder video" blocks; to be attached to a product and a moment in the journey (P17) |
