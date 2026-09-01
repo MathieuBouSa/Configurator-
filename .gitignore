@@ -1,3 +1,9 @@
 # Fichiers locaux
 .DS_Store
 Thumbs.db
+
+# Dépendance de build locale (npm install --no-save sharp)
+node_modules/
+
+# Photos produit brutes, avant mise au format (voir build/product-photos.mjs)
+build/photos-in/

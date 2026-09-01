@@ -27,13 +27,13 @@ This table is also visible inside the tool ("About this BETA" page).
 | P19 | Savings hard to estimate | row 20 | Calculator: 4 inputs the customer knows, result as a **range** (% and EUR/year), "see the method" (EN 15232), calculation stored with the configuration | Working (fictional coefficients) |
 | P20 | No step-by-step guide for the whole system | row 21 | **Single guide generated as a PDF** in the real order of the job: preparation, wiring (wired products only), ordered pairing, commissioning, final test; diagram on page 1 | Working (test content) |
 | P21 | Benefits poorly explained | row 22 | Benefits expressed **room by room**, generated from the rooms the customer declared | Working |
-| P22 | Comparing options (savings, etc.) | - *(no Solutions row)* | **Addition outside the workshop, approved by Mathieu**: side-by-side comparison of the 3 levels (price, devices, savings, remote control) | Working |
+| P22 | Comparing options (savings, etc.) | - *(no Solutions row)* | **Addition outside the workshop**: side-by-side comparison of the 3 levels (price, devices, savings, remote control) | Working |
 | P23 | Having to start over every visit | row 23 | **Project code** from the first answer, exact resume at the step left (localStorage), resume link by email (the email also feeds the CRM - P26 answered at the same time), 48 h reminder | Working (email simulated) |
 | P24 | Finding the right system within a budget | row 24 | Budget slider; a level above the budget stays **visible and greyed with the gap shown**; one naming (Essential/Comfort/Premium) everywhere; packs never mixed into the levels | Working |
 | P25 | Turning a configuration into a quote | row 25 | Quote generated (single template, simulated national numbering) at the **recommended retail price**; installer message "present this quote to your Salus distributor (Espace Aubade, Algorel, Richardson)" - no net price | Working (test PDF, Zoho simulated) |
 | P26 | Configurator not connected to the CRM | row 26 | Every configuration creates / updates a Lead (profile, postcode, project, zones, level, amount, drop-off step); **"CRM backstage"** panel: explained flows, live payload, event log | Fully simulated (BETA requirement) |
 
-## Additions outside the workshop file (flagged, approved by Mathieu)
+## Additions outside the workshop file (flagged)
 
 1. **Level comparison screen** - covers P22, the only problem with no solution row.
 2. **"Demo scenario - mixed house" button** - a pre-filled journey for the 5-minute internal presentation.

@@ -1,25 +1,42 @@
 # Visuals needed - BETA configurator
 
-Neutral placeholders are already in place at the correct dimensions, with **fixed paths**: to drop a real
-visual in, just **place the file at the same path with the same name** - no code to change. Keep the exact
-name and extension listed below (a JPEG photo is fine if it is saved / renamed as `.png`).
+**Every visual this BETA needs is now in place.** What follows documents the specs, so a
+replacement can be dropped in without reading the code, and lists what is still only planned.
 
-General rule: light or cut-out background, no text burnt into the image (labels live in the interface).
+Two families of visuals, handled in two different ways:
+
+- **Pictograms** (questions, situations, rooms, profiles) - **done**: they are now real vector icons
+  from [Iconify](https://iconify.design) (Material Design Icons set, Apache-2.0), bundled offline.
+  Nothing to supply. See [Pictograms](#pictograms-done---no-file-to-supply) below.
+- **Product photos and the logo** - **done**: all 24 slots hold genuine Salus cut-outs, and the
+  landing page carries the real logo. See sections 1 and 2.
+
+General rule for the photos: light or cut-out background, no text burnt into the image (labels live
+in the interface). Paths are **fixed**: to replace a visual, place the file at the same path with the
+same name - no code to change. Keep the exact name and extension listed (a JPEG photo is fine if it
+is saved / renamed as `.png`).
 
 ## 1. Product photos - `assets/products/` - PNG - **800 x 800** - ratio 1:1 - <= 200 KB
 
 Product cut out on a white or transparent background, three-quarter view, screen lit where there is one.
 
-**Status: real photos in place, except `el600f.png`.** The 23 other files are the genuine Salus
-cut-outs: transparent background, cropped on the product bounding box with a constant 5 % margin,
-800 x 800, every one under 200 KB. Four entries still need a look:
+**Status: done.** All 24 slots hold genuine Salus cut-outs: transparent background, cropped on the
+product bounding box with a constant 5 % margin, 800 x 800, every one under 200 KB - verified with
+`node build/product-photos.mjs --check`, which also confirms no code path points at a missing file
+and no file sits unreferenced.
 
-| File | What is pending |
-|---|---|
-| `el600f.png` | Still the placeholder. The photo supplied showed the round iT800 thermostat, not a pilot-wire EL600F. |
-| `rx30rf.png` | The photo supplied is an RX10RF. Confirm which reference the tool should carry. |
-| `sq610b.png` | Uses the SQ610BRF photo: no wired-black shot was supplied, and the two are identical from the front. |
-| `trv3rf-ab.png` | Uses the TRV3RF photo: no auto-balancing shot was supplied. |
+Four of them deliberately reuse a neighbouring product's shot, because the two products share the
+same body. Confirmed product-side, so these are settled rather than pending:
+
+| File | Reuses | Why |
+|---|---|---|
+| `el600f.png` | the iT800 shot | Same design. The frame keeps the iT800's receiver behind the dial: the receiver sits physically behind the thermostat, so no rectangular crop removes it without leaving a worse artefact. |
+| `rx30rf.png` | an RX10 shot | Same design. |
+| `sq610b.png` | the SQ610BRF shot | Same design; the two are identical from the front. |
+| `trv3rf-ab.png` | the TRV3RF shot | Same design as the auto-balancing head. |
+
+Replacing any of them later is a drop-in: same path, same name, then
+`node build/product-photos.mjs` if the source needs conforming.
 
 | File | Product | Seen on |
 |---|---|---|
@@ -45,59 +62,92 @@ cut-outs: transparent background, cropped on the product bounding box with a con
 | `it800wifi.png` | iT800 WiFi and its receiver | idem |
 | `rsq800wrf.png` | RSQ800WRF R-System thermostat | Ducted AC journey |
 
-## 2. Question illustrations - `assets/questions/` - PNG - **600 x 400** - ratio 3:2 - <= 150 KB
+### Putting the photos in the right format
 
-A photo or illustration that reads instantly: the customer must recognise THEIR situation in one second.
+`build/product-photos.mjs` does the resizing, cropping, centring, compression and renaming, so
+the only manual step is downloading the photos:
 
-| File | Screen (question) | What must be visible |
-|---|---|---|
-| `logement-maison.png` · `logement-appartement.png` · `logement-tertiaire.png` | My home - type | Detached house / residential block / office-retail building |
-| `niveaux-plainpied.png` · `niveaux-1etage.png` · `niveaux-2etages.png` | My home - floors | Section or facade suggesting 1, 2, 3+ levels |
-| `murs-standard.png` · `murs-epais.png` · `murs-inconnu.png` | My home - walls | Brick/plasterboard wall · thick stone wall · a plain question mark |
-| `gen-gaz.png` | My heating - heat source | Wall-hung gas boiler |
-| `gen-fioul.png` | idem | Floor-standing oil boiler with the tank suggested |
-| `gen-pac-eau.png` | idem | Heat pump outdoor unit + hydraulic connection |
-| `gen-pac-air.png` | idem | Outdoor unit + supply grille |
-| `gen-electrique.png` | idem | Electric radiator + consumer unit |
-| `gen-reseau.png` | idem | District heating substation / heat exchanger |
-| `gen-bois.png` | idem | Pellet stove |
-| `gen-inconnu.png` | idem | A plain question mark |
-| `emit-radiateur-eau.png` | My heating - emitters | Steel radiator with a thermostatic valve |
-| `emit-plancher-eau.png` | idem | Underfloor pipe loops + manifold |
-| `emit-plancher-elec.png` | idem | Electric mat under tiles |
-| `emit-radiateur-elec.png` | idem | Radiant panel on the wall |
-| `emit-gainable.png` | idem | Ceiling supply grille + duct |
-| `emit-ventilo.png` | idem | Fan coil console unit |
-| `cables-oui.png` · `cables-non.png` | My heating - existing cables | Wall box with wires showing / bare wall (the 2 photos from workshop solution P5) |
-| `zonage-multi.png` · `zonage-mono.png` | My heating - room by room | The "two houses" drawing: rooms at different temperatures / all the same (workshop solution P6) |
+```
+npm install --no-save sharp          # build-time only, nothing ships to the browser
+# drop the raw downloads into build/photos-in/, named after each reference
+node build/product-photos.mjs
+```
 
-## 3. Real-life situations - `assets/situations/` - PNG - **800 x 500** - ratio 16:10 - <= 180 KB
+It reads the 24 expected filenames from `js/data/catalog.js`, so the catalogue stays the single
+source of truth. Each photo is trimmed of its uniform border, centred on an 800 x 800 square with a
+4 % margin, flattened on white (`--transparent` keeps the alpha channel instead) and compressed
+under 200 KB, quantising the palette only if it has to. Filename matching is forgiving:
+`UG800.jpg`, `sq610-rf.png` and `TRV3RF AB.webp` all land in the right slot.
 
-Warm illustrations, one person in the situation (workshop solutions P12/P13).
+It tells you what it could not do: a source smaller than 800 px (upscaled, will look soft), a file
+matching no product, and a photo still over 200 KB after quantising - which in practice means the
+background is too busy and needs a cleaner cut-out.
 
-| File | Situation illustrated |
+`build/photos-in/` is git-ignored, because the raw downloads are inputs and only the conformed
+output belongs in `assets/products/`. If you are handing the photos to someone else through the
+repository, override it once with `git add -f build/photos-in/` (or drop them in through the GitHub
+web UI, which ignores `.gitignore`), and delete them again in the commit that adds the outputs.
+
+`node build/product-photos.mjs --check` audits `assets/products/` against the spec and writes
+nothing. It needs no dependency, so it is the quick way to see what is still a placeholder.
+
+## 2. Logo - `assets/hero/logo-salus.png` - **done**
+
+The real logo is in place: transparent PNG, **700 x 120**, 17 KB, rasterised from the official vector.
+
+The constraint to respect when replacing it is the **ratio, not a fixed box**: `app.js` renders it
+`h-10` with automatic width and no `object-fit`, so the file must carry the logo's own ratio
+(5.83:1). Padding it into a 4:1 box would add transparent bands and shrink the logo on screen.
+Keep height 120, let the width follow, stay under 50 KB.
+
+## Pictograms (done - no file to supply)
+
+The 27 question illustrations, the 4 real-life situations, the 6 room pictograms and the 2 profile
+cards - 39 files - used to be placeholder PNGs. They are now 38 Iconify vector icons (two screens
+share the question mark), which gives one consistent style, the brand colour on every glyph (the SVG
+inherits `currentColor`), crispness at any size and about 13 KB in total instead of 39 PNG files.
+
+**Worth shooting anyway.** Of the 39, the 4 situations and the 2 profile visuals are the ones the
+workshop wanted as photographs: they carry emotion rather than information, and a glyph states the
+sentence where a photograph sells it - "I start the heating from the train" next to a train icon
+reads as a label, not as a moment. They are also the visuals meant to be reused in sales material.
+The other 33 are diagrammatic and genuinely read faster as icons. So: not a blocker, but the six to
+commission first when there is budget. Dropping a photo back in is a one-line change per visual -
+swap the `icon:` back to an `img:` path in `js/data/copy.js` or `js/app.js`.
+
+**How it works**
+
+- `build/icons.mjs` scans `js/` for icon references written `"mdi:<name>"`, pulls the matching set
+  from npm (`@iconify-json/mdi`) and writes `vendor/icons.js` with **only the icons actually used**.
+- `vendor/icons.js` is committed, so the demo stays 100 % static and works offline. The build script
+  needs the network only on the run that regenerates it.
+- `UI.Icon` renders one glyph; `UI.IconTile` renders the framed pictogram that stands in for a photo.
+
+**Changing a pictogram**
+
+1. Find a name on [icon-sets.iconify.design/mdi](https://icon-sets.iconify.design/mdi/).
+2. Edit the `icon:` value in `js/data/markets.js`, `js/data/copy.js` or `js/app.js`.
+3. Run `node build/icons.mjs` (it fails loudly on an unknown name), then recompile the CSS only if
+   you also changed Tailwind classes - see `build/README-build.md`.
+
+**Current mapping**
+
+| Screen | Icons used |
 |---|---|
-| `situation-train.png` | Person on a train, phone in hand, home in the distance |
-| `situation-gel.png` | Holiday house under snow + an alert notification |
-| `situation-installateur.png` | Installer at a desk adjusting a system remotely |
-| `situation-voiture.png` | Driver parked, app open |
+| Home type | `home-variant` · `home-city` · `office-building` |
+| Floors | `home-floor-g` · `home-floor-1` · `home-floor-2` |
+| Walls | `bricks` · `wall` · `help-circle-outline` |
+| Heat source | `gas-water-boiler` · `oil-barrel` · `heat-pump` · `sun-snowflake` · `lightning-bolt` · `pipe-valve` · `fireplace` · `help-circle-outline` |
+| Emitters | `radiator` · `pipe` · `heating-coil` · `heat-wave` · `ventilation` · `fan` |
+| Existing cables | `power-plug` · `wifi` |
+| Room by room | `home-thermometer` · `thermostat` |
+| Situations | `train` · `snowflake-alert` · `remote-desktop` · `car-connected` |
+| Rooms | `sofa` · `stove` · `bed` · `desk` · `shower` · `door` |
+| Profiles | `account-group` · `account-hard-hat` |
 
-## 4. Room pictograms - `assets/pieces/` - PNG - **400 x 400** - ratio 1:1 - <= 80 KB
-
-One consistent pictogram style (same stroke, same brand colours).
-`piece-sejour.png`, `piece-cuisine.png`, `piece-chambre.png`, `piece-bureau.png`, `piece-sdb.png`, `piece-autre.png`.
-
-## 5. Landing page - `assets/hero/`
-
-| File | Format / dimensions | Max weight | Description |
-|---|---|---|---|
-| `logo-salus.png` | Transparent PNG - **height 120**, width proportional (700 x 120 for the current logo) | 50 KB | Official Salus Controls logo, rasterised from the official vector. `app.js` renders it `h-10` with automatic width and no `object-fit`, so the file must carry the logo own ratio (5.83:1): a 4:1 box would add transparent bands and shrink the logo on screen. |
-| `profil-particulier.png` | PNG/JPG - **800 x 450** (16:9) | 250 KB | A family in their living room, warm feel |
-| `profil-installateur.png` | PNG/JPG - **800 x 450** (16:9) | 250 KB | An installer working on a boiler |
-
-## 6. To plan for later (no placeholder file yet)
+## To plan for later (no placeholder file yet)
 
 | Item | Format | Use |
 |---|---|---|
-| Icon library for the system diagram | Vector SVG, one file per block: heat source, pump, valve, manifold, wiring centre, thermostat, TRV head, gateway, internet router, outdoor sensor | Replaces the placeholder icons drawn in `js/schematic.js` - also plan ~10 reference diagrams drawn by hand as models (workshop solution P18) |
+| Icon library for the system diagram | Vector SVG, one file per block: heat source, pump, valve, manifold, wiring centre, thermostat, TRV head, gateway, internet router, outdoor sensor | Replaces the placeholder icons drawn in `js/schematic.js` - the Iconify route above is a candidate here too. Also plan ~10 reference diagrams drawn by hand as models (workshop solution P18) |
 | Short choice videos (<= 1 min) and installation videos (per step) | MP4 H.264 960 x 540 + PNG thumbnail | Replace the "placeholder video" blocks; to be attached to a product and a moment in the journey (P17) |

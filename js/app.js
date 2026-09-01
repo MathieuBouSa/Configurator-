@@ -9,7 +9,7 @@
    ============================================================ */
 
 (function () {
-  const { h, cx, eur, PriceTag, Btn, ChoiceCard, SectionTitle, Modal, VideoPlaceholder, StepBar, InfoBox, Stepper } = window.UI;
+  const { h, cx, eur, Icon, IconTile, PriceTag, Btn, ChoiceCard, SectionTitle, Modal, VideoPlaceholder, StepBar, InfoBox, Stepper } = window.UI;
   const { useState, useEffect, useMemo, useRef } = React;
   const E = window.SalusEngine;
   const CAT = window.SALUS_CATALOG;
@@ -119,9 +119,9 @@
         sub: t("The journey adapts: a commercial building goes to a dedicated study - never a dead end.", "Commercial buildings leave the automatic path and prepare a qualified file."),
         valid: a => !!a.homeType,
         render: (a, set) => h("div", { className: "grid sm:grid-cols-3 gap-3" },
-          h(ChoiceCard, { label: "A house", img: "assets/questions/logement-maison.png", selected: a.homeType === "house", onClick: () => set({ homeType: "house" }, true) }),
-          h(ChoiceCard, { label: "A flat", img: "assets/questions/logement-appartement.png", selected: a.homeType === "flat", onClick: () => set({ homeType: "flat" }, true) }),
-          h(ChoiceCard, { label: "A commercial building", hint: "Offices, retail, multi-dwelling...", img: "assets/questions/logement-tertiaire.png", selected: a.homeType === "tertiary", onClick: () => set({ homeType: "tertiary" }, true) }))
+          h(ChoiceCard, { label: "A house", icon: "mdi:home-variant", selected: a.homeType === "house", onClick: () => set({ homeType: "house" }, true) }),
+          h(ChoiceCard, { label: "A flat", icon: "mdi:home-city", selected: a.homeType === "flat", onClick: () => set({ homeType: "flat" }, true) }),
+          h(ChoiceCard, { label: "A commercial building", hint: "Offices, retail, multi-dwelling...", icon: "mdi:office-building", selected: a.homeType === "tertiary", onClick: () => set({ homeType: "tertiary" }, true) }))
       },
       {
         id: "surface", step: 0,
@@ -148,9 +148,9 @@
         sub: "A floor to cross may call for a radio repeater - the configurator will think of it for you.",
         valid: a => a.floors != null,
         render: (a, set) => h("div", { className: "grid sm:grid-cols-3 gap-3" },
-          h(ChoiceCard, { label: "Single storey", img: "assets/questions/niveaux-plainpied.png", selected: a.floors === 0, onClick: () => set({ floors: 0 }, true) }),
-          h(ChoiceCard, { label: "One upper floor", img: "assets/questions/niveaux-1etage.png", selected: a.floors === 1, onClick: () => set({ floors: 1 }, true) }),
-          h(ChoiceCard, { label: "Two or more", img: "assets/questions/niveaux-2etages.png", selected: a.floors === 2, onClick: () => set({ floors: 2 }, true) }))
+          h(ChoiceCard, { label: "Single storey", icon: "mdi:home-floor-g", selected: a.floors === 0, onClick: () => set({ floors: 0 }, true) }),
+          h(ChoiceCard, { label: "One upper floor", icon: "mdi:home-floor-1", selected: a.floors === 1, onClick: () => set({ floors: 1 }, true) }),
+          h(ChoiceCard, { label: "Two or more", icon: "mdi:home-floor-2", selected: a.floors === 2, onClick: () => set({ floors: 2 }, true) }))
       },
       {
         id: "walls", step: 0,
@@ -158,9 +158,9 @@
         sub: "Thick walls slow radio signals down: better to know now.",
         valid: a => !!a.walls,
         render: (a, set) => h("div", { className: "grid sm:grid-cols-3 gap-3" },
-          h(ChoiceCard, { label: t("Standard", "Standard partitions"), hint: "Brick, block, plasterboard...", img: "assets/questions/murs-standard.png", selected: a.walls === "standard", onClick: () => set({ walls: "standard" }, true) }),
-          h(ChoiceCard, { label: t("Thick or old", "Heavy masonry"), hint: "Stone, thick concrete...", img: "assets/questions/murs-epais.png", selected: a.walls === "thick", onClick: () => set({ walls: "thick" }, true) }),
-          h(ChoiceCard, { label: "I don't know", img: "assets/questions/murs-inconnu.png", selected: a.walls === "unknown", onClick: () => set({ walls: "unknown" }, true) }))
+          h(ChoiceCard, { label: t("Standard", "Standard partitions"), hint: "Brick, block, plasterboard...", icon: "mdi:bricks", selected: a.walls === "standard", onClick: () => set({ walls: "standard" }, true) }),
+          h(ChoiceCard, { label: t("Thick or old", "Heavy masonry"), hint: "Stone, thick concrete...", icon: "mdi:wall", selected: a.walls === "thick", onClick: () => set({ walls: "thick" }, true) }),
+          h(ChoiceCard, { label: "I don't know", icon: "mdi:help-circle-outline", selected: a.walls === "unknown", onClick: () => set({ walls: "unknown" }, true) }))
       },
       {
         id: "rooms", step: 0,
@@ -197,7 +197,7 @@
         valid: a => !!a.generator,
         render: (a, set) => h("div", { className: "grid sm:grid-cols-2 lg:grid-cols-4 gap-3" },
           Object.values(MKT.generators).map(g => h(ChoiceCard, {
-            key: g.id, label: g.label, hint: g.hint, img: g.img,
+            key: g.id, label: g.label, hint: g.hint, icon: g.icon,
             badge: g.covered === false ? "dedicated study" : null,
             selected: a.generator === g.id, onClick: () => set({ generator: g.id }, true)
           })))
@@ -209,7 +209,7 @@
         valid: a => !!a.emitterMain,
         render: (a, set) => h("div", { className: "grid sm:grid-cols-2 lg:grid-cols-3 gap-3" },
           Object.values(MKT.emitters).map(em => h(ChoiceCard, {
-            key: em.id, label: em.label, hint: em.hint, img: em.img,
+            key: em.id, label: em.label, hint: em.hint, icon: em.icon,
             badge: em.covered === false ? "dedicated study" : null,
             selected: a.emitterMain === em.id, onClick: () => set({ emitterMain: em.id }, true)
           })))
@@ -223,7 +223,7 @@
         render: (a, set) => h("div", { className: "grid sm:grid-cols-2 lg:grid-cols-3 gap-3" },
           h(ChoiceCard, { label: "Same as downstairs", hint: "The same emitter throughout.", selected: a.emitterUpper === "same", onClick: () => set({ emitterUpper: "same" }, true) }),
           Object.values(MKT.emitters).map(em => h(ChoiceCard, {
-            key: em.id, label: em.label, img: em.img,
+            key: em.id, label: em.label, icon: em.icon,
             badge: em.covered === false ? "dedicated study" : null,
             selected: a.emitterUpper === em.id, onClick: () => set({ emitterUpper: em.id }, true)
           })))
@@ -262,8 +262,8 @@
         sub: t("Look where your old thermostat sits, or between the manifold and the rooms.", "Drives wired vs wireless (CB500CO vs CB12RF, SQ610 vs SQ610RF)."),
         valid: a => !!a.hasThermostatWiring,
         render: (a, set) => h("div", { className: "grid sm:grid-cols-3 gap-3" },
-          h(ChoiceCard, { label: "Yes, cables are there", img: "assets/questions/cables-oui.png", selected: a.hasThermostatWiring === "yes", onClick: () => set({ hasThermostatWiring: "yes" }, true) }),
-          h(ChoiceCard, { label: "No, nothing", img: "assets/questions/cables-non.png", hint: "Wireless avoids all the building work.", selected: a.hasThermostatWiring === "no", onClick: () => set({ hasThermostatWiring: "no" }, true) }),
+          h(ChoiceCard, { label: "Yes, cables are there", icon: "mdi:power-plug", selected: a.hasThermostatWiring === "yes", onClick: () => set({ hasThermostatWiring: "yes" }, true) }),
+          h(ChoiceCard, { label: "No, nothing", icon: "mdi:wifi", hint: "Wireless avoids all the building work.", selected: a.hasThermostatWiring === "no", onClick: () => set({ hasThermostatWiring: "no" }, true) }),
           h(ChoiceCard, { label: "I don't know", selected: a.hasThermostatWiring === "unknown", onClick: () => set({ hasThermostatWiring: "unknown" }, true) }))
       },
       {
@@ -272,8 +272,8 @@
         sub: "This is the question that changes everything: one temperature for the whole home, or a temperature per room.",
         valid: a => !!a.perRoomControl,
         render: (a, set) => h("div", { className: "grid sm:grid-cols-2 gap-3" },
-          h(ChoiceCard, { label: "Yes, room by room", hint: "18 C in the bedrooms, 21 C in the living room...", img: "assets/questions/zonage-multi.png", selected: a.perRoomControl === "yes", onClick: () => set({ perRoomControl: "yes" }, true) }),
-          h(ChoiceCard, { label: "No, one temperature", hint: "A single thermostat controls everything.", img: "assets/questions/zonage-mono.png", selected: a.perRoomControl === "no", onClick: () => set({ perRoomControl: "no" }, true) }))
+          h(ChoiceCard, { label: "Yes, room by room", hint: "18 C in the bedrooms, 21 C in the living room...", icon: "mdi:home-thermometer", selected: a.perRoomControl === "yes", onClick: () => set({ perRoomControl: "yes" }, true) }),
+          h(ChoiceCard, { label: "No, one temperature", hint: "A single thermostat controls everything.", icon: "mdi:thermostat", selected: a.perRoomControl === "no", onClick: () => set({ perRoomControl: "no" }, true) }))
       },
       {
         id: "hasBMS", step: 1,
@@ -391,7 +391,7 @@
     return h("div", { className: "grid sm:grid-cols-2 gap-3 mb-4" },
       COPY.situations.filter(s => ids.includes(s.id)).map(s =>
         h("div", { className: "flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3" },
-          h("img", { src: s.img, alt: "", className: "w-16 h-16 rounded-xl object-cover bg-slate-100 shrink-0" }),
+          h(IconTile, { name: s.icon, className: "w-16 h-16 rounded-xl shrink-0", size: "w-8 h-8" }),
           h("p", { className: "text-sm text-slate-600 italic leading-snug" }, "\u201c" + s.text + "\u201d"))));
   }
 
@@ -418,7 +418,7 @@
       rooms.length === 0 && h("p", { className: "text-sm text-slate-400 italic" }, "Add at least one room using the buttons above."),
       h("div", { className: "space-y-2" },
         rooms.map(r => h("div", { key: r.id, className: "flex items-center gap-2.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2.5" },
-          h("img", { src: (COPY.roomTypes.find(t => t.id === r.type) || {}).img, className: "w-8 h-8 rounded-lg object-cover bg-slate-100", alt: "" }),
+          h(IconTile, { name: (COPY.roomTypes.find(t => t.id === r.type) || {}).icon, className: "w-8 h-8 rounded-lg shrink-0", size: "w-5 h-5" }),
           h("input", {
             value: r.name, onChange: e => set({ rooms: rooms.map(x => x.id === r.id ? { ...x, name: e.target.value } : x) }),
             className: "flex-1 min-w-0 rounded-lg border border-transparent hover:border-slate-200 focus:border-salus-cyan px-2 py-1 text-sm font-semibold text-salus-navy focus:outline-none bg-transparent"
@@ -475,12 +475,12 @@
             "We ask so we can match the wording and the level of detail: a homeowner gets simple, illustrated questions, while an installer moves faster with trade vocabulary - and extra tools (pre-visit, quote, technical docs).")),
         h("div", { className: "grid sm:grid-cols-2 gap-4 max-w-3xl mx-auto" },
           h("button", { onClick: () => onStart("user"), className: "tile text-left rounded-3xl border-2 border-slate-200 bg-white p-6 hover:border-salus-cyan" },
-            h("img", { src: "assets/hero/profil-particulier.png", alt: "", className: "w-full h-36 object-cover rounded-2xl mb-4 bg-slate-100" }),
+            h(IconTile, { name: "mdi:account-group", className: "w-full h-36 rounded-2xl mb-4", size: "w-20 h-20" }),
             h("div", { className: "font-ubuntu font-bold text-lg text-salus-navy" }, "I am a homeowner"),
             h("p", { className: "text-sm text-slate-500 mt-1" }, "Simple questions, with pictures. Your solution in three levels, explained room by room."),
             h("div", { className: "mt-3 text-salus-cyan font-bold text-sm" }, "Start \u2192")),
           h("button", { onClick: () => onStart("installer"), className: "tile text-left rounded-3xl border-2 border-slate-200 bg-white p-6 hover:border-salus-cyan" },
-            h("img", { src: "assets/hero/profil-installateur.png", alt: "", className: "w-full h-36 object-cover rounded-2xl mb-4 bg-slate-100" }),
+            h(IconTile, { name: "mdi:account-hard-hat", className: "w-full h-36 rounded-2xl mb-4", size: "w-20 h-20" }),
             h("div", { className: "font-ubuntu font-bold text-lg text-salus-navy flex items-center gap-2" }, "I am an installer",
               h("span", { className: "text-[9px] bg-salus-navy text-white rounded-full px-2 py-0.5 uppercase tracking-wide" }, "Pro area")),
             h("p", { className: "text-sm text-slate-500 mt-1" }, "Trade vocabulary, customer pre-visit questionnaire, quote ready for your distributor."),
@@ -634,7 +634,7 @@
             h("td", { className: "px-4 py-2 text-slate-600" }, f),
             h("td", { className: "px-4 py-2 font-bold text-salus-cyan" }, p)))))),
       h("div", { className: "mt-4" },
-        h(InfoBox, { tone: "info", title: "Additions outside the workshop file (approved by Mathieu)" },
+        h(InfoBox, { tone: "info", title: "Additions outside the workshop file" },
           h("ul", { className: "list-disc ml-4 space-y-0.5 mt-1" }, additions.map((x, i) => h("li", { key: i }, x))))));
   }
 

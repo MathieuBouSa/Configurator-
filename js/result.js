@@ -10,7 +10,7 @@
    ============================================================ */
 
 (function () {
-  const { h, cx, eur, PriceTag, Btn, ChoiceCard, SectionTitle, Modal, VideoPlaceholder, InfoBox, Stepper } = window.UI;
+  const { h, cx, eur, Icon, IconTile, PriceTag, Btn, ChoiceCard, SectionTitle, Modal, VideoPlaceholder, InfoBox, Stepper } = window.UI;
   const { useState, useMemo } = React;
   const E = window.SalusEngine;
   const CAT = window.SALUS_CATALOG;
@@ -143,7 +143,7 @@
             const benefit = (COPY.roomBenefits[room.type] || COPY.roomBenefits.autre)((room.name || t.label || "room").toLowerCase());
             return h("div", { key: room.id, className: "rounded-2xl border border-slate-200 bg-white p-4" },
               h("div", { className: "flex items-center gap-2.5 mb-2" },
-                h("img", { src: t.img, alt: "", className: "w-9 h-9 rounded-lg object-cover bg-slate-100" }),
+                h(IconTile, { name: t.icon, className: "w-9 h-9 rounded-lg shrink-0", size: "w-5 h-5" }),
                 h("div", null,
                   h("div", { className: "font-semibold text-salus-navy text-sm" }, room.name),
                   h("div", { className: "text-[11px] text-slate-400" }, emitterLabel(room.emitter)))),
