@@ -91,7 +91,7 @@ One consistent pictogram style (same stroke, same brand colours).
 
 | File | Format / dimensions | Max weight | Description |
 |---|---|---|---|
-| `logo-salus.png` | Transparent PNG - **480 x 120** (4:1) | 50 KB | Official Salus Controls logo |
+| `logo-salus.png` | Transparent PNG - **height 120**, width proportional (700 x 120 for the current logo) | 50 KB | Official Salus Controls logo, rasterised from the official vector. `app.js` renders it `h-10` with automatic width and no `object-fit`, so the file must carry the logo own ratio (5.83:1): a 4:1 box would add transparent bands and shrink the logo on screen. |
 | `profil-particulier.png` | PNG/JPG - **800 x 450** (16:9) | 250 KB | A family in their living room, warm feel |
 | `profil-installateur.png` | PNG/JPG - **800 x 450** (16:9) | 250 KB | An installer working on a boiler |
 
