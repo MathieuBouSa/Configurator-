@@ -41,6 +41,30 @@ Product cut out on a white or transparent background, three-quarter view, screen
 | `it800wifi.png` | iT800 WiFi and its receiver | idem |
 | `rsq800wrf.png` | RSQ800WRF R-System thermostat | Ducted AC journey |
 
+### Putting the photos in the right format
+
+`build/product-photos.mjs` does the resizing, cropping, centring, compression and renaming, so
+the only manual step is downloading the photos:
+
+```
+npm install --no-save sharp          # build-time only, nothing ships to the browser
+# drop the raw downloads into build/photos-in/, named after each reference
+node build/product-photos.mjs
+```
+
+It reads the 24 expected filenames from `js/data/catalog.js`, so the catalogue stays the single
+source of truth. Each photo is trimmed of its uniform border, centred on an 800 x 800 square with a
+4 % margin, flattened on white (`--transparent` keeps the alpha channel instead) and compressed
+under 200 KB, quantising the palette only if it has to. Filename matching is forgiving:
+`UG800.jpg`, `sq610-rf.png` and `TRV3RF AB.webp` all land in the right slot.
+
+It tells you what it could not do: a source smaller than 800 px (upscaled, will look soft), a file
+matching no product, and a photo still over 200 KB after quantising - which in practice means the
+background is too busy and needs a cleaner cut-out.
+
+`node build/product-photos.mjs --check` audits `assets/products/` against the spec and writes
+nothing. It needs no dependency, so it is the quick way to see what is still a placeholder.
+
 ## 2. Logo - `assets/hero/logo-salus.png`
 
 Transparent PNG - **480 x 120** (4:1) - <= 50 KB - the official Salus Controls logo, landing page.

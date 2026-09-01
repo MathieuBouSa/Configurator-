@@ -66,7 +66,7 @@ js/ui.js              Shared components  ·  js/result.js "My solution" screen
 js/app.js             Journey, landing, replacement, pre-visit, backstage
 assets/               Product photo placeholders + logo (fixed paths - see VISUALS.md)
 vendor/               React, jsPDF, compiled Tailwind CSS, Iconify icon bundle
-build/                CSS recompilation config + Iconify bundler (both optional)
+build/                CSS recompilation, Iconify bundler, product photo pipeline
 tests/                Engine tests (plain node, no dependencies)
 ```
 
