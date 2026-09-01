@@ -62,6 +62,11 @@ It tells you what it could not do: a source smaller than 800 px (upscaled, will 
 matching no product, and a photo still over 200 KB after quantising - which in practice means the
 background is too busy and needs a cleaner cut-out.
 
+`build/photos-in/` is git-ignored, because the raw downloads are inputs and only the conformed
+output belongs in `assets/products/`. If you are handing the photos to someone else through the
+repository, override it once with `git add -f build/photos-in/` (or drop them in through the GitHub
+web UI, which ignores `.gitignore`), and delete them again in the commit that adds the outputs.
+
 `node build/product-photos.mjs --check` audits `assets/products/` against the spec and writes
 nothing. It needs no dependency, so it is the quick way to see what is still a placeholder.
 
