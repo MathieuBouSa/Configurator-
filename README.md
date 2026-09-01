@@ -8,6 +8,12 @@ One journey only: **My home -> My heating -> My habits -> My solution.**
 Every feature traces back to the Problems / Solutions workshop - see [WORKSHOP-MAPPING.md](WORKSHOP-MAPPING.md)
 and the "About" page inside the tool.
 
+**Explaining it to someone else:** [how-it-works.html](how-it-works.html) is a standalone walkthrough -
+five diagrams (the engine's needs-to-products seam, the three-state compatibility check, the journey with
+its human takeover, the outputs of one configuration, the CRM loop) plus the 26 problems grouped by the
+part of the mechanism that answers them, each tagged live / test content / simulated / placeholder.
+Open the file directly, or reach it on the deployed site at `/how-it-works.html`.
+
 **Live demo:** https://effulgent-pie-e51188.netlify.app/
 (Netlify auto-deploys `main`. The site name is still Netlify's generated one - rename it under
 Site configuration -> Site details -> Change site name.)
@@ -29,7 +35,7 @@ Site configuration -> Site details -> Change site name.)
 | **Club Pro installers / distributors** | Fictional names, simulated area. | Real directory geolocated by postcode, Club Pro members served first. |
 | **Estimated savings** | A range calculated with **fictional coefficients and energy prices** (method inspired by EN 15232, readable in the tool). | Validated EN 15232 coefficients, current energy prices. |
 | **Videos** | Placeholders positioned at the right moments of the journey. | Real videos: short ones to choose (<= 1 min), step-by-step ones to install. |
-| **Visuals** | **Real**, on both fronts: all 24 product photos are genuine Salus cut-outs, and every pictogram is an Iconify vector icon bundled offline. The logo is the only file left (see [VISUALS.md](VISUALS.md)). | The logo, plus the official Salus icon library for the system diagram. |
+| **Visuals** | **Real**, all of them: the 24 product photos are genuine Salus cut-outs, the logo is the official one, and every pictogram is an Iconify vector icon bundled offline (see [VISUALS.md](VISUALS.md)). | The official Salus icon library for the system diagram, and the videos. |
 | **System diagram** | Genuinely generated as SVG from the configuration (fixed rules, solid = wired / dotted = radio) with **placeholder icons**. | The same generator with the official vector icon library plus a dozen reference drawings. |
 | **Label recognition** (replacement module) | Button present, function simulated. Equivalence table limited to 10 entries (Delta Dore, Netatmo, Honeywell, Tado, legacy Salus). | OCR of the label, full equivalence table enriched by the requests that come back empty. |
 
@@ -54,6 +60,7 @@ A 100% static site - no build, no dependencies.
 
 ```
 index.html            Entry point (permanent BETA banner)
+how-it-works.html     Standalone walkthrough: 5 diagrams + the 26 problems, tagged by status
 js/data/catalog.js    Product catalogue (real) + prices (fictional) + rules
 js/data/markets.js    Heat sources & emitters across FR / UK / DE / RO / DK
 js/data/copy.js       Copy, room benefits, equivalences, demo scenario
@@ -64,7 +71,7 @@ js/crm.js             Zoho CRM simulation: payloads, explained flows, log
 js/docs.js            Placeholder PDF documents (jsPDF)
 js/ui.js              Shared components  ·  js/result.js "My solution" screen
 js/app.js             Journey, landing, replacement, pre-visit, backstage
-assets/               Product photo placeholders + logo (fixed paths - see VISUALS.md)
+assets/               Real product photos + logo (fixed paths - see VISUALS.md)
 vendor/               React, jsPDF, compiled Tailwind CSS, Iconify icon bundle
 build/                CSS recompilation, Iconify bundler, product photo pipeline
 tests/                Engine tests (plain node, no dependencies)
@@ -77,9 +84,9 @@ Carried over, in priority order:
 1. **Three product references need validating.** Shown in the tool as "ref. to confirm":
    `TRV3RF-AB` (auto-balancing head), `T30NC` (loop actuator), `THB` (auto-balancing actuator).
    Every other reference comes from the existing Salus configurators.
-2. **Visuals - one file left.** All 24 product photos are the real cut-outs, and the 41
-   question / situation / room / profile placeholders are gone: those are Iconify vector icons now.
-   What remains is `assets/hero/logo-salus.png`. See [VISUALS.md](VISUALS.md), which also lists the
+2. **Visuals - done.** No placeholder left. All 24 product photos are the real Salus cut-outs, the
+   landing page carries the real logo, and the 41 question / situation / room / profile placeholders
+   are gone: those are Iconify vector icons now. See [VISUALS.md](VISUALS.md), which also lists the
    four photos that deliberately reuse a neighbouring product's shot for a shared body
    (`el600f`, `rx30rf`, `sq610b`, `trv3rf-ab`) - confirmed product-side, not gaps.
 3. **Two assets that have no placeholder**: the vector icon library for the system diagram

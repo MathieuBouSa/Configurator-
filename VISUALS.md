@@ -1,17 +1,20 @@
 # Visuals needed - BETA configurator
 
+**Every visual this BETA needs is now in place.** What follows documents the specs, so a
+replacement can be dropped in without reading the code, and lists what is still only planned.
+
 Two families of visuals, handled in two different ways:
 
 - **Pictograms** (questions, situations, rooms, profiles) - **done**: they are now real vector icons
   from [Iconify](https://iconify.design) (Material Design Icons set, Apache-2.0), bundled offline.
   Nothing to supply. See [Pictograms](#pictograms-done---no-file-to-supply) below.
-- **Product photos** - **done**: all 24 slots hold genuine Salus cut-outs. The logo is the only
-  file left. See section 1.
+- **Product photos and the logo** - **done**: all 24 slots hold genuine Salus cut-outs, and the
+  landing page carries the real logo. See sections 1 and 2.
 
 General rule for the photos: light or cut-out background, no text burnt into the image (labels live
-in the interface). Paths are **fixed**: to drop a real visual in, place the file at the same path with
-the same name - no code to change. Keep the exact name and extension listed (a JPEG photo is fine if
-it is saved / renamed as `.png`).
+in the interface). Paths are **fixed**: to replace a visual, place the file at the same path with the
+same name - no code to change. Keep the exact name and extension listed (a JPEG photo is fine if it
+is saved / renamed as `.png`).
 
 ## 1. Product photos - `assets/products/` - PNG - **800 x 800** - ratio 1:1 - <= 200 KB
 
@@ -88,9 +91,14 @@ web UI, which ignores `.gitignore`), and delete them again in the commit that ad
 `node build/product-photos.mjs --check` audits `assets/products/` against the spec and writes
 nothing. It needs no dependency, so it is the quick way to see what is still a placeholder.
 
-## 2. Logo - `assets/hero/logo-salus.png`
+## 2. Logo - `assets/hero/logo-salus.png` - **done**
 
-Transparent PNG - **480 x 120** (4:1) - <= 50 KB - the official Salus Controls logo, landing page.
+The real logo is in place: transparent PNG, **700 x 120**, 17 KB, rasterised from the official vector.
+
+The constraint to respect when replacing it is the **ratio, not a fixed box**: `app.js` renders it
+`h-10` with automatic width and no `object-fit`, so the file must carry the logo's own ratio
+(5.83:1). Padding it into a 4:1 box would add transparent bands and shrink the logo on screen.
+Keep height 120, let the width follow, stay under 50 KB.
 
 ## Pictograms (done - no file to supply)
 
