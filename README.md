@@ -35,7 +35,7 @@ Site configuration -> Site details -> Change site name.)
 | **Club Pro installers / distributors** | Fictional names, simulated area. | Real directory geolocated by postcode, Club Pro members served first. |
 | **Estimated savings** | A range calculated with **fictional coefficients and energy prices** (method inspired by EN 15232, readable in the tool). | Validated EN 15232 coefficients, current energy prices. |
 | **Videos** | Placeholders positioned at the right moments of the journey. | Real videos: short ones to choose (<= 1 min), step-by-step ones to install. |
-| **Visuals** | Neutral placeholders at final dimensions (see [VISUALS.md](VISUALS.md)) - replaced by dropping a file in, with no code change. | Product photos, illustrations and the official icon library. |
+| **Visuals** | **Real**, all of them: the 24 product photos are genuine Salus cut-outs, the logo is the official one, and every pictogram is an Iconify vector icon bundled offline (see [VISUALS.md](VISUALS.md)). | The official Salus icon library for the system diagram, and the videos. |
 | **System diagram** | Genuinely generated as SVG from the configuration (fixed rules, solid = wired / dotted = radio) with **placeholder icons**. | The same generator with the official vector icon library plus a dozen reference drawings. |
 | **Label recognition** (replacement module) | Button present, function simulated. Equivalence table limited to 10 entries (Delta Dore, Netatmo, Honeywell, Tado, legacy Salus). | OCR of the label, full equivalence table enriched by the requests that come back empty. |
 
@@ -71,9 +71,9 @@ js/crm.js             Zoho CRM simulation: payloads, explained flows, log
 js/docs.js            Placeholder PDF documents (jsPDF)
 js/ui.js              Shared components  ·  js/result.js "My solution" screen
 js/app.js             Journey, landing, replacement, pre-visit, backstage
-assets/               Visual placeholders (fixed paths - see VISUALS.md)
-vendor/               React, jsPDF, compiled Tailwind CSS (self-contained)
-build/                CSS recompilation config (optional)
+assets/               Real product photos + logo (fixed paths - see VISUALS.md)
+vendor/               React, jsPDF, compiled Tailwind CSS, Iconify icon bundle
+build/                CSS recompilation, Iconify bundler, product photo pipeline
 tests/                Engine tests (plain node, no dependencies)
 ```
 
@@ -84,11 +84,18 @@ Carried over, in priority order:
 1. **Three product references need validating.** Shown in the tool as "ref. to confirm":
    `TRV3RF-AB` (auto-balancing head), `T30NC` (loop actuator), `THB` (auto-balancing actuator).
    Every other reference comes from the existing Salus configurators.
-2. **Visuals.** 23 of the 24 product photos and the logo are real; 40 placeholders remain at final
-   dimensions - see [VISUALS.md](VISUALS.md).
-   Highest impact first: the 4 situation images and the 2 remaining landing-page visuals, then `el600f.png`.
+2. **Visuals - done.** No placeholder left. All 24 product photos are the real Salus cut-outs, the
+   landing page carries the real logo, and the 39 question / situation / room / profile placeholders
+   are gone: those are Iconify vector icons now (27 questions, 6 rooms, 4 situations, 2 profiles).
+   See [VISUALS.md](VISUALS.md), which also lists the four photos that deliberately reuse a
+   neighbouring product's shot for a shared body (`el600f`, `rx30rf`, `sq610b`, `trv3rf-ab`) -
+   confirmed product-side, not gaps.
+   Worth shooting anyway when there is budget: the 4 situations and the 2 profile visuals. Those six
+   carry emotion rather than information, which a glyph states but a photograph sells. The other 33
+   are diagrammatic and read faster as icons.
 3. **Two assets that have no placeholder**: the vector icon library for the system diagram
-   (plus ~10 hand-drawn reference diagrams), and the videos. Also in VISUALS.md.
+   (plus ~10 hand-drawn reference diagrams) - the Iconify route used for the pictograms is a
+   candidate here too - and the videos. Also in VISUALS.md.
 4. **Netlify site name** is still the generated one. Rename under
    Site configuration -> Site details -> Change site name.
 5. **GitHub Pages** is optional and one toggle away: Settings -> Pages -> Source: GitHub Actions.

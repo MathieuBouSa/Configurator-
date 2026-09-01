@@ -16,22 +16,22 @@ globalThis.SALUS_COPY = {
     {
       id: "train",
       text: "I'm coming home earlier than planned, so I start the heating from the train.",
-      img: "assets/situations/situation-train.png"
+      icon: "mdi:train"
     },
     {
       id: "gel",
       text: "My holiday house drops below 5 C and I get an alert before the pipes freeze.",
-      img: "assets/situations/situation-gel.png"
+      icon: "mdi:snowflake-alert"
     },
     {
       id: "installateur",
       text: "My installer fixes my schedule without coming out, so there is no call-out fee.",
-      img: "assets/situations/situation-installateur.png"
+      icon: "mdi:remote-desktop"
     },
     {
       id: "voiture",
       text: "I leave for the weekend having forgotten to turn it down, so I do it from the car.",
-      img: "assets/situations/situation-voiture.png"
+      icon: "mdi:car-connected"
     }
   ],
 
@@ -145,15 +145,15 @@ globalThis.SALUS_COPY = {
 
   /* --- Room types (room builder, My home step) --- */
   roomTypes: [
-    { id: "sejour",  label: "Living room",  living: true,  img: "assets/pieces/piece-sejour.png" },
-    { id: "cuisine", label: "Kitchen",      living: false, img: "assets/pieces/piece-cuisine.png" },
-    { id: "chambre", label: "Bedroom",      living: true,  img: "assets/pieces/piece-chambre.png" },
-    { id: "bureau",  label: "Study",        living: true,  img: "assets/pieces/piece-bureau.png" },
-    { id: "sdb",     label: "Bathroom",     living: false, img: "assets/pieces/piece-sdb.png" },
-    { id: "autre",   label: "Other room",   living: false, img: "assets/pieces/piece-autre.png" }
+    { id: "sejour",  label: "Living room",  living: true,  icon: "mdi:sofa" },
+    { id: "cuisine", label: "Kitchen",      living: false, icon: "mdi:stove" },
+    { id: "chambre", label: "Bedroom",      living: true,  icon: "mdi:bed" },
+    { id: "bureau",  label: "Study",        living: true,  icon: "mdi:desk" },
+    { id: "sdb",     label: "Bathroom",     living: false, icon: "mdi:shower" },
+    { id: "autre",   label: "Other room",   living: false, icon: "mdi:door" }
   ],
 
-  /* --- Demo scenario (approved by Mathieu): 5-room house,
+  /* --- Demo scenario: 5-room house,
      underfloor downstairs + water radiators upstairs, gas
      boiler, remote control --- */
   demoScenario: {
