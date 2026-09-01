@@ -5,8 +5,8 @@ Two families of visuals, handled in two different ways:
 - **Pictograms** (questions, situations, rooms, profiles) - **done**: they are now real vector icons
   from [Iconify](https://iconify.design) (Material Design Icons set, Apache-2.0), bundled offline.
   Nothing to supply. See [Pictograms](#pictograms-done---no-file-to-supply) below.
-- **Product photos and the logo** - **still to supply**, from the Salus site. That is the only
-  list left, and it is section 1.
+- **Product photos** - **done**, except one: 23 of the 24 slots hold the genuine Salus cut-outs.
+  `el600f.png` and the logo are all that is left. See section 1.
 
 General rule for the photos: light or cut-out background, no text burnt into the image (labels live
 in the interface). Paths are **fixed**: to drop a real visual in, place the file at the same path with
@@ -19,7 +19,9 @@ Product cut out on a white or transparent background, three-quarter view, screen
 
 **Status: real photos in place, except `el600f.png`.** The 23 other files are the genuine Salus
 cut-outs: transparent background, cropped on the product bounding box with a constant 5 % margin,
-800 x 800, every one under 200 KB. Four entries still need a look:
+800 x 800, every one under 200 KB - verified with `node build/product-photos.mjs --check`, which
+also confirms no code path points at a missing file and no file sits unreferenced.
+Four entries still need a look:
 
 | File | What is pending |
 |---|---|
