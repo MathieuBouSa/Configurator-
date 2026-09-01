@@ -225,25 +225,24 @@ globalThis.SALUS_CATALOG = {
     },
 
     /* ----- Security / sensors ----- */
-    OS600: {
-      ref: "OS600", name: "Window / door opening sensor",
+    SW600: {
+      ref: "SW600", name: "Window / door opening sensor",
       role: "windowSensor", price: 35,
       protocol: "zigbee", power: "battery",
       needsGateway: true,
-      img: "assets/products/os600.png",
+      img: "assets/products/sw600.png",
       solution: "Alerts you to an unexpected visit, and cuts the heating in a room as soon as a window is left open.",
       descUser: "Two small parts stuck to the window and its frame.",
       descPro: "Zigbee opening contact, native 'window open = frost protection setpoint' scenario.",
       docs: ["fiche", "notice_pose", "doc_conformite"]
     },
 
-    MS600: {
-      ref: "MS600", name: "Presence sensor",
-      refToConfirm: true,
+    MS610: {
+      ref: "MS610", name: "Presence sensor",
       role: "presenceSensor", price: 45,
       protocol: "zigbee", power: "battery",
       needsGateway: true,
-      img: "assets/products/ms600.png",
+      img: "assets/products/ms610.png",
       solution: "Knows whether someone is there: alerts you while you are away, and trims the heating when a room stays empty.",
       descUser: "Mounted high up in the hallway or living room.",
       descPro: "Zigbee PIR motion sensor + light level, presence/absence scenarios.",
@@ -340,8 +339,8 @@ globalThis.SALUS_CATALOG = {
     repeater:        ["RE600"],
     relay:           ["SR600"],
     shutterRelay:    ["RS600"],
-    windowSensor:    ["OS600"],
-    presenceSensor:  ["MS600"],
+    windowSensor:    ["SW600"],
+    presenceSensor:  ["MS610"],
     acController:    ["RSQ800WRF"]
   },
 

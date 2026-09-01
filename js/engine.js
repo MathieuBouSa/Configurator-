@@ -237,8 +237,8 @@
       packs.push({
         id: "security", name: CAT.packs.security.name,
         tagline: CAT.packs.security.tagline,
-        items: [{ ref: "OS600", qty }, { ref: "MS600", qty: 1 }],
-        total: price("OS600") * qty + price("MS600"),
+        items: [{ ref: "SW600", qty }, { ref: "MS610", qty: 1 }],
+        total: price("SW600") * qty + price("MS610"),
         preChecked: false,
         note: `${qty} opening sensor${qty > 1 ? "s" : ""} (your ${windows || "?"} windows) + 1 presence sensor.`
       });

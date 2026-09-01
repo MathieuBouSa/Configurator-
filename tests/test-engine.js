@@ -87,9 +87,9 @@ check("\"evohome\" -> Honeywell", E.searchReplacement("evohome").some(r => r.fro
 console.log("- Packs -");
 const packs = E.buildPacks(demo);
 check("Heat source pack pre-checked (boiler accessible)", packs.find(p => p.id === "boilerPilot").preChecked);
-check("Security pack: 8 OS600 (8 windows) + 1 MS600", (() => {
+check("Security pack: 8 SW600 (8 windows) + 1 MS610", (() => {
   const s = packs.find(p => p.id === "security");
-  return s.items.find(i => i.ref === "OS600").qty === 8 && s.items.find(i => i.ref === "MS600").qty === 1;
+  return s.items.find(i => i.ref === "SW600").qty === 8 && s.items.find(i => i.ref === "MS610").qty === 1;
 })());
 
 console.log(failures === 0 ? "\nALL TESTS PASS" : `\n${failures} FAILURE(S)`);
