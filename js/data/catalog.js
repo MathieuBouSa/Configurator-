@@ -1,333 +1,332 @@
 /* ============================================================
-   SALUS Configurateur BETA — Catalogue produits
+   SALUS Configurator BETA — Product catalogue
    ------------------------------------------------------------
-   ⚠ TOUS LES PRIX SONT FICTIFS (version BETA, démonstration
-   interne). Les références produits sont réelles.
-   Chaque produit expose :
-   - role        : rôle dans le système abstrait (voir engine.js)
+   /!\ ALL PRICES ARE FICTIONAL (BETA build, internal demo).
+   Product references are real.
+   Each product exposes:
+   - role        : role in the abstract system (see engine.js)
    - protocol    : zigbee | rf | wifi | wired | none
    - needsGateway / integratedGateway / worksStandalone
-   - zigbeeRepeater : le produit 230 V étend le maillage Zigbee
-   - requires    : références nécessaires au fonctionnement
-   - limits      : contraintes de quantité
-   - solution    : « à quoi ça sert » en une phrase (exigence
-                   Mathieu : tout ce qui passe par l'UG800 est
-                   présenté sous forme de solution)
+   - zigbeeRepeater : the 230 V product extends the Zigbee mesh
+   - limits      : quantity constraints
+   - solution    : "what it is for" in one sentence (Mathieu's
+                   rule: anything going through the UG800 is
+                   presented as a solution, not a part number)
    ============================================================ */
 
 globalThis.SALUS_CATALOG = {
 
   products: {
 
-    /* ----- Cœur du système connecté ----- */
+    /* ----- Core of the connected system ----- */
     UG800: {
-      ref: "UG800", name: "Passerelle Zigbee / Wi-Fi",
+      ref: "UG800", name: "Zigbee / Wi-Fi gateway",
       role: "gateway", price: 89,
       protocol: "zigbee", power: "230v",
       needsGateway: false, worksStandalone: true, zigbeeRepeater: true,
       limits: { maxDevices: 100 },
       img: "assets/products/ug800.png",
-      solution: "Le cerveau de votre installation : elle relie tous vos appareils Salus à internet pour les piloter depuis votre téléphone, recevoir des alertes et partager l'accès.",
-      descUser: "Petit boîtier branché à votre box internet. Sans elle, chaque appareil se règle à la main.",
-      descPro: "Passerelle Zigbee 3.0 / Wi-Fi, jusqu'à 100 périphériques, appairage QR, API cloud Salus.",
+      solution: "The brain of your installation: it connects every Salus device to the internet so you can control them from your phone, get alerts and share access.",
+      descUser: "A small box plugged into your internet router. Without it, every device is set by hand.",
+      descPro: "Zigbee 3.0 / Wi-Fi gateway, up to 100 devices, QR pairing, Salus cloud API.",
       docs: ["fiche", "notice_pose", "notice_user", "doc_conformite", "video_install"]
     },
 
     TRV3RF: {
-      ref: "TRV3RF", name: "Tête thermostatique connectée",
+      ref: "TRV3RF", name: "Connected thermostatic head",
       role: "trv", price: 79,
       protocol: "zigbee", power: "battery",
       needsGateway: true,
       img: "assets/products/trv3rf.png",
-      solution: "Remplace la tête de votre robinet de radiateur : chaque radiateur suit sa propre température, pièce par pièce.",
-      descUser: "Se visse à la place de la tête actuelle (filetage standard M30). Fonctionne sur piles.",
-      descPro: "Tête Zigbee M30×1,5, adaptateurs Danfoss RA/RAV/RAVL fournis, détection fenêtre ouverte.",
+      solution: "Replaces the head on your radiator valve: every radiator follows its own temperature, room by room.",
+      descUser: "Screws on in place of the current head (standard M30 thread). Runs on batteries.",
+      descPro: "Zigbee head M30x1.5, Danfoss RA/RAV/RAVL adapters supplied, open-window detection.",
       docs: ["fiche", "notice_pose", "notice_user", "doc_conformite", "video_install", "video_choix"]
     },
 
     "TRV3RF-AB": {
-      ref: "TRV3RF-AB", name: "Tête thermostatique auto-équilibrante",
+      ref: "TRV3RF-AB", name: "Auto-balancing thermostatic head",
       refToConfirm: true,
       role: "trv", price: 99,
       protocol: "zigbee", power: "battery",
       needsGateway: true,
       img: "assets/products/trv3rf-ab.png",
-      solution: "Comme la TRV3RF, mais elle répartit d'elle-même le débit entre les radiateurs : plus besoin d'équilibrer le réseau à la main.",
-      descUser: "Idéale si certains radiateurs chauffent trop et d'autres pas assez.",
-      descPro: "Équilibrage dynamique du débit par mesure de gradient — supprime l'équilibrage manuel au té de réglage.",
+      solution: "Same as the TRV3RF, but it shares the flow between radiators on its own: no more balancing the circuit by hand.",
+      descUser: "Ideal if some radiators run too hot and others stay cold.",
+      descPro: "Dynamic flow balancing by gradient measurement - removes manual balancing at the lockshield valve.",
       docs: ["fiche", "notice_pose", "notice_user", "doc_conformite"]
     },
 
     SQ610: {
-      ref: "SQ610", name: "Thermostat Quantum filaire",
+      ref: "SQ610", name: "Quantum wired thermostat",
       role: "roomstat", price: 119,
       protocol: "zigbee", power: "230v",
       needsGateway: true, zigbeeRepeater: true,
       img: "assets/products/sq610.png",
-      solution: "L'écran de contrôle d'une pièce : température ambiante mesurée et réglée au dixième de degré.",
-      descUser: "Ultra-fin (10 mm), alimenté par le 230 V, se fixe au mur.",
-      descPro: "Filaire / 230 V — sert de répéteur Zigbee. Sortie vers centre de câblage ou récepteur.",
+      solution: "The control screen for a room: room temperature measured and set to a tenth of a degree.",
+      descUser: "Ultra-slim (10 mm), powered by 230 V, fixed to the wall.",
+      descPro: "Wired / 230 V - also acts as a Zigbee repeater. Output to wiring centre or receiver.",
       variantOf: null,
       docs: ["fiche", "notice_pose", "notice_user", "doc_conformite", "video_install"]
     },
 
     SQ610B: {
-      ref: "SQ610B", name: "Thermostat Quantum filaire — noir",
+      ref: "SQ610B", name: "Quantum wired thermostat - black",
       role: "roomstat", price: 119,
       protocol: "zigbee", power: "230v",
       needsGateway: true, zigbeeRepeater: true,
       img: "assets/products/sq610b.png",
-      solution: "Le même thermostat Quantum filaire, en coloris noir.",
-      descUser: "Version noire du SQ610.",
-      descPro: "Identique au SQ610, coloris noir.",
+      solution: "The same Quantum wired thermostat, in black.",
+      descUser: "Black version of the SQ610.",
+      descPro: "Identical to the SQ610, black finish.",
       variantOf: "SQ610",
       docs: ["fiche", "notice_pose", "notice_user", "doc_conformite"]
     },
 
     SQ610RF: {
-      ref: "SQ610RF", name: "Thermostat Quantum sans fil",
+      ref: "SQ610RF", name: "Quantum wireless thermostat",
       role: "roomstat", price: 129,
       protocol: "zigbee", power: "battery",
       needsGateway: true,
       img: "assets/products/sq610rf.png",
-      solution: "Le thermostat de pièce qui se pose où l'on veut : rechargeable USB-C, support mural aimanté.",
-      descUser: "Aucun câble à tirer : il se pose sur un meuble ou s'aimante au mur.",
-      descPro: "Zigbee, batterie rechargeable USB-C, support aimanté, appairage direct UG800 ou CB12RF.",
+      solution: "The room thermostat you can put anywhere: USB-C rechargeable, magnetic wall mount.",
+      descUser: "No cable to run: stands on a shelf or clips magnetically to the wall.",
+      descPro: "Zigbee, USB-C rechargeable battery, magnetic mount, pairs directly with UG800 or CB12RF.",
       variantOf: null,
       docs: ["fiche", "notice_pose", "notice_user", "doc_conformite", "video_install"]
     },
 
     SQ610BRF: {
-      ref: "SQ610BRF", name: "Thermostat Quantum sans fil — noir",
+      ref: "SQ610BRF", name: "Quantum wireless thermostat - black",
       role: "roomstat", price: 129,
       protocol: "zigbee", power: "battery",
       needsGateway: true,
       img: "assets/products/sq610brf.png",
-      solution: "Le même thermostat Quantum sans fil, en coloris noir.",
-      descUser: "Version noire du SQ610RF.",
-      descPro: "Identique au SQ610RF, coloris noir.",
+      solution: "The same Quantum wireless thermostat, in black.",
+      descUser: "Black version of the SQ610RF.",
+      descPro: "Identical to the SQ610RF, black finish.",
       variantOf: "SQ610RF",
       docs: ["fiche", "notice_pose", "notice_user", "doc_conformite"]
     },
 
     RX30RF: {
-      ref: "RX30RF", name: "Récepteur chaudière / générateur",
+      ref: "RX30RF", name: "Boiler / heat source receiver",
       role: "boilerReceiver", price: 79,
       protocol: "zigbee", power: "230v",
       needsGateway: true, zigbeeRepeater: true,
       img: "assets/products/rx30rf.png",
-      solution: "Le lien avec votre générateur : il démarre et coupe la chaudière, la PAC, le circulateur ou une vanne exactement quand vos pièces le demandent.",
-      descUser: "Se pose près de la chaudière. Plus aucune chauffe inutile quand aucune pièce ne réclame de chaleur.",
-      descPro: "Récepteur Zigbee contact sec — pilotage chaudière, PAC (contact démarrage), circulateur, vanne de zone.",
+      solution: "The link to your heat source: it starts and stops the boiler, the heat pump, the pump or a valve exactly when your rooms ask for it.",
+      descUser: "Installed next to the boiler. No more heating for nothing when no room is calling.",
+      descPro: "Zigbee volt-free receiver - boiler, heat pump (start contact), circulating pump, zone valve.",
       docs: ["fiche", "notice_pose", "schema_cablage", "doc_conformite", "video_install"]
     },
 
-    /* ----- Plancher chauffant ----- */
+    /* ----- Underfloor heating ----- */
     CB12RF: {
-      ref: "CB12RF", name: "Centre de câblage plancher — radio",
+      ref: "CB12RF", name: "Underfloor wiring centre - wireless",
       role: "wiringCentre", price: 249,
       protocol: "zigbee", power: "230v",
       needsGateway: false, worksStandalone: true, zigbeeRepeater: true,
       limits: { maxZones: 12 },
       img: "assets/products/cb12rf.png",
-      solution: "Le chef d'orchestre du plancher chauffant : il ouvre et ferme chaque boucle du collecteur selon la demande de chaque pièce, sans fil vers les thermostats.",
-      descUser: "S'installe près du collecteur du plancher. Chaque pièce devient réglable séparément.",
-      descPro: "12 zones max, liaison radio vers thermostats, pilotage circulateur + chaudière intégré, extensible.",
+      solution: "The conductor of the underfloor system: it opens and closes each manifold loop on demand from each room, with no wires to the thermostats.",
+      descUser: "Installed near the underfloor manifold. Every room becomes adjustable on its own.",
+      descPro: "12 zones max, wireless link to thermostats, built-in pump + boiler control, expandable.",
       docs: ["fiche", "notice_pose", "schema_cablage", "doc_conformite", "video_install"]
     },
 
     CB500CO: {
-      ref: "CB500CO", name: "Centre de câblage plancher — filaire",
+      ref: "CB500CO", name: "Underfloor wiring centre - wired",
       role: "wiringCentre", price: 199,
       protocol: "wired", power: "230v",
       needsGateway: false, worksStandalone: true,
       limits: { maxZones: 8 },
       img: "assets/products/cb500co.png",
-      solution: "La même orchestration du plancher chauffant, en version filaire : idéale quand les gaines existent déjà.",
-      descUser: "Choisi quand des câbles relient déjà les thermostats au collecteur.",
-      descPro: "Centre de câblage filaire, thermostats 230 V raccordés en direct, pilotage circulateur.",
+      solution: "The same underfloor orchestration, in a wired version: ideal when the conduits are already in place.",
+      descUser: "Chosen when cables already run from the thermostats to the manifold.",
+      descPro: "Wired wiring centre, 230 V thermostats connected directly, pump control.",
       docs: ["fiche", "notice_pose", "schema_cablage", "doc_conformite"]
     },
 
     T30NC: {
-      ref: "T30NC", name: "Actionneur thermique de boucle",
+      ref: "T30NC", name: "Thermal loop actuator",
       refToConfirm: true,
       role: "actuator", price: 25,
       protocol: "none", power: "230v",
       needsGateway: false,
       img: "assets/products/t30nc.png",
-      solution: "Le muscle du collecteur : un actionneur par boucle ouvre ou ferme le circuit de la pièce correspondante.",
-      descUser: "Petite pièce vissée sur le collecteur du plancher — une par circuit.",
-      descPro: "Actionneur thermique 230 V NC, M30×1,5, monté sur le retour du collecteur.",
+      solution: "The muscle of the manifold: one actuator per loop opens or closes the circuit for its room.",
+      descUser: "A small part screwed onto the underfloor manifold - one per circuit.",
+      descPro: "230 V NC thermal actuator, M30x1.5, mounted on the manifold return.",
       docs: ["fiche", "notice_pose"]
     },
 
     THB: {
-      ref: "THB", name: "Actionneur auto-équilibrant",
+      ref: "THB", name: "Auto-balancing actuator",
       refToConfirm: true,
       role: "actuator", price: 49,
       protocol: "none", power: "230v",
       needsGateway: false,
       img: "assets/products/thb.png",
-      solution: "L'actionneur intelligent : il équilibre de lui-même le débit de chaque boucle du plancher — fini les pièces trop ou pas assez chauffées.",
-      descUser: "Remplace l'actionneur standard pour un confort plus régulier.",
-      descPro: "Actionneur auto-équilibrant : mesure du débit retour et ajustement continu, supprime l'équilibrage manuel.",
+      solution: "The smart actuator: it balances the flow of every underfloor loop by itself - no more rooms too hot or too cold.",
+      descUser: "Replaces the standard actuator for steadier comfort.",
+      descPro: "Auto-balancing actuator: return flow measurement and continuous adjustment, removes manual balancing.",
       docs: ["fiche", "notice_pose"]
     },
 
-    /* ----- Électrique ----- */
+    /* ----- Electric heating ----- */
     EL600F: {
-      ref: "EL600F", name: "Thermostat chauffage électrique — fil pilote",
+      ref: "EL600F", name: "Electric heating thermostat - pilot wire",
       role: "electricStat", price: 99,
       protocol: "zigbee", power: "230v",
       needsGateway: true, zigbeeRepeater: true,
       img: "assets/products/el600f.png",
-      solution: "Chaque radiateur électrique ou zone de plancher électrique devient pilotable et programmable, via le fil pilote.",
-      descUser: "Se raccorde au radiateur électrique existant (fil pilote).",
-      descPro: "Thermostat Zigbee fil pilote 6 ordres, charge 16 A, plancher électrique ou panneau rayonnant.",
+      solution: "Every electric radiator or electric floor zone becomes controllable and programmable, through the pilot wire.",
+      descUser: "Wired to your existing electric radiator (pilot wire).",
+      descPro: "Zigbee pilot-wire thermostat, 6 orders, 16 A load, electric floor or radiant panel.",
       docs: ["fiche", "notice_pose", "schema_cablage", "doc_conformite"]
     },
 
-    /* ----- Renfort réseau & relais ----- */
+    /* ----- Network reinforcement & relays ----- */
     RE600: {
-      ref: "RE600", name: "Répéteur Zigbee",
+      ref: "RE600", name: "Zigbee repeater",
       role: "repeater", price: 49,
       protocol: "zigbee", power: "230v",
       needsGateway: true, zigbeeRepeater: true,
       img: "assets/products/re600.png",
-      solution: "Prolonge la portée radio de votre système : indispensable au-delà de 15 appareils, à travers des murs épais ou entre étages.",
-      descUser: "Se branche sur une prise à mi-chemin entre la passerelle et les appareils éloignés.",
-      descPro: "Répéteur Zigbee 230 V — 1 par étage à franchir ou par groupe de 15 appareils.",
+      solution: "Extends the radio range of your system: needed beyond 15 devices, through thick walls or between floors.",
+      descUser: "Plugs into a socket halfway between the gateway and the devices furthest away.",
+      descPro: "230 V Zigbee repeater - 1 per floor to cross or per group of 15 devices.",
       docs: ["fiche", "notice_pose", "doc_conformite"]
     },
 
     SR600: {
-      ref: "SR600", name: "Relais intelligent",
+      ref: "SR600", name: "Smart relay",
       role: "relay", price: 45,
       protocol: "zigbee", power: "230v",
       needsGateway: true, zigbeeRepeater: true,
       img: "assets/products/sr600.png",
-      solution: "Transforme n'importe quelle prise ou appareil en équipement piloté : le relais se loge dans la prise elle-même — sèche-serviette, ballon, luminaire.",
-      descUser: "Invisible une fois posé : c'est votre prise actuelle qui devient intelligente.",
-      descPro: "Relais Zigbee 16 A encastrable (fond de boîte / prise), mesure de consommation, répéteur 230 V.",
+      solution: "Turns any socket or appliance into a controlled device: the relay sits inside the socket itself - towel rail, water tank, lighting.",
+      descUser: "Invisible once fitted: it is your existing socket that becomes smart.",
+      descPro: "16 A Zigbee relay, flush-mounted (back box / socket), consumption metering, 230 V repeater.",
       docs: ["fiche", "notice_pose", "schema_cablage", "doc_conformite"]
     },
 
     RS600: {
-      ref: "RS600", name: "Module volets roulants",
+      ref: "RS600", name: "Roller shutter module",
       role: "shutterRelay", price: 55,
       protocol: "zigbee", power: "230v",
       needsGateway: true, zigbeeRepeater: true,
       img: "assets/products/rs600.png",
-      solution: "Vos volets participent au confort : fermeture automatique la nuit pour garder la chaleur, ou en été pour garder le frais.",
-      descUser: "Un module par volet, caché derrière l'interrupteur existant.",
-      descPro: "Module Zigbee volet roulant, encastrable, position favorite, scénarios chaleur/fraîcheur.",
+      solution: "Your shutters join in on comfort: closing automatically at night to keep the heat in, or in summer to keep the cool in.",
+      descUser: "One module per shutter, hidden behind the existing switch.",
+      descPro: "Zigbee roller shutter module, flush-mounted, favourite position, heat/cool scenarios.",
       docs: ["fiche", "notice_pose", "schema_cablage", "doc_conformite"]
     },
 
-    /* ----- Sécurité / capteurs ----- */
+    /* ----- Security / sensors ----- */
     OS600: {
-      ref: "OS600", name: "Détecteur d'ouverture fenêtre / porte",
+      ref: "OS600", name: "Window / door opening sensor",
       role: "windowSensor", price: 35,
       protocol: "zigbee", power: "battery",
       needsGateway: true,
       img: "assets/products/os600.png",
-      solution: "Alerte en cas de visite inattendue, et coupe le chauffage de la pièce dès qu'une fenêtre reste ouverte.",
-      descUser: "Deux petites pièces collées sur la fenêtre et son cadre.",
-      descPro: "Contact d'ouverture Zigbee, scénario natif « fenêtre ouverte = consigne hors gel »." ,
+      solution: "Alerts you to an unexpected visit, and cuts the heating in a room as soon as a window is left open.",
+      descUser: "Two small parts stuck to the window and its frame.",
+      descPro: "Zigbee opening contact, native 'window open = frost protection setpoint' scenario.",
       docs: ["fiche", "notice_pose", "doc_conformite"]
     },
 
     MS600: {
-      ref: "MS600", name: "Détecteur de présence",
+      ref: "MS600", name: "Presence sensor",
       refToConfirm: true,
       role: "presenceSensor", price: 45,
       protocol: "zigbee", power: "battery",
       needsGateway: true,
       img: "assets/products/ms600.png",
-      solution: "Sait si quelqu'un est là : alerte en votre absence, et chauffage ajusté quand une pièce reste vide.",
-      descUser: "Se pose en hauteur dans l'entrée ou le séjour.",
-      descPro: "Détecteur de mouvement PIR Zigbee + luminosité, scénarios présence/absence.",
+      solution: "Knows whether someone is there: alerts you while you are away, and trims the heating when a room stays empty.",
+      descUser: "Mounted high up in the hallway or living room.",
+      descPro: "Zigbee PIR motion sensor + light level, presence/absence scenarios.",
       docs: ["fiche", "notice_pose", "doc_conformite"]
     },
 
-    /* ----- Thermostats autonomes (sans passerelle UG800) ----- */
+    /* ----- Standalone thermostats (no UG800 gateway) ----- */
     RT520: {
-      ref: "RT520", name: "Thermostat programmable filaire",
+      ref: "RT520", name: "Wired programmable thermostat",
       role: "standaloneWired", price: 69,
       protocol: "wired", power: "battery",
       needsGateway: false, worksStandalone: true,
       img: "assets/products/rt520.png",
-      solution: "Le remplacement direct d'un thermostat filaire existant : programmation simple, aucun réglage réseau.",
-      descUser: "Reprend les deux fils de votre ancien thermostat. Posé en 15 minutes.",
-      descPro: "Thermostat ON/OFF filaire programmable hebdo, contact sec 230 V, remplacement universel.",
+      solution: "The direct replacement for an existing wired thermostat: simple programming, no network setup.",
+      descUser: "Reuses the two wires of your old thermostat. Fitted in 15 minutes.",
+      descPro: "Wired ON/OFF weekly programmable thermostat, 230 V volt-free contact, universal replacement.",
       docs: ["fiche", "notice_pose", "schema_cablage", "notice_user"]
     },
 
     RT520RF: {
-      ref: "RT520RF", name: "Thermostat programmable sans fil + récepteur",
+      ref: "RT520RF", name: "Wireless programmable thermostat + receiver",
       role: "standaloneRF", price: 89,
       protocol: "rf", power: "battery",
       needsGateway: false, worksStandalone: true,
       img: "assets/products/rt520rf.png",
-      solution: "Un thermostat qui se pose où l'on vit, un récepteur près de la chaudière : la régulation sans tirer un seul câble.",
-      descUser: "Le boîtier récepteur est fourni : il se câble sur la chaudière, le thermostat reste mobile.",
-      descPro: "Kit RF 868 MHz thermostat + récepteur chaudière, portée 60 m champ libre.",
+      solution: "A thermostat you place where you live, a receiver next to the boiler: control without running a single cable.",
+      descUser: "The receiver box is included: it wires to the boiler, the thermostat stays portable.",
+      descPro: "868 MHz RF kit, thermostat + boiler receiver, 60 m open-field range.",
       docs: ["fiche", "notice_pose", "schema_cablage", "notice_user", "video_install"]
     },
 
     WQ610: {
-      ref: "WQ610", name: "Thermostat chaudière filaire — modulant",
+      ref: "WQ610", name: "Wired boiler thermostat - modulating",
       role: "standaloneWired", price: 129,
       protocol: "wired", power: "230v",
       needsGateway: false, worksStandalone: true,
       img: "assets/products/wq610.png",
-      solution: "Dialogue en direct avec les chaudières récentes (OpenTherm) : la flamme module au plus juste au lieu de faire du tout-ou-rien.",
-      descUser: "Pour les chaudières compatibles : consommation plus fine, confort plus stable.",
-      descPro: "Thermostat filaire OpenTherm / ON-OFF, algorithme modulant, écran LCD.",
+      solution: "Talks directly to recent boilers (OpenTherm): the flame modulates precisely instead of switching all-or-nothing.",
+      descUser: "For compatible boilers: finer consumption, steadier comfort.",
+      descPro: "Wired OpenTherm / ON-OFF thermostat, modulating algorithm, LCD display.",
       docs: ["fiche", "notice_pose", "schema_cablage", "notice_user"]
     },
 
     IT700: {
-      ref: "iT700", name: "Thermostat connectable — passerelle intégrée",
+      ref: "iT700", name: "Connectable thermostat - built-in gateway",
       role: "standaloneRF", price: 149,
       protocol: "rf", power: "battery",
       needsGateway: false, worksStandalone: true, integratedGateway: true,
       img: "assets/products/it700.png",
-      solution: "Le thermostat autonome qui peut devenir connecté : sa passerelle est déjà intégrée dans son récepteur chaudière — rien d'autre à acheter.",
-      descUser: "Commencez simple ; activez le pilotage depuis le téléphone le jour où vous en avez envie.",
-      descPro: "Kit thermostat + récepteur chaudière à passerelle intégrée — pas d'UG800 requis.",
+      solution: "The standalone thermostat that can become connected: its gateway is already built into its boiler receiver - nothing else to buy.",
+      descUser: "Start simple; switch on phone control the day you feel like it.",
+      descPro: "Thermostat + boiler receiver kit with built-in gateway - no UG800 required.",
       docs: ["fiche", "notice_pose", "schema_cablage", "notice_user", "video_install"]
     },
 
     IT800WIFI: {
-      ref: "iT800 WiFi", name: "Thermostat Wi-Fi premium — passerelle intégrée",
+      ref: "iT800 WiFi", name: "Premium Wi-Fi thermostat - built-in gateway",
       role: "standaloneRF", price: 199,
       protocol: "wifi", power: "battery",
       needsGateway: false, worksStandalone: true, integratedGateway: true,
       img: "assets/products/it800wifi.png",
-      solution: "Le haut de gamme autonome : application, géolocalisation, historique de consommation — la passerelle est dans son récepteur chaudière.",
-      descUser: "Pilotage complet depuis le téléphone, sans aucun boîtier supplémentaire.",
-      descPro: "Thermostat Wi-Fi premium, récepteur chaudière à passerelle intégrée, OpenTherm.",
+      solution: "The standalone flagship: app, geolocation, consumption history - the gateway is inside its boiler receiver.",
+      descUser: "Full phone control, with no extra box.",
+      descPro: "Premium Wi-Fi thermostat, boiler receiver with built-in gateway, OpenTherm.",
       docs: ["fiche", "notice_pose", "schema_cablage", "notice_user", "video_install", "video_choix"]
     },
 
-    /* ----- Climatisation gainable ----- */
+    /* ----- Ducted air conditioning ----- */
     RSQ800WRF: {
-      ref: "RSQ800WRF", name: "Thermostat R-System — gainable",
+      ref: "RSQ800WRF", name: "R-System thermostat - ducted",
       role: "acController", price: 159,
       protocol: "rf", power: "230v",
       needsGateway: false, worksStandalone: true, integratedGateway: true,
       img: "assets/products/rsq800wrf.png",
-      solution: "Pilote votre climatisation gainable pièce par pièce (Daikin, Mitsubishi, Toshiba) — chauffage et rafraîchissement dans la même application.",
-      descUser: "Un thermostat par zone de soufflage, relié à l'unité gainable.",
-      descPro: "R-System : contrôle zone par zone des gainables FBA (35→140), registres motorisés, app dédiée.",
+      solution: "Controls your ducted air conditioning room by room (Daikin, Mitsubishi, Toshiba) - heating and cooling in the same app.",
+      descUser: "One thermostat per supply zone, connected to the ducted unit.",
+      descPro: "R-System: zone-by-zone control of FBA ducted units (35 to 140), motorised dampers, dedicated app.",
       docs: ["fiche", "notice_pose", "schema_cablage", "doc_conformite", "video_install"]
     }
   },
 
-  /* Alternatives proposées par le bouton « Autre choix » (même rôle).
-     L'ordre est l'ordre d'affichage. */
+  /* Alternatives offered by the "Other choice" button (same role).
+     Display order is the order below. */
   alternatives: {
     roomstat:        ["SQ610RF", "SQ610", "SQ610BRF", "SQ610B"],
     trv:             ["TRV3RF", "TRV3RF-AB"],
@@ -346,32 +345,32 @@ globalThis.SALUS_CATALOG = {
     acController:    ["RSQ800WRF"]
   },
 
-  /* Niveaux — échelle thermostat autonome RF (règle Mathieu) */
+  /* Levels - standalone RF thermostat ladder (Mathieu's rule) */
   standaloneLadder: {
     rf:    { essential: "RT520RF", comfort: "IT700", premium: "IT800WIFI" },
     wired: { essential: "RT520",   comfort: "RT520", premium: "WQ610" }
   },
 
-  /* Packs optionnels (jamais mélangés aux niveaux — règle P24) */
+  /* Optional packs (never mixed with the levels - rule P24) */
   packs: {
     security: {
-      id: "security", name: "Pack sécurité",
-      tagline: "Alerte en cas de visite, chauffage coupé si une fenêtre reste ouverte.",
+      id: "security", name: "Security pack",
+      tagline: "Alerts you to a visit, cuts the heating if a window is left open.",
       needsGateway: true
     },
     shutters: {
-      id: "shutters", name: "Pack volets roulants",
-      tagline: "Vos volets gardent la chaleur l'hiver et la fraîcheur l'été, automatiquement.",
+      id: "shutters", name: "Roller shutter pack",
+      tagline: "Your shutters keep the heat in winter and the cool in summer, automatically.",
       needsGateway: true
     },
     smartplug: {
-      id: "smartplug", name: "Prise intelligente",
-      tagline: "Le relais SR600 se loge dans la prise : sèche-serviette ou ballon piloté, prise inchangée.",
+      id: "smartplug", name: "Smart socket",
+      tagline: "The SR600 relay sits inside the socket: towel rail or water tank controlled, socket unchanged.",
       needsGateway: true
     },
     boilerPilot: {
-      id: "boilerPilot", name: "Pilotage du générateur",
-      tagline: "Le RX30RF démarre et coupe chaudière, PAC, circulateur ou vanne à la demande des pièces.",
+      id: "boilerPilot", name: "Heat source control",
+      tagline: "The RX30RF starts and stops boiler, heat pump, pump or valve on demand from the rooms.",
       needsGateway: true
     }
   }

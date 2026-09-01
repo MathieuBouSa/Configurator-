@@ -1,122 +1,122 @@
 /* ============================================================
-   SALUS Configurateur BETA — Générateurs & émetteurs par marché
+   SALUS Configurator BETA — Heat sources & emitters by market
    ------------------------------------------------------------
-   Exigence Mathieu : pas de sélecteur de pays, mais le
-   questionnaire couvre les générateurs (chaud & froid) et les
-   émetteurs rencontrés sur les 5 marchés FR / UK / DE / RO / DK
-   — y compris quand aucun produit Salus n'y répond encore :
-   dans ce cas `covered:false` fait basculer le parcours vers le
-   dossier qualifié (reprise humaine, solutions P9/P15).
+   Mathieu's requirement: no country selector, but the
+   questionnaire covers the heat sources (hot & cold) and the
+   emitters found across the 5 markets FR / UK / DE / RO / DK -
+   including those Salus has no product for yet: in that case
+   `covered:false` sends the journey to the qualified file
+   (human takeover, workshop solutions P9/P15).
    ============================================================ */
 
 globalThis.SALUS_MARKETS = {
 
   countries: ["FR", "UK", "DE", "RO", "DK"],
 
-  /* Générateurs de chaleur / froid.
-     markets  : où ce générateur est courant (info coulisses)
-     covered  : true = la BETA sait composer un système
-     pilotVia : comment Salus pilote ce générateur */
+  /* Heat / cold sources.
+     markets  : where this source is common (backstage info)
+     covered  : true = the BETA can compose a system
+     pilotVia : how Salus controls this source */
   generators: {
     gas_boiler: {
-      id: "gas_boiler", label: "Chaudière gaz",
-      hint: "Murale ou au sol — la plus répandue en France et au Royaume-Uni.",
+      id: "gas_boiler", label: "Gas boiler",
+      hint: "Wall-hung or floor-standing - the most common in France and the UK.",
       markets: ["FR", "UK", "DE", "RO"], covered: true,
       pilotVia: "RX30RF", img: "assets/questions/gen-gaz.png"
     },
     oil_boiler: {
-      id: "oil_boiler", label: "Chaudière fioul",
-      hint: "Encore fréquente en maison ancienne, surtout en Allemagne.",
+      id: "oil_boiler", label: "Oil boiler",
+      hint: "Still frequent in older houses, especially in Germany.",
       markets: ["FR", "DE"], covered: true,
       pilotVia: "RX30RF", img: "assets/questions/gen-fioul.png"
     },
     heat_pump_aw: {
-      id: "heat_pump_aw", label: "Pompe à chaleur air / eau",
-      hint: "Chauffe l'eau des radiateurs ou du plancher.",
+      id: "heat_pump_aw", label: "Air-to-water heat pump",
+      hint: "Heats the water in your radiators or underfloor circuits.",
       markets: ["FR", "DE", "DK", "UK"], covered: true,
       pilotVia: "RX30RF", img: "assets/questions/gen-pac-eau.png"
     },
     heat_pump_aa: {
-      id: "heat_pump_aa", label: "Pompe à chaleur air / air (clim)",
-      hint: "Souffle de l'air chaud ou froid — gainable ou splits.",
+      id: "heat_pump_aa", label: "Air-to-air heat pump (AC)",
+      hint: "Blows warm or cool air - ducted or split units.",
       markets: ["FR", "UK", "RO"], covered: true,
       pilotVia: "RSQ800WRF", img: "assets/questions/gen-pac-air.png"
     },
     electric: {
-      id: "electric", label: "Tout électrique",
-      hint: "Radiateurs électriques ou plancher électrique, sans chaudière.",
+      id: "electric", label: "All electric",
+      hint: "Electric radiators or electric floor, no boiler.",
       markets: ["FR", "RO", "UK"], covered: true,
       pilotVia: null, img: "assets/questions/gen-electrique.png"
     },
     district: {
-      id: "district", label: "Réseau de chaleur urbain",
-      hint: "L'eau chaude arrive de l'extérieur (très courant au Danemark et en Roumanie).",
+      id: "district", label: "District heating",
+      hint: "Hot water arrives from outside (very common in Denmark and Romania).",
       markets: ["DK", "RO", "DE"], covered: true,
-      pilotVia: "RX30RF", coveredNote: "Pilotage de la vanne d'arrivée et régulation pièce par pièce ; le raccordement primaire reste à valider par un technicien.",
+      pilotVia: "RX30RF", coveredNote: "Inlet valve control and room-by-room regulation; the primary connection still needs a technician to validate it.",
       img: "assets/questions/gen-reseau.png"
     },
     biomass: {
-      id: "biomass", label: "Poêle ou chaudière bois / granulés",
-      hint: "Bois bûche, granulés, biomasse.",
+      id: "biomass", label: "Wood or pellet stove / boiler",
+      hint: "Logs, pellets, biomass.",
       markets: ["FR", "DE", "RO", "DK"], covered: false,
       pilotVia: null,
-      uncoveredNote: "Les générateurs biomasse demandent une validation au cas par cas (inertie, sécurité de décharge) : le configurateur prépare un dossier qualifié pour un technicien Salus.",
+      uncoveredNote: "Biomass heat sources need case-by-case validation (thermal inertia, heat dump safety): the configurator prepares a qualified file for a Salus technician.",
       img: "assets/questions/gen-bois.png"
     },
     unknown: {
-      id: "unknown", label: "Je ne sais pas",
-      hint: "Le configurateur s'adapte — une photo suffira plus tard.",
+      id: "unknown", label: "I don't know",
+      hint: "The configurator adapts - a photo will be enough later on.",
       markets: ["FR", "UK", "DE", "RO", "DK"], covered: true,
       pilotVia: null, img: "assets/questions/gen-inconnu.png"
     }
   },
 
-  /* Émetteurs — ce qui diffuse le chaud (ou le froid) dans les pièces */
+  /* Emitters - what spreads the heat (or the cool) into the rooms */
   emitters: {
     water_radiators: {
-      id: "water_radiators", label: "Radiateurs à eau",
-      hint: "Reliés à une chaudière, une PAC ou un réseau de chaleur.",
+      id: "water_radiators", label: "Water radiators",
+      hint: "Connected to a boiler, a heat pump or district heating.",
       markets: ["FR", "UK", "DE", "RO", "DK"], covered: true,
       img: "assets/questions/emit-radiateur-eau.png"
     },
     ufh_water: {
-      id: "ufh_water", label: "Plancher chauffant à eau",
-      hint: "Circuits d'eau chaude dans la dalle, avec un collecteur.",
+      id: "ufh_water", label: "Water underfloor heating",
+      hint: "Hot water circuits in the slab, with a manifold.",
       markets: ["FR", "DE", "DK"], covered: true,
       img: "assets/questions/emit-plancher-eau.png"
     },
     ufh_electric: {
-      id: "ufh_electric", label: "Plancher chauffant électrique",
-      hint: "Trame électrique sous le revêtement.",
+      id: "ufh_electric", label: "Electric underfloor heating",
+      hint: "Electric mat under the floor covering.",
       markets: ["FR", "UK", "RO"], covered: true,
       img: "assets/questions/emit-plancher-elec.png"
     },
     electric_radiators: {
-      id: "electric_radiators", label: "Radiateurs électriques",
-      hint: "Panneaux rayonnants, convecteurs, inertie — avec fil pilote.",
+      id: "electric_radiators", label: "Electric radiators",
+      hint: "Radiant panels, convectors, storage heaters - with pilot wire.",
       markets: ["FR", "RO", "UK"], covered: true,
       img: "assets/questions/emit-radiateur-elec.png"
     },
     ducted_ac: {
-      id: "ducted_ac", label: "Climatisation gainable",
-      hint: "Air soufflé par des grilles, unité cachée dans les combles ou faux plafond.",
+      id: "ducted_ac", label: "Ducted air conditioning",
+      hint: "Air blown through grilles, unit hidden in the loft or false ceiling.",
       markets: ["FR", "UK", "RO"], covered: true,
       img: "assets/questions/emit-gainable.png"
     },
     fan_coils: {
-      id: "fan_coils", label: "Ventilo-convecteurs",
-      hint: "Unités murales ou consoles à eau — fréquents en tertiaire.",
+      id: "fan_coils", label: "Fan coil units",
+      hint: "Wall or console water units - frequent in commercial buildings.",
       markets: ["FR", "RO", "DE"], covered: false,
-      uncoveredNote: "Les ventilo-convecteurs demandent une étude d'intégration : le configurateur prépare un dossier qualifié pour un technicien Salus.",
+      uncoveredNote: "Fan coil units need an integration study: the configurator prepares a qualified file for a Salus technician.",
       img: "assets/questions/emit-ventilo.png"
     }
   },
 
-  /* Critères qui sortent un projet du parcours automatique
-     (solution P15 — jamais un blocage, toujours un dossier qualifié) */
+  /* Criteria that take a project out of the automatic journey
+     (solution P15 - never a dead end, always a qualified file) */
   qualifiedFileTriggers: {
     maxAutoZones: 12,
     buildingTypes: ["tertiary"],
-    notes: "Au-delà de 12 zones, bâtiment tertiaire / commercial, générateur ou émetteur non couvert, ou GTB existante : le configurateur prépare le dossier et un technicien Salus valide (rappel sous 48 h)."
+    notes: "Beyond 12 zones, a commercial building, an uncovered heat source or emitter, or an existing BMS: the configurator prepares the file and a Salus technician validates it (call back within 48 h)."
   }
 };

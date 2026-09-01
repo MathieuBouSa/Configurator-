@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Configurateur Salus — BETA</title>
-<meta name="description" content="Configurateur unifié SALUS Controls — version BETA de démonstration interne. Prix fictifs, documents de test, CRM simulé." />
+<title>Salus Configurator - BETA</title>
+<meta name="description" content="Unified SALUS Controls configurator - BETA build for internal demonstration. Fictional prices, test documents, simulated CRM." />
 <meta name="robots" content="noindex, nofollow" />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231D2858'/><circle cx='50' cy='50' r='26' fill='none' stroke='%2300AEEF' stroke-width='8'/><circle cx='50' cy='50' r='8' fill='%2300AEEF'/></svg>" />
 
-<!-- Tout est embarqué (vendor/) : la démo fonctionne même sans internet.
-     CSS Tailwind compilé statiquement — voir build/README-build.md. -->
+<!-- Everything is bundled (vendor/): the demo runs even offline.
+     Tailwind CSS compiled statically - see build/README-build.md. -->
 <link rel="stylesheet" href="vendor/tailwind.css" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -44,7 +44,7 @@
   .tile:hover{ transform:translateY(-3px); box-shadow:0 14px 30px -16px rgba(29,40,88,.35); border-color:var(--cyan); }
   .tile:active{ transform:translateY(0); }
   a{ text-decoration:none; }
-  /* Arcs concentriques décoratifs (élément graphique de la charte) */
+  /* Decorative concentric arcs (brand graphic element) */
   .arcs::before{
     content:""; position:absolute; inset:auto -180px -200px auto; width:560px; height:560px;
     border-radius:50%;
@@ -64,14 +64,14 @@
 </head>
 <body>
 <div id="root"></div>
-<noscript>Ce configurateur BETA nécessite JavaScript.</noscript>
+<noscript>This BETA configurator requires JavaScript.</noscript>
 
-<!-- Données (catalogue réel / prix fictifs, marchés, textes) -->
+<!-- Data (real catalogue / fictional prices, markets, copy) -->
 <script src="js/data/catalog.js"></script>
 <script src="js/data/markets.js"></script>
 <script src="js/data/copy.js"></script>
 
-<!-- Logique -->
+<!-- Logic -->
 <script src="js/engine.js"></script>
 <script src="js/schematic.js"></script>
 <script src="js/crm.js"></script>

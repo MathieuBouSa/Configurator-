@@ -1,11 +1,11 @@
 /* ============================================================
-   SALUS Configurateur BETA — Application (parcours unifié)
+   SALUS Configurator BETA - Application (unified journey)
    ------------------------------------------------------------
-   Un seul parcours : Mon logement → Mon chauffage → Mes
-   habitudes → Ma solution (P4). Une question par écran, cartes
-   cliquables, vocabulaire adapté au profil (P6). Proposition
-   précoce mise à jour en direct (P8). Reprise par code projet
-   (P24). Dossier qualifié pour les cas hors parcours (P9/P16).
+   One journey only: My home -> My heating -> My habits -> My
+   solution (P4). One question per screen, clickable cards,
+   vocabulary matched to the profile (P6). Early proposal updated
+   live (P8). Resume by project code (P23). Qualified file for
+   cases outside the automatic path (P9/P15).
    ============================================================ */
 
 (function () {
@@ -19,19 +19,19 @@
 
   const LS_KEY = "salus_beta_state_v1";
 
-  /* ---------- Bandeau BETA permanent (règle absolue) ---------- */
+  /* ---------- Permanent BETA banner (absolute rule) ---------- */
   function BetaBanner({ onAbout, onBackstage }) {
     return h("div", { className: "fixed top-0 inset-x-0 z-[60] bg-amber-400 text-salus-navy" },
       h("div", { className: "max-w-6xl mx-auto px-3 py-1.5 flex items-center justify-between gap-2 text-[11px] md:text-xs font-semibold" },
         h("span", { className: "flex items-center gap-2 min-w-0" },
           h("span", { className: "bg-salus-navy text-amber-300 rounded px-1.5 py-0.5 font-bold tracking-wider shrink-0" }, "BETA"),
-          h("span", { className: "truncate" }, "Démonstration interne — prix fictifs · documents de test · CRM simulé. Aucune donnée n'est envoyée.")),
+          h("span", { className: "truncate" }, "Internal demo - fictional prices / test documents / simulated CRM. No data is ever sent.")),
         h("span", { className: "flex items-center gap-3 shrink-0" },
-          h("button", { onClick: onBackstage, className: "underline underline-offset-2 hover:opacity-70" }, "Coulisses CRM"),
-          h("button", { onClick: onAbout, className: "underline underline-offset-2 hover:opacity-70" }, "À propos"))));
+          h("button", { onClick: onBackstage, className: "underline underline-offset-2 hover:opacity-70" }, "CRM backstage"),
+          h("button", { onClick: onAbout, className: "underline underline-offset-2 hover:opacity-70" }, "About"))));
   }
 
-  /* ---------- Panneau « Coulisses CRM » (P26/P27) ---------- */
+  /* ---------- "CRM backstage" panel (P26) ---------- */
   function Backstage({ open, onClose, answers, projectCode, selection }) {
     const [tab, setTab] = useState("flux");
     if (!open) return null;
@@ -43,11 +43,11 @@
         h("div", { className: "sticky top-0 bg-salus-navy text-white px-5 py-4 z-10" },
           h("div", { className: "flex items-center justify-between" },
             h("div", null,
-              h("h3", { className: "font-ubuntu font-bold" }, "Coulisses — ce qui se passerait côté CRM"),
-              h("p", { className: "text-xs text-white/60 mt-0.5" }, "Zoho CRM · simulation BETA — rien ne quitte votre navigateur")),
+              h("h3", { className: "font-ubuntu font-bold" }, "Backstage - what would happen on the CRM side"),
+              h("p", { className: "text-xs text-white/60 mt-0.5" }, "Zoho CRM / BETA simulation - nothing leaves your browser")),
             h("button", { onClick: onClose, className: "w-8 h-8 rounded-full hover:bg-white/10 font-bold" }, "✕")),
           h("div", { className: "flex gap-1.5 mt-3" },
-            [["flux", "Les flux réels"], ["payload", "Payload en direct"], ["journal", "Journal (" + log.length + ")"]].map(([id, label]) =>
+            [["flux", "The real flows"], ["payload", "Live payload"], ["journal", "Log (" + log.length + ")"]].map(([id, label]) =>
               h("button", {
                 key: id, onClick: () => setTab(id),
                 className: cx("rounded-full px-3 py-1 text-xs font-semibold", tab === id ? "bg-salus-cyan text-white" : "bg-white/10 text-white/70 hover:bg-white/20")
@@ -55,13 +55,13 @@
         h("div", { className: "p-5 space-y-4" },
           tab === "flux" && Object.entries(CRM.flows).map(([id, f]) => h(FlowCard, { key: id, flow: f })),
           tab === "payload" && h("div", null,
-            h("p", { className: "text-sm text-slate-600 mb-2" }, "Le lead tel qu'il partirait ", h("b", null, "maintenant"), ", avec vos réponses actuelles :"),
+            h("p", { className: "text-sm text-slate-600 mb-2" }, "The lead exactly as it would go out ", h("b", null, "right now"), ", with your current answers:"),
             h("div", { className: "text-xs text-slate-400 mb-1 font-mono" }, payload.endpoint),
             h("pre", { className: "bg-salus-navy text-emerald-300 text-[11px] leading-relaxed rounded-xl p-4 overflow-x-auto" },
               JSON.stringify(payload.data[0], null, 2))),
           tab === "journal" && (log.length
             ? log.map((e, i) => h(JournalEntry, { key: i, e }))
-            : h("p", { className: "text-sm text-slate-400" }, "Aucun événement pour l'instant — avancez dans le parcours, générez un devis ou envoyez la liste par email.")))));
+            : h("p", { className: "text-sm text-slate-400" }, "No events yet - move through the journey, generate a quote or email the list.")))));
   }
 
   function FlowCard({ flow }) {
@@ -72,11 +72,11 @@
         h("span", { className: "text-slate-400" }, openF ? "−" : "+")),
       openF && h("div", { className: "px-4 pb-4 space-y-2 text-sm text-slate-600" },
         h("p", null, flow.what),
-        h("div", null, h("b", { className: "text-salus-navy text-xs uppercase" }, "Données envoyées : "), flow.dataSent),
-        h("div", null, h("b", { className: "text-salus-navy text-xs uppercase" }, "Enregistrement : "), flow.record),
-        h("div", null, h("b", { className: "text-salus-navy text-xs uppercase" }, "Notifications : "),
+        h("div", null, h("b", { className: "text-salus-navy text-xs uppercase" }, "Data sent: "), flow.dataSent),
+        h("div", null, h("b", { className: "text-salus-navy text-xs uppercase" }, "Record: "), flow.record),
+        h("div", null, h("b", { className: "text-salus-navy text-xs uppercase" }, "Notifications: "),
           h("ul", { className: "list-disc ml-5 mt-1 space-y-0.5" }, flow.notifications.map((n, i) => h("li", { key: i }, n)))),
-        h("div", null, h("b", { className: "text-salus-navy text-xs uppercase" }, "Et ensuite : "), flow.next)));
+        h("div", null, h("b", { className: "text-salus-navy text-xs uppercase" }, "And then: "), flow.next)));
   }
 
   function JournalEntry({ e }) {
@@ -85,13 +85,13 @@
       h("div", { className: "flex items-center justify-between gap-2" },
         h("div", null,
           h("div", { className: "text-sm font-semibold text-salus-navy" }, e.title),
-          h("div", { className: "text-[10px] text-slate-400" }, new Date(e.at).toLocaleTimeString("fr-FR") + " · module " + (e.payload && e.payload.module))),
-        h("button", { onClick: () => setOpenJ(!openJ), className: "text-xs font-semibold text-salus-cyan hover:underline shrink-0" }, openJ ? "masquer" : "payload")),
+          h("div", { className: "text-[10px] text-slate-400" }, new Date(e.at).toLocaleTimeString("en-GB") + " / module " + (e.payload && e.payload.module))),
+        h("button", { onClick: () => setOpenJ(!openJ), className: "text-xs font-semibold text-salus-cyan hover:underline shrink-0" }, openJ ? "hide" : "payload")),
       openJ && h("pre", { className: "mt-2 bg-salus-navy text-emerald-300 text-[10px] leading-relaxed rounded-lg p-3 overflow-x-auto" },
         JSON.stringify(e.payload, null, 2)));
   }
 
-  /* ---------- Attribution des émetteurs aux pièces ---------- */
+  /* ---------- Assign emitters to rooms ---------- */
   function assignEmitters(a) {
     if (!a.rooms) return a;
     const rooms = a.rooms.map(r => {
@@ -103,136 +103,136 @@
     return { ...a, rooms };
   }
 
-  /* ---------- Définition des questions (une par écran) ---------- */
+  /* ---------- Question definitions (one per screen) ---------- */
   function buildQuestions(isPro) {
     const t = (user, pro) => (isPro && pro) ? pro : user;
     const yesNo = (a, set, key, yesLabel, noLabel, extra) => h("div", { className: "grid sm:grid-cols-2 gap-3" },
-      h(ChoiceCard, { label: yesLabel || "Oui", selected: a[key] === "yes", onClick: () => set({ [key]: "yes" }, true) }),
-      h(ChoiceCard, { label: noLabel || "Non", selected: a[key] === "no", onClick: () => set({ [key]: "no" }, true) }),
+      h(ChoiceCard, { label: yesLabel || "Yes", selected: a[key] === "yes", onClick: () => set({ [key]: "yes" }, true) }),
+      h(ChoiceCard, { label: noLabel || "No", selected: a[key] === "no", onClick: () => set({ [key]: "no" }, true) }),
       extra);
 
     return [
-      /* ============ ÉTAPE 1 — MON LOGEMENT ============ */
+      /* ============ STEP 1 - MY HOME ============ */
       {
         id: "homeType", step: 0,
-        title: t("Où se passe votre projet ?", "Type de bâtiment du chantier ?"),
-        sub: t("Le parcours s'adapte : un bâtiment professionnel part vers une étude dédiée — jamais un blocage.", "Le tertiaire sort du parcours automatique et prépare un dossier qualifié."),
+        title: t("Where is your project?", "Building type on site?"),
+        sub: t("The journey adapts: a commercial building goes to a dedicated study - never a dead end.", "Commercial buildings leave the automatic path and prepare a qualified file."),
         valid: a => !!a.homeType,
         render: (a, set) => h("div", { className: "grid sm:grid-cols-3 gap-3" },
-          h(ChoiceCard, { label: "Une maison", img: "assets/questions/logement-maison.png", selected: a.homeType === "house", onClick: () => set({ homeType: "house" }, true) }),
-          h(ChoiceCard, { label: "Un appartement", img: "assets/questions/logement-appartement.png", selected: a.homeType === "flat", onClick: () => set({ homeType: "flat" }, true) }),
-          h(ChoiceCard, { label: "Un bâtiment professionnel", hint: "Bureaux, commerce, collectif…", img: "assets/questions/logement-tertiaire.png", selected: a.homeType === "tertiary", onClick: () => set({ homeType: "tertiary" }, true) }))
+          h(ChoiceCard, { label: "A house", img: "assets/questions/logement-maison.png", selected: a.homeType === "house", onClick: () => set({ homeType: "house" }, true) }),
+          h(ChoiceCard, { label: "A flat", img: "assets/questions/logement-appartement.png", selected: a.homeType === "flat", onClick: () => set({ homeType: "flat" }, true) }),
+          h(ChoiceCard, { label: "A commercial building", hint: "Offices, retail, multi-dwelling...", img: "assets/questions/logement-tertiaire.png", selected: a.homeType === "tertiary", onClick: () => set({ homeType: "tertiary" }, true) }))
       },
       {
         id: "surface", step: 0,
-        title: "Quelle surface à chauffer, environ ?",
-        sub: "Une valeur approximative suffit — elle sert au calcul d'économies et à la portée radio.",
+        title: "Roughly what floor area needs heating?",
+        sub: "A rough figure is enough - it feeds the savings estimate and the radio range check.",
         valid: a => a.surface > 0,
         render: (a, set) => h("div", null,
           h("div", { className: "flex flex-wrap gap-2 mb-4" },
             [60, 90, 120, 160, 200, 300].map(v => h("button", {
               key: v, onClick: () => set({ surface: v }),
               className: cx("rounded-full px-4 py-2 text-sm font-semibold border-2 transition", a.surface === v ? "border-salus-cyan bg-salus-cyan/10 text-salus-navy" : "border-slate-200 bg-white text-slate-500 hover:border-salus-cyan/50")
-            }, v + " m²"))),
+            }, v + " m2"))),
           h("div", { className: "flex items-center gap-3" },
             h("input", {
               type: "number", min: 10, max: 2000, value: a.surface || "",
               onChange: e => set({ surface: parseInt(e.target.value, 10) || 0 }),
-              placeholder: "ou saisissez…",
+              placeholder: "or type it in...",
               className: "w-40 rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:outline-none focus:border-salus-cyan"
-            }), h("span", { className: "text-sm text-slate-500" }, "m²")))
+            }), h("span", { className: "text-sm text-slate-500" }, "m2")))
       },
       {
         id: "floors", step: 0,
-        title: "Sur combien de niveaux ?",
-        sub: "Un étage à franchir peut demander un répéteur radio — le configurateur y pensera pour vous.",
+        title: "Over how many floors?",
+        sub: "A floor to cross may call for a radio repeater - the configurator will think of it for you.",
         valid: a => a.floors != null,
         render: (a, set) => h("div", { className: "grid sm:grid-cols-3 gap-3" },
-          h(ChoiceCard, { label: "Plain-pied", img: "assets/questions/niveaux-plainpied.png", selected: a.floors === 0, onClick: () => set({ floors: 0 }, true) }),
-          h(ChoiceCard, { label: "Un étage", img: "assets/questions/niveaux-1etage.png", selected: a.floors === 1, onClick: () => set({ floors: 1 }, true) }),
-          h(ChoiceCard, { label: "Deux étages ou plus", img: "assets/questions/niveaux-2etages.png", selected: a.floors === 2, onClick: () => set({ floors: 2 }, true) }))
+          h(ChoiceCard, { label: "Single storey", img: "assets/questions/niveaux-plainpied.png", selected: a.floors === 0, onClick: () => set({ floors: 0 }, true) }),
+          h(ChoiceCard, { label: "One upper floor", img: "assets/questions/niveaux-1etage.png", selected: a.floors === 1, onClick: () => set({ floors: 1 }, true) }),
+          h(ChoiceCard, { label: "Two or more", img: "assets/questions/niveaux-2etages.png", selected: a.floors === 2, onClick: () => set({ floors: 2 }, true) }))
       },
       {
         id: "walls", step: 0,
-        title: t("Vos murs, plutôt ?", "Nature des parois (portée radio) ?"),
-        sub: "Des murs épais freinent les ondes radio : mieux vaut le savoir maintenant.",
+        title: t("Your walls are mostly?", "Wall construction (radio range)?"),
+        sub: "Thick walls slow radio signals down: better to know now.",
         valid: a => !!a.walls,
         render: (a, set) => h("div", { className: "grid sm:grid-cols-3 gap-3" },
-          h(ChoiceCard, { label: t("Classiques", "Cloisons standard"), hint: "Brique, parpaing, placo…", img: "assets/questions/murs-standard.png", selected: a.walls === "standard", onClick: () => set({ walls: "standard" }, true) }),
-          h(ChoiceCard, { label: t("Épais ou anciens", "Maçonnerie lourde"), hint: "Pierre, béton épais…", img: "assets/questions/murs-epais.png", selected: a.walls === "thick", onClick: () => set({ walls: "thick" }, true) }),
-          h(ChoiceCard, { label: "Je ne sais pas", img: "assets/questions/murs-inconnu.png", selected: a.walls === "unknown", onClick: () => set({ walls: "unknown" }, true) }))
+          h(ChoiceCard, { label: t("Standard", "Standard partitions"), hint: "Brick, block, plasterboard...", img: "assets/questions/murs-standard.png", selected: a.walls === "standard", onClick: () => set({ walls: "standard" }, true) }),
+          h(ChoiceCard, { label: t("Thick or old", "Heavy masonry"), hint: "Stone, thick concrete...", img: "assets/questions/murs-epais.png", selected: a.walls === "thick", onClick: () => set({ walls: "thick" }, true) }),
+          h(ChoiceCard, { label: "I don't know", img: "assets/questions/murs-inconnu.png", selected: a.walls === "unknown", onClick: () => set({ walls: "unknown" }, true) }))
       },
       {
         id: "rooms", step: 0,
-        title: "Quelles pièces voulez-vous chauffer (ou rafraîchir) ?",
-        sub: "Ajoutez vos pièces : la solution sera calculée pièce par pièce, et vos bénéfices aussi.",
+        title: "Which rooms do you want to heat (or cool)?",
+        sub: "Add your rooms: the solution is calculated room by room, and so are your benefits.",
         valid: a => (a.rooms || []).length > 0,
         render: (a, set) => h(RoomBuilder, { a, set })
       },
       {
         id: "windows", step: 0,
-        title: "Combien de fenêtres, environ ?",
-        sub: "Utile pour le pack sécurité : alerte en cas d'ouverture et chauffage coupé si une fenêtre reste ouverte.",
+        title: "Roughly how many windows?",
+        sub: "Useful for the security pack: an alert when one opens, and heating cut if a window is left open.",
         valid: () => true,
         render: (a, set) => h("div", { className: "flex items-center gap-4" },
           h(Stepper, { value: a.windows || 0, onChange: v => set({ windows: v }), min: 0, max: 40 }),
-          h("span", { className: "text-sm text-slate-500" }, "fenêtres"))
+          h("span", { className: "text-sm text-slate-500" }, "windows"))
       },
       {
         id: "wifiQuality", step: 0,
-        title: "Le wifi passe-t-il bien partout chez vous ?",
-        sub: "Si le wifi peine, la radio de vos futurs appareils peinera sans doute aussi — un répéteur sera peut-être conseillé.",
+        title: "Does wi-fi reach everywhere in your home?",
+        sub: "If wi-fi struggles, the radio of your future devices will probably struggle too - a repeater may be advised.",
         valid: a => !!a.wifiQuality,
         render: (a, set) => h("div", { className: "grid sm:grid-cols-3 gap-3" },
-          h(ChoiceCard, { label: "Oui, partout", selected: a.wifiQuality === "good", onClick: () => set({ wifiQuality: "good" }, true) }),
-          h(ChoiceCard, { label: "Des zones où ça passe mal", selected: a.wifiQuality === "weak_spots", onClick: () => set({ wifiQuality: "weak_spots" }, true) }),
-          h(ChoiceCard, { label: "J'utilise des répéteurs wifi", hint: "Signe que la maison est difficile pour les ondes.", selected: a.wifiQuality === "has_repeaters", onClick: () => set({ wifiQuality: "has_repeaters" }, true) }))
+          h(ChoiceCard, { label: "Yes, everywhere", selected: a.wifiQuality === "good", onClick: () => set({ wifiQuality: "good" }, true) }),
+          h(ChoiceCard, { label: "Some weak spots", selected: a.wifiQuality === "weak_spots", onClick: () => set({ wifiQuality: "weak_spots" }, true) }),
+          h(ChoiceCard, { label: "I use wi-fi repeaters", hint: "A sign the house is hard on radio signals.", selected: a.wifiQuality === "has_repeaters", onClick: () => set({ wifiQuality: "has_repeaters" }, true) }))
       },
 
-      /* ============ ÉTAPE 2 — MON CHAUFFAGE ============ */
+      /* ============ STEP 2 - MY HEATING ============ */
       {
         id: "generator", step: 1,
-        title: t("Qu'est-ce qui produit la chaleur (ou le froid) chez vous ?", "Générateur en place ?"),
-        sub: "Tous les cas se présentent selon les pays (France, Royaume-Uni, Allemagne, Roumanie, Danemark) — même sans produit adapté, le configurateur prépare la suite.",
+        title: t("What produces the heat (or the cool) in your home?", "Heat source in place?"),
+        sub: "Every case appears, across France, the UK, Germany, Romania and Denmark - even with no matching product, the configurator prepares the next step.",
         valid: a => !!a.generator,
         render: (a, set) => h("div", { className: "grid sm:grid-cols-2 lg:grid-cols-4 gap-3" },
           Object.values(MKT.generators).map(g => h(ChoiceCard, {
             key: g.id, label: g.label, hint: g.hint, img: g.img,
-            badge: g.covered === false ? "étude dédiée" : null,
+            badge: g.covered === false ? "dedicated study" : null,
             selected: a.generator === g.id, onClick: () => set({ generator: g.id }, true)
           })))
       },
       {
         id: "emitterMain", step: 1,
-        title: a => (a.floors > 0 ? "Comment la chaleur est-elle diffusée au rez-de-chaussée ?" : "Comment la chaleur est-elle diffusée dans votre logement ?"),
-        sub: "C'est l'émetteur qui décide de la façon de réguler chaque pièce.",
+        title: a => (a.floors > 0 ? "How is the heat delivered on the ground floor?" : "How is the heat delivered in your home?"),
+        sub: "The emitter is what decides how each room is controlled.",
         valid: a => !!a.emitterMain,
         render: (a, set) => h("div", { className: "grid sm:grid-cols-2 lg:grid-cols-3 gap-3" },
           Object.values(MKT.emitters).map(em => h(ChoiceCard, {
             key: em.id, label: em.label, hint: em.hint, img: em.img,
-            badge: em.covered === false ? "étude dédiée" : null,
+            badge: em.covered === false ? "dedicated study" : null,
             selected: a.emitterMain === em.id, onClick: () => set({ emitterMain: em.id }, true)
           })))
       },
       {
         id: "emitterUpper", step: 1,
         applicable: a => (a.floors || 0) > 0,
-        title: "Et à l'étage ?",
-        sub: "Le mixte est fréquent : plancher en bas, radiateurs en haut — le configurateur combine les deux.",
+        title: "And upstairs?",
+        sub: "Mixed setups are common: underfloor downstairs, radiators upstairs - the configurator combines both.",
         valid: a => !!a.emitterUpper,
         render: (a, set) => h("div", { className: "grid sm:grid-cols-2 lg:grid-cols-3 gap-3" },
-          h(ChoiceCard, { label: "Comme en bas", hint: "Le même émetteur partout.", selected: a.emitterUpper === "same", onClick: () => set({ emitterUpper: "same" }, true) }),
+          h(ChoiceCard, { label: "Same as downstairs", hint: "The same emitter throughout.", selected: a.emitterUpper === "same", onClick: () => set({ emitterUpper: "same" }, true) }),
           Object.values(MKT.emitters).map(em => h(ChoiceCard, {
             key: em.id, label: em.label, img: em.img,
-            badge: em.covered === false ? "étude dédiée" : null,
+            badge: em.covered === false ? "dedicated study" : null,
             selected: a.emitterUpper === em.id, onClick: () => set({ emitterUpper: em.id }, true)
           })))
       },
       {
         id: "radiators", step: 1,
         applicable: a => (assignEmitters(a).rooms || []).some(r => r.emitter === "water_radiators" || r.emitter === "electric_radiators"),
-        title: "Combien de radiateurs dans chaque pièce ?",
-        sub: "Une tête ou un module par radiateur à réguler.",
+        title: "How many radiators in each room?",
+        sub: "One head or module per radiator to control.",
         valid: () => true,
         render: (a, set) => {
           const rooms = assignEmitters(a).rooms.filter(r => r.emitter === "water_radiators" || r.emitter === "electric_radiators");
@@ -248,97 +248,97 @@
       {
         id: "boilerAccessible", step: 1,
         applicable: a => ["gas_boiler", "oil_boiler", "heat_pump_aw", "district", "biomass", "unknown"].includes(a.generator),
-        title: t("Votre générateur est-il facilement accessible ?", "Accès au générateur pour le récepteur ?"),
-        sub: "S'il l'est, un récepteur peut le démarrer et le couper exactement quand vos pièces le demandent.",
+        title: t("Is your heat source easy to get to?", "Access to the heat source for the receiver?"),
+        sub: "If it is, a receiver can start and stop it exactly when your rooms ask for heat.",
         valid: a => !!a.boilerAccessible,
         render: (a, set) => h("div", { className: "grid sm:grid-cols-3 gap-3" },
-          h(ChoiceCard, { label: "Oui", hint: t("Chaudière ou PAC visible et approchable.", "Câblage possible au générateur."), selected: a.boilerAccessible === "yes", onClick: () => set({ boilerAccessible: "yes" }, true) }),
-          h(ChoiceCard, { label: "Non / difficile", selected: a.boilerAccessible === "no", onClick: () => set({ boilerAccessible: "no" }, true) }),
-          h(ChoiceCard, { label: "Je ne sais pas", selected: a.boilerAccessible === "unknown", onClick: () => set({ boilerAccessible: "unknown" }, true) }))
+          h(ChoiceCard, { label: "Yes", hint: t("Boiler or heat pump visible and reachable.", "Wiring possible at the heat source."), selected: a.boilerAccessible === "yes", onClick: () => set({ boilerAccessible: "yes" }, true) }),
+          h(ChoiceCard, { label: "No / difficult", selected: a.boilerAccessible === "no", onClick: () => set({ boilerAccessible: "no" }, true) }),
+          h(ChoiceCard, { label: "I don't know", selected: a.boilerAccessible === "unknown", onClick: () => set({ boilerAccessible: "unknown" }, true) }))
       },
       {
         id: "hasThermostatWiring", step: 1,
-        title: t("Des câbles arrivent-ils déjà là où seraient les thermostats ?", "Bus / gaines disponibles vers les points de régulation ?"),
-        sub: t("Regardez l'emplacement de votre ancien thermostat, ou entre le collecteur et les pièces.", "Conditionne filaire vs radio (CB500CO vs CB12RF, SQ610 vs SQ610RF)."),
+        title: t("Do cables already run to where the thermostats would go?", "Bus / conduits available to the control points?"),
+        sub: t("Look where your old thermostat sits, or between the manifold and the rooms.", "Drives wired vs wireless (CB500CO vs CB12RF, SQ610 vs SQ610RF)."),
         valid: a => !!a.hasThermostatWiring,
         render: (a, set) => h("div", { className: "grid sm:grid-cols-3 gap-3" },
-          h(ChoiceCard, { label: "Oui, des câbles existent", img: "assets/questions/cables-oui.png", selected: a.hasThermostatWiring === "yes", onClick: () => set({ hasThermostatWiring: "yes" }, true) }),
-          h(ChoiceCard, { label: "Non, rien", img: "assets/questions/cables-non.png", hint: "Le sans-fil évite tous les travaux.", selected: a.hasThermostatWiring === "no", onClick: () => set({ hasThermostatWiring: "no" }, true) }),
-          h(ChoiceCard, { label: "Je ne sais pas", selected: a.hasThermostatWiring === "unknown", onClick: () => set({ hasThermostatWiring: "unknown" }, true) }))
+          h(ChoiceCard, { label: "Yes, cables are there", img: "assets/questions/cables-oui.png", selected: a.hasThermostatWiring === "yes", onClick: () => set({ hasThermostatWiring: "yes" }, true) }),
+          h(ChoiceCard, { label: "No, nothing", img: "assets/questions/cables-non.png", hint: "Wireless avoids all the building work.", selected: a.hasThermostatWiring === "no", onClick: () => set({ hasThermostatWiring: "no" }, true) }),
+          h(ChoiceCard, { label: "I don't know", selected: a.hasThermostatWiring === "unknown", onClick: () => set({ hasThermostatWiring: "unknown" }, true) }))
       },
       {
         id: "perRoomControl", step: 1,
-        title: "Voulez-vous régler chaque pièce séparément ?",
-        sub: "C'est la question qui change tout : une température pour tout le logement, ou chaque pièce sa température.",
+        title: "Do you want to set each room separately?",
+        sub: "This is the question that changes everything: one temperature for the whole home, or a temperature per room.",
         valid: a => !!a.perRoomControl,
         render: (a, set) => h("div", { className: "grid sm:grid-cols-2 gap-3" },
-          h(ChoiceCard, { label: "Oui, pièce par pièce", hint: "18 °C dans les chambres, 21 °C au salon…", img: "assets/questions/zonage-multi.png", selected: a.perRoomControl === "yes", onClick: () => set({ perRoomControl: "yes" }, true) }),
-          h(ChoiceCard, { label: "Non, une seule température", hint: "Un thermostat général pilote tout.", img: "assets/questions/zonage-mono.png", selected: a.perRoomControl === "no", onClick: () => set({ perRoomControl: "no" }, true) }))
+          h(ChoiceCard, { label: "Yes, room by room", hint: "18 C in the bedrooms, 21 C in the living room...", img: "assets/questions/zonage-multi.png", selected: a.perRoomControl === "yes", onClick: () => set({ perRoomControl: "yes" }, true) }),
+          h(ChoiceCard, { label: "No, one temperature", hint: "A single thermostat controls everything.", img: "assets/questions/zonage-mono.png", selected: a.perRoomControl === "no", onClick: () => set({ perRoomControl: "no" }, true) }))
       },
       {
         id: "hasBMS", step: 1,
         applicable: (a, isProQ) => isProQ && a.homeType === "tertiary",
-        title: "Une GTB (gestion technique du bâtiment) existe-t-elle ?",
-        sub: "Une GTB en place impose une étude d'intégration — dossier qualifié.",
+        title: "Is there a BMS (building management system)?",
+        sub: "An existing BMS calls for an integration study - qualified file.",
         valid: a => !!a.hasBMS,
         render: (a, set) => yesNo(a, set, "hasBMS")
       },
 
-      /* ============ ÉTAPE 3 — MES HABITUDES ============ */
+      /* ============ STEP 3 - MY HABITS ============ */
       {
         id: "remote", step: 2,
-        title: "Voulez-vous pouvoir agir sur votre chauffage à distance ?",
-        sub: "Deux situations vécues, plutôt qu'une fiche technique :",
+        title: "Do you want to control your heating remotely?",
+        sub: "Two real-life situations, rather than a spec sheet:",
         valid: a => !!a.remote,
         render: (a, set) => h("div", null,
           h(SituationsRow, { ids: ["train", "voiture"] }),
-          yesNo(a, set, "remote", "Oui, depuis mon téléphone", "Non, sur place suffit"))
+          yesNo(a, set, "remote", "Yes, from my phone", "No, on the device is fine"))
       },
       {
         id: "alerts", step: 2,
-        title: "Voulez-vous être alerté s'il y a un problème ?",
+        title: "Do you want to be alerted if something goes wrong?",
         valid: a => !!a.alerts,
         render: (a, set) => h("div", null,
           h(SituationsRow, { ids: ["gel"] }),
-          yesNo(a, set, "alerts", "Oui, je veux savoir", "Non merci"))
+          yesNo(a, set, "alerts", "Yes, I want to know", "No thanks"))
       },
       {
         id: "sharing", step: 2,
-        title: "Voulez-vous partager l'accès — famille ou installateur ?",
+        title: "Do you want to share access - family or installer?",
         valid: a => !!a.sharing,
         render: (a, set) => h("div", null,
           h(SituationsRow, { ids: ["installateur"] }),
-          yesNo(a, set, "sharing", "Oui, partager l'accès", "Non"))
+          yesNo(a, set, "sharing", "Yes, share access", "No"))
       },
       {
         id: "connectivityConclusion", step: 2, isConclusion: true,
-        title: a => E.wantsConnected(a) ? "Votre solution sera connectée" : "Votre solution peut rester non connectée",
-        sub: "Vous n'avez pas eu à choisir « connecté ou pas » : c'est la conclusion de vos trois réponses.",
+        title: a => E.wantsConnected(a) ? "Your solution will be connected" : "Your solution can stay offline",
+        sub: "You never had to choose \u201cconnected or not\u201d: it is the conclusion of your three answers.",
         valid: () => true,
         render: (a) => h("div", { className: "space-y-4" },
           h("div", { className: "grid sm:grid-cols-2 gap-3" },
             h("div", { className: cx("rounded-2xl border-2 p-4", E.wantsConnected(a) ? "border-salus-cyan bg-salus-cyan/5" : "border-slate-200 bg-white opacity-70") },
-              h("div", { className: "font-bold text-salus-navy text-sm mb-1" }, "Avec la passerelle"),
-              h("p", { className: "text-xs text-slate-600 leading-relaxed" }, "Vous gardez le contrôle à distance, recevez les alertes, et votre installateur peut vous aider sans se déplacer.")),
+              h("div", { className: "font-bold text-salus-navy text-sm mb-1" }, "With the gateway"),
+              h("p", { className: "text-xs text-slate-600 leading-relaxed" }, "You keep remote control, you get the alerts, and your installer can help without coming out.")),
             h("div", { className: cx("rounded-2xl border-2 p-4", !E.wantsConnected(a) ? "border-salus-cyan bg-salus-cyan/5" : "border-slate-200 bg-white opacity-70") },
-              h("div", { className: "font-bold text-salus-navy text-sm mb-1" }, "Sans la passerelle"),
-              h("p", { className: "text-xs text-slate-600 leading-relaxed" }, "Chaque réglage se fait sur l'appareil lui-même. Rien n'est perdu : la passerelle peut s'ajouter plus tard."))),
-          h(VideoPlaceholder, { label: "L'application Salus en usage réel", duration: "0:40" }))
+              h("div", { className: "font-bold text-salus-navy text-sm mb-1" }, "Without the gateway"),
+              h("p", { className: "text-xs text-slate-600 leading-relaxed" }, "Every setting is made on the device itself. Nothing is lost: the gateway can be added later."))),
+          h(VideoPlaceholder, { label: "The Salus app in real use", duration: "0:40" }))
       },
       {
         id: "presence", step: 2,
-        title: "En semaine, vous êtes plutôt…",
-        sub: "Le programme proposé s'adapte à votre rythme réel.",
+        title: "During the week, you are usually...",
+        sub: "The suggested schedule matches your real routine.",
         valid: a => !!a.presence,
         render: (a, set) => h("div", { className: "grid sm:grid-cols-3 gap-3" },
-          h(ChoiceCard, { label: "Souvent à la maison", selected: a.presence === "home_days", onClick: () => set({ presence: "home_days" }, true) }),
-          h(ChoiceCard, { label: "Absent en journée", selected: a.presence === "away_weekdays", onClick: () => set({ presence: "away_weekdays" }, true) }),
-          h(ChoiceCard, { label: "Horaires variables", selected: a.presence === "variable", onClick: () => set({ presence: "variable" }, true) }))
+          h(ChoiceCard, { label: "Often at home", selected: a.presence === "home_days", onClick: () => set({ presence: "home_days" }, true) }),
+          h(ChoiceCard, { label: "Out during the day", selected: a.presence === "away_weekdays", onClick: () => set({ presence: "away_weekdays" }, true) }),
+          h(ChoiceCard, { label: "Varying hours", selected: a.presence === "variable", onClick: () => set({ presence: "variable" }, true) }))
       },
       {
         id: "constructionPeriod", step: 2,
-        title: "Votre logement date de quand, environ ?",
-        sub: "Sert uniquement à estimer vos économies — une fourchette, jamais un chiffre unique.",
+        title: "Roughly when was your home built?",
+        sub: "Used only to estimate your savings - a range, never a single figure.",
         valid: a => !!a.constructionPeriod,
         render: (a, set) => h("div", { className: "grid grid-cols-2 sm:grid-cols-5 gap-3" },
           Object.entries(COPY.consumptionByPeriod).map(([id, p]) => h(ChoiceCard, {
@@ -347,23 +347,23 @@
       },
       {
         id: "currentControl", step: 2,
-        title: "Comment votre chauffage est-il régulé aujourd'hui ?",
+        title: "How is your heating controlled today?",
         valid: a => !!a.currentControl,
         render: (a, set) => h("div", { className: "grid sm:grid-cols-2 lg:grid-cols-4 gap-3" },
-          h(ChoiceCard, { label: "Aucune régulation", hint: "Ça chauffe, point.", selected: a.currentControl === "none", onClick: () => set({ currentControl: "none" }, true) }),
-          h(ChoiceCard, { label: "Un seul thermostat", selected: a.currentControl === "single_stat", onClick: () => set({ currentControl: "single_stat" }, true) }),
-          h(ChoiceCard, { label: "Robinets thermostatiques manuels", selected: a.currentControl === "trv_manual", onClick: () => set({ currentControl: "trv_manual" }, true) }),
-          h(ChoiceCard, { label: "Déjà pièce par pièce", selected: a.currentControl === "multi", onClick: () => set({ currentControl: "multi" }, true) }))
+          h(ChoiceCard, { label: "No control at all", hint: "It heats, full stop.", selected: a.currentControl === "none", onClick: () => set({ currentControl: "none" }, true) }),
+          h(ChoiceCard, { label: "One single thermostat", selected: a.currentControl === "single_stat", onClick: () => set({ currentControl: "single_stat" }, true) }),
+          h(ChoiceCard, { label: "Manual radiator valves", selected: a.currentControl === "trv_manual", onClick: () => set({ currentControl: "trv_manual" }, true) }),
+          h(ChoiceCard, { label: "Already room by room", selected: a.currentControl === "multi", onClick: () => set({ currentControl: "multi" }, true) }))
       },
       {
         id: "budget", step: 2,
-        title: "Avez-vous un budget en tête ?",
-        sub: "Un niveau au-dessus de votre budget restera visible, avec l'écart affiché — à vous de décider.",
+        title: "Do you have a budget in mind?",
+        sub: "A level above your budget stays visible, with the gap shown - your call.",
         valid: () => true,
         render: (a, set) => h("div", { className: "max-w-md space-y-4" },
           h("label", { className: "flex items-center gap-2 text-sm text-slate-600 cursor-pointer" },
             h("input", { type: "checkbox", checked: a.budget == null, onChange: e => set({ budget: e.target.checked ? null : 900 }), className: "accent-[#00AEEF] w-4 h-4" }),
-            "Pas de budget défini"),
+            "No budget set"),
           a.budget != null && h("div", null,
             h("input", {
               type: "range", min: 200, max: 3000, step: 50, value: a.budget,
@@ -374,8 +374,8 @@
       },
       {
         id: "postalCode", step: 2,
-        title: "Votre code postal ?",
-        sub: t("Pour vous proposer les installateurs Club Pro de votre secteur.", "Pour le routage vers le commercial et les Club Pro du secteur."),
+        title: "Your postcode?",
+        sub: t("So we can show you the Club Pro installers in your area.", "For routing to the area sales rep and the local Club Pro members."),
         valid: a => (a.postalCode || "").length >= 4,
         render: (a, set) => h("input", {
           type: "text", inputMode: "numeric", maxLength: 5, value: a.postalCode || "",
@@ -392,10 +392,10 @@
       COPY.situations.filter(s => ids.includes(s.id)).map(s =>
         h("div", { className: "flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3" },
           h("img", { src: s.img, alt: "", className: "w-16 h-16 rounded-xl object-cover bg-slate-100 shrink-0" }),
-          h("p", { className: "text-sm text-slate-600 italic leading-snug" }, "« " + s.text + " »"))));
+          h("p", { className: "text-sm text-slate-600 italic leading-snug" }, "\u201c" + s.text + "\u201d"))));
   }
 
-  /* ---------- Constructeur de pièces ---------- */
+  /* ---------- Room builder ---------- */
   function RoomBuilder({ a, set }) {
     const rooms = a.rooms || [];
     const nextId = rooms.reduce((m, r) => Math.max(m, r.id), 0) + 1;
@@ -415,7 +415,7 @@
           key: t.id, onClick: () => addRoom(t.id),
           className: "rounded-full border-2 border-slate-200 bg-white px-3.5 py-1.5 text-sm font-semibold text-slate-600 hover:border-salus-cyan hover:text-salus-navy transition"
         }, "+ " + t.label))),
-      rooms.length === 0 && h("p", { className: "text-sm text-slate-400 italic" }, "Ajoutez au moins une pièce avec les boutons ci-dessus."),
+      rooms.length === 0 && h("p", { className: "text-sm text-slate-400 italic" }, "Add at least one room using the buttons above."),
       h("div", { className: "space-y-2" },
         rooms.map(r => h("div", { key: r.id, className: "flex items-center gap-2.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2.5" },
           h("img", { src: (COPY.roomTypes.find(t => t.id === r.type) || {}).img, className: "w-8 h-8 rounded-lg object-cover bg-slate-100", alt: "" }),
@@ -427,15 +427,15 @@
             value: r.floor || 0, onChange: e => set({ rooms: rooms.map(x => x.id === r.id ? { ...x, floor: parseInt(e.target.value, 10) } : x) }),
             className: "rounded-lg border border-slate-200 text-xs px-2 py-1.5 text-slate-600 bg-white"
           },
-            h("option", { value: 0 }, "RDC"),
-            Array.from({ length: a.floors }, (_, i) => h("option", { key: i + 1, value: i + 1 }, "Étage " + (i + 1)))),
+            h("option", { value: 0 }, "Ground"),
+            Array.from({ length: a.floors }, (_, i) => h("option", { key: i + 1, value: i + 1 }, "Floor " + (i + 1)))),
           h("button", {
             onClick: () => set({ rooms: rooms.filter(x => x.id !== r.id) }),
             className: "w-7 h-7 rounded-full text-slate-400 hover:bg-red-50 hover:text-red-500 font-bold shrink-0"
           }, "✕")))));
   }
 
-  /* ---------- Proposition précoce (P8) ---------- */
+  /* ---------- Early proposal (P8) ---------- */
   function EarlyEstimateBar({ answers, visible, onSee }) {
     const est = useMemo(() => visible ? E.earlyEstimate(assignEmitters(answers)) : null, [answers, visible]);
     if (!est) return null;
@@ -443,15 +443,15 @@
       h("div", { className: "max-w-3xl mx-auto px-4 pb-4" },
         h("div", { className: "pointer-events-auto rounded-2xl bg-salus-navy text-white shadow-2xl px-5 py-3.5 flex items-center justify-between gap-3 fadeUp" },
           h("div", null,
-            h("div", { className: "text-[10px] uppercase tracking-wider text-salus-cyan font-bold" }, "Votre solution se construit"),
+            h("div", { className: "text-[10px] uppercase tracking-wider text-salus-cyan font-bold" }, "Your solution is taking shape"),
             h("div", { className: "text-sm font-semibold flex items-baseline gap-2" },
-              "≈ " + eur(est.total),
-              h("span", { className: "text-[9px] uppercase bg-amber-400/20 text-amber-200 rounded px-1.5 py-0.5 font-bold" }, "prix fictif · beta"),
-              h("span", { className: "text-white/50 text-xs" }, "· " + est.deviceCount + " appareils — s'affine à chaque réponse"))),
-          onSee && h(Btn, { kind: "primary", className: "!py-2 !text-xs shrink-0", onClick: onSee }, "Voir"))));
+              "~ " + eur(est.total),
+              h("span", { className: "text-[9px] uppercase bg-amber-400/20 text-amber-200 rounded px-1.5 py-0.5 font-bold" }, "fictional price / beta"),
+              h("span", { className: "text-white/50 text-xs" }, "/ " + est.deviceCount + " devices - refined with every answer"))),
+          onSee && h(Btn, { kind: "primary", className: "!py-2 !text-xs shrink-0", onClick: onSee }, "View"))));
   }
 
-  /* ---------- Écran d'accueil ---------- */
+  /* ---------- Landing screen ---------- */
   function Landing({ onStart, onDemo, onReplace, onAbout, saved, onResume }) {
     return h("div", { className: "relative overflow-hidden" },
       h("div", { className: "arcs absolute inset-0 pointer-events-none" }),
@@ -459,55 +459,55 @@
         h("div", { className: "text-center max-w-2xl mx-auto mb-10 fadeUp" },
           h("img", { src: "assets/hero/logo-salus.png", alt: "SALUS Controls", className: "h-10 mx-auto mb-6" }),
           h("h1", { className: "font-ubuntu text-3xl md:text-4xl font-bold text-salus-navy leading-tight" },
-            "Du besoin à la solution, ", h("span", { className: "text-salus-cyan" }, "en moins de dix questions")),
+            "From need to solution, ", h("span", { className: "text-salus-cyan" }, "in under ten questions")),
           h("p", { className: "text-slate-500 mt-3 text-sm md:text-base" },
-            "Décrivez votre logement et vos habitudes : le configurateur compose le système Salus complet — produits, prix, schéma, documents — sans jamais vous montrer un catalogue.")),
+            "Describe your home and your habits: the configurator builds the complete Salus system - products, price, diagram, documents - without ever showing you a catalogue.")),
 
         saved && h("div", { className: "max-w-xl mx-auto mb-8 fadeUp" },
-          h(InfoBox, { tone: "info", title: "Un projet vous attend — " + saved.projectCode },
+          h(InfoBox, { tone: "info", title: "A project is waiting for you - " + saved.projectCode },
             h("div", { className: "flex items-center justify-between gap-3 mt-1" },
-              h("span", { className: "text-xs" }, "Vos réponses sont conservées : reprenez exactement où vous vous étiez arrêté."),
-              h(Btn, { className: "!py-1.5 !text-xs shrink-0", onClick: onResume }, "Reprendre")))),
+              h("span", { className: "text-xs" }, "Your answers are kept: pick up exactly where you stopped."),
+              h(Btn, { className: "!py-1.5 !text-xs shrink-0", onClick: onResume }, "Resume")))),
 
         h("div", { className: "max-w-3xl mx-auto mb-4 text-center" },
-          h("h2", { className: "font-ubuntu font-bold text-lg text-salus-navy" }, "Qui êtes-vous ?"),
+          h("h2", { className: "font-ubuntu font-bold text-lg text-salus-navy" }, "Who are you?"),
           h("p", { className: "text-xs text-slate-500 mt-1 mb-5" },
-            "On vous le demande pour adapter les mots et le niveau de détail : un particulier voit des questions simples et illustrées, un installateur va plus vite avec le vocabulaire du métier — et des outils en plus (pré-visite, devis, docs techniques).")),
+            "We ask so we can match the wording and the level of detail: a homeowner gets simple, illustrated questions, while an installer moves faster with trade vocabulary - and extra tools (pre-visit, quote, technical docs).")),
         h("div", { className: "grid sm:grid-cols-2 gap-4 max-w-3xl mx-auto" },
           h("button", { onClick: () => onStart("user"), className: "tile text-left rounded-3xl border-2 border-slate-200 bg-white p-6 hover:border-salus-cyan" },
             h("img", { src: "assets/hero/profil-particulier.png", alt: "", className: "w-full h-36 object-cover rounded-2xl mb-4 bg-slate-100" }),
-            h("div", { className: "font-ubuntu font-bold text-lg text-salus-navy" }, "Je suis particulier"),
-            h("p", { className: "text-sm text-slate-500 mt-1" }, "Des questions simples, en images. Votre solution en trois niveaux, expliquée pièce par pièce."),
-            h("div", { className: "mt-3 text-salus-cyan font-bold text-sm" }, "Commencer →")),
+            h("div", { className: "font-ubuntu font-bold text-lg text-salus-navy" }, "I am a homeowner"),
+            h("p", { className: "text-sm text-slate-500 mt-1" }, "Simple questions, with pictures. Your solution in three levels, explained room by room."),
+            h("div", { className: "mt-3 text-salus-cyan font-bold text-sm" }, "Start \u2192")),
           h("button", { onClick: () => onStart("installer"), className: "tile text-left rounded-3xl border-2 border-slate-200 bg-white p-6 hover:border-salus-cyan" },
             h("img", { src: "assets/hero/profil-installateur.png", alt: "", className: "w-full h-36 object-cover rounded-2xl mb-4 bg-slate-100" }),
-            h("div", { className: "font-ubuntu font-bold text-lg text-salus-navy flex items-center gap-2" }, "Je suis installateur",
-              h("span", { className: "text-[9px] bg-salus-navy text-white rounded-full px-2 py-0.5 uppercase tracking-wide" }, "Espace pro")),
-            h("p", { className: "text-sm text-slate-500 mt-1" }, "Vocabulaire métier, questionnaire de pré-visite client, devis prêt pour votre distributeur."),
-            h("div", { className: "mt-3 text-salus-cyan font-bold text-sm" }, "Commencer →"))),
+            h("div", { className: "font-ubuntu font-bold text-lg text-salus-navy flex items-center gap-2" }, "I am an installer",
+              h("span", { className: "text-[9px] bg-salus-navy text-white rounded-full px-2 py-0.5 uppercase tracking-wide" }, "Pro area")),
+            h("p", { className: "text-sm text-slate-500 mt-1" }, "Trade vocabulary, customer pre-visit questionnaire, quote ready for your distributor."),
+            h("div", { className: "mt-3 text-salus-cyan font-bold text-sm" }, "Start \u2192"))),
 
         h("div", { className: "flex flex-wrap justify-center gap-3 mt-8" },
           h(Btn, { kind: "navy", onClick: onDemo }, "▶ " + COPY.demoScenario.label),
-          h(Btn, { kind: "ghost", onClick: onReplace }, "Remplacer un produit existant"),
-          h(Btn, { kind: "ghost", onClick: onAbout }, "À propos de cette BETA")),
+          h(Btn, { kind: "ghost", onClick: onReplace }, "Replace an existing product"),
+          h(Btn, { kind: "ghost", onClick: onAbout }, "About this BETA")),
         h("p", { className: "text-center text-[11px] text-slate-400 mt-3" }, COPY.demoScenario.description)));
   }
 
-  /* ---------- Module remplacement (P15) ---------- */
+  /* ---------- Replacement module (P14) ---------- */
   function ReplaceView({ onBack, onStartConfig }) {
     const [q, setQ] = useState("");
     const results = useMemo(() => E.searchReplacement(q), [q]);
     return h("div", { className: "max-w-3xl mx-auto px-4 py-8 fadeUp" },
-      h(Btn, { kind: "subtle", className: "!text-xs mb-5", onClick: onBack }, "← Accueil"),
-      h(SectionTitle, { sub: "Saisissez le produit déjà en place — même un produit concurrent, même avec une faute de frappe. Le configurateur propose l'équivalent Salus et ce qu'il faut en plus." }, "Remplacer un produit existant"),
+      h(Btn, { kind: "subtle", className: "!text-xs mb-5", onClick: onBack }, "\u2190 Home"),
+      h(SectionTitle, { sub: "Type in the product already installed - even a competitor product, even with a typo. The configurator offers the Salus equivalent plus what else is needed." }, "Replace an existing product"),
       h("div", { className: "flex gap-2 mb-2" },
         h("input", {
-          value: q, onChange: e => setQ(e.target.value), placeholder: "Ex. : Tybox 1117, Netatmo, evohome, RT500RF…",
+          value: q, onChange: e => setQ(e.target.value), placeholder: "e.g. Tybox 1117, Netatmo, evohome, RT500RF...",
           className: "flex-1 rounded-xl border border-slate-300 px-4 py-3 text-sm focus:outline-none focus:border-salus-cyan"
         }),
-        h(Btn, { kind: "ghost", onClick: () => alert("BETA : en production, une photo de l'étiquette suffirait — reconnaissance du modèle incluse.") }, "📷 Photo de l'étiquette")),
-      h("p", { className: "text-[11px] text-slate-400 mb-5" }, "Couverts en priorité : Delta Dore, Netatmo, Honeywell, Tado — et les anciennes gammes Salus. (Table BETA : 10 équivalences.)"),
-      q.length >= 2 && results.length === 0 && h(InfoBox, { tone: "warn", title: "Pas trouvé dans la table BETA" }, "En production, la saisie partirait en demande qualifiée : un technicien Salus identifierait l'équivalence et elle enrichirait la table."),
+        h(Btn, { kind: "ghost", onClick: () => alert("BETA: in production a photo of the label would be enough - model recognition included.") }, "\ud83d\udcf7 Photo of the label")),
+      h("p", { className: "text-[11px] text-slate-400 mb-5" }, "Covered first: Delta Dore, Netatmo, Honeywell, Tado - and the legacy Salus ranges. (BETA table: 10 equivalences.)"),
+      q.length >= 2 && results.length === 0 && h(InfoBox, { tone: "warn", title: "Not in the BETA table" }, "In production the entry would go out as a qualified request: a Salus technician would identify the equivalence and it would enrich the table."),
       h("div", { className: "space-y-3" },
         results.map((r, i) => {
           const p = CAT.products[r.to] || {};
@@ -521,120 +521,120 @@
                 h("div", { className: "text-xs text-slate-500" }, p.name)),
               h(PriceTag, { value: p.price })),
             r.alsoNeeds.length > 0 && h("div", { className: "text-xs text-amber-700 bg-amber-50 rounded-lg px-3 py-2 mt-2.5" },
-              "Nécessite en plus : " + r.alsoNeeds.map(ref => (CAT.products[ref] || {}).ref || ref).join(", ")),
-            h("div", { className: "text-xs text-slate-600 mt-2.5" }, h("b", null, "Câblage : "), r.wiring),
-            h("div", { className: "text-xs text-slate-600 mt-1" }, h("b", null, "Ce qui change : "), r.note));
+              "Also needs: " + r.alsoNeeds.map(ref => (CAT.products[ref] || {}).ref || ref).join(", ")),
+            h("div", { className: "text-xs text-slate-600 mt-2.5" }, h("b", null, "Wiring: "), r.wiring),
+            h("div", { className: "text-xs text-slate-600 mt-1" }, h("b", null, "What changes: "), r.note));
         })),
       h("div", { className: "mt-8 text-center" },
-        h("p", { className: "text-sm text-slate-500 mb-3" }, "Le remplacement est aussi l'occasion de repenser le système complet :"),
-        h(Btn, { onClick: onStartConfig }, "Configurer ma solution complète →")));
+        h("p", { className: "text-sm text-slate-500 mb-3" }, "A replacement is also the moment to rethink the whole system:"),
+        h(Btn, { onClick: onStartConfig }, "Configure my complete solution \u2192")));
   }
 
-  /* ---------- Pré-visite installateur (P9) ---------- */
+  /* ---------- Installer pre-visit (P8) ---------- */
   function PrevisitView({ onBack, onLoadPrefilled }) {
     const [stage, setStage] = useState(0);
     const link = "configurateur.salus.fr/previsite/SC-" + (1000 + Math.floor(Math.random() * 0) + 4821);
     return h("div", { className: "max-w-3xl mx-auto px-4 py-8 fadeUp" },
-      h(Btn, { kind: "subtle", className: "!text-xs mb-5", onClick: onBack }, "← Retour"),
-      h(SectionTitle, { sub: "Le client répond chez lui, avec photos ; vous arrivez sur site avec le matériel déjà chiffré." }, "Préparer une visite"),
+      h(Btn, { kind: "subtle", className: "!text-xs mb-5", onClick: onBack }, "\u2190 Back"),
+      h(SectionTitle, { sub: "The customer answers at home, with photos; you arrive on site with the material already priced." }, "Prepare a visit"),
       stage === 0 && h("div", { className: "space-y-4" },
-        h("p", { className: "text-sm text-slate-600" }, "Un lien unique part au client. Il répond aux questions du parcours particulier et envoie trois photos demandées explicitement : ",
-          h("b", null, "le générateur"), ", ", h("b", null, "un radiateur avec sa vanne"), ", ", h("b", null, "le tableau électrique"), "."),
-        h(Btn, { onClick: () => { setStage(1); CRM.logEvent("previsit", "Lien de pré-visite créé (simulation)", CRM.leadPayload({ profile: "installer" }, {}), CRM.flows.previsit); } }, "Créer le lien de pré-visite")),
+        h("p", { className: "text-sm text-slate-600" }, "A unique link goes out to the customer. They answer the homeowner questions and send three photos asked for explicitly: ",
+          h("b", null, "the heat source"), ", ", h("b", null, "one radiator with its valve"), ", ", h("b", null, "the electrical panel"), "."),
+        h(Btn, { onClick: () => { setStage(1); CRM.logEvent("previsit", "Pre-visit link created (simulation)", CRM.leadPayload({ profile: "installer" }, {}), CRM.flows.previsit); } }, "Create the pre-visit link")),
       stage >= 1 && h("div", { className: "space-y-4" },
-        h(InfoBox, { tone: "ok", title: "Lien créé (simulation)" },
+        h(InfoBox, { tone: "ok", title: "Link created (simulation)" },
           h("div", { className: "flex items-center justify-between gap-2 flex-wrap" },
             h("code", { className: "text-xs bg-white rounded px-2 py-1 border border-emerald-200" }, link),
-            h(Btn, { kind: "ghost", className: "!py-1 !text-xs", onClick: () => alert("BETA : lien fictif copié — en production, envoi par SMS ou email.") }, "Copier"))),
-        stage === 1 && h(Btn, { kind: "navy", onClick: () => setStage(2) }, "▶ Simuler : le client a répondu"),
+            h(Btn, { kind: "ghost", className: "!py-1 !text-xs", onClick: () => alert("BETA: fictional link copied - in production it would be sent by SMS or email.") }, "Copy"))),
+        stage === 1 && h(Btn, { kind: "navy", onClick: () => setStage(2) }, "\u25b6 Simulate: the customer has answered"),
         stage >= 2 && h("div", { className: "rounded-2xl border border-slate-200 bg-white p-5 space-y-4 fadeUp" },
           h("div", { className: "flex items-center gap-2" },
             h("span", { className: "w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" }),
-            h("span", { className: "text-sm font-bold text-salus-navy" }, "Réponse reçue lundi 21 h 04 — configuration pré-remplie")),
+            h("span", { className: "text-sm font-bold text-salus-navy" }, "Answer received Monday 21:04 - configuration pre-filled")),
           h("ul", { className: "text-sm text-slate-600 space-y-1" },
-            h("li", null, "• Maison des années 1990, 120 m², 5 pièces, un étage"),
-            h("li", null, "• Plancher chauffant au RDC, 3 radiateurs eau à l'étage — filetage de vanne standard visible sur photo"),
-            h("li", null, "• Chaudière gaz murale, accessible"),
-            h("li", null, "• Souhaite le pilotage à distance")),
+            h("li", null, "\u2022 1990s house, 120 m2, 5 rooms, one upper floor"),
+            h("li", null, "\u2022 Underfloor heating downstairs, 3 water radiators upstairs - standard valve thread visible on the photo"),
+            h("li", null, "\u2022 Wall-hung gas boiler, accessible"),
+            h("li", null, "\u2022 Wants remote control")),
           h("div", { className: "grid grid-cols-3 gap-2.5" },
             ["photo-generateur", "photo-radiateur-vanne", "photo-tableau"].map(id =>
               h("div", { key: id, className: "rounded-xl bg-slate-100 h-24 flex items-center justify-center text-[10px] text-slate-400 border border-dashed border-slate-300 text-center px-2" },
-                "[ " + id + ".jpg — photo client simulée ]"))),
-          h(Btn, { className: "w-full", onClick: onLoadPrefilled }, "Ouvrir la configuration pré-remplie → valider ou corriger"))));
+                "[ " + id + ".jpg - simulated customer photo ]"))),
+          h(Btn, { className: "w-full", onClick: onLoadPrefilled }, "Open the pre-filled configuration \u2192 validate or correct"))));
   }
 
-  /* ---------- Dossier qualifié (P9/P16) ---------- */
+  /* ---------- Qualified file (P9/P15) ---------- */
   function QualifiedView({ answers, reasons, projectCode, onBack, onBackstage }) {
     useEffect(() => {
-      CRM.logEvent("qualified", "Dossier qualifié préparé et transmis (simulation)",
+      CRM.logEvent("qualified", "Qualified file prepared and sent (simulation)",
         CRM.qualifiedFilePayload(answers, reasons, { projectCode }), CRM.flows.qualified);
     }, []);
     const est = E.earlyEstimate(assignEmitters(answers));
     return h("div", { className: "max-w-3xl mx-auto px-4 py-8 fadeUp" },
       h("div", { className: "text-center mb-8" },
         h("div", { className: "w-16 h-16 mx-auto rounded-full bg-salus-cyan/10 flex items-center justify-center text-3xl mb-3" }, "🧑‍🔧"),
-        h("h1", { className: "font-ubuntu text-2xl md:text-3xl font-bold text-salus-navy" }, "Votre projet mérite une validation humaine"),
+        h("h1", { className: "font-ubuntu text-2xl md:text-3xl font-bold text-salus-navy" }, "Your project deserves a human check"),
         h("p", { className: "text-sm text-slate-500 mt-2 max-w-xl mx-auto" },
-          "Rien n'est bloqué : le configurateur a préparé un dossier complet avec sa recommandation, et un technicien Salus vous rappelle ", h("b", null, "sous 48 h"), ". C'est un service, pas une impasse.")),
-      h(InfoBox, { tone: "info", title: "Pourquoi une validation ?" },
+          "Nothing is blocked: the configurator has prepared a complete file with its recommendation, and a Salus technician will call you back ", h("b", null, "within 48 h"), ". This is a service, not a dead end.")),
+      h(InfoBox, { tone: "info", title: "Why a check?" },
         h("ul", { className: "list-disc ml-4 space-y-1 mt-1" }, reasons.map((r, i) => h("li", { key: i }, r)))),
       est && h("div", { className: "rounded-2xl border border-slate-200 bg-white p-5 mt-4" },
-        h("div", { className: "text-xs uppercase tracking-wide text-slate-400 font-bold mb-2" }, "Recommandation préparée pour le technicien (base de travail)"),
+        h("div", { className: "text-xs uppercase tracking-wide text-slate-400 font-bold mb-2" }, "Recommendation prepared for the technician (starting point)"),
         h("div", { className: "flex items-baseline gap-2" },
           h(PriceTag, { value: est.total, size: "lg" }),
-          h("span", { className: "text-xs text-slate-400" }, "· " + est.deviceCount + " appareils · hypothèses à confirmer")),
-        h("p", { className: "text-xs text-slate-500 mt-2" }, "Chaque correction du technicien devient une règle du configurateur : c'est ainsi que l'outil apprend.")),
+          h("span", { className: "text-xs text-slate-400" }, "/ " + est.deviceCount + " devices / assumptions to confirm")),
+        h("p", { className: "text-xs text-slate-500 mt-2" }, "Every correction the technician makes becomes a configurator rule: this is how the tool learns.")),
       h("div", { className: "flex flex-wrap gap-3 mt-6 justify-center" },
-        h(Btn, { kind: "navy", onClick: onBackstage }, "Voir le dossier qui partirait (coulisses) →"),
-        h(Btn, { kind: "ghost", onClick: onBack }, "← Modifier mes réponses")));
+        h(Btn, { kind: "navy", onClick: onBackstage }, "See the file that would go out (backstage) \u2192"),
+        h(Btn, { kind: "ghost", onClick: onBack }, "\u2190 Change my answers")));
   }
 
-  /* ---------- À propos de la BETA ---------- */
+  /* ---------- About the BETA ---------- */
   function AboutView({ onBack }) {
     const rows = [
-      ["Parcours en 4 étapes nommées, une question par écran", "P3, P5"],
-      ["Besoins → système abstrait → produits (jamais de catalogue d'abord)", "P2"],
-      ["Compatibilité 3 états, produits grisés avec raison, complétude vérifiée", "P1"],
-      ["Proposition précoce mise à jour en direct + 3 actions finales", "P7"],
-      ["3 niveaux Essential / Comfort / Premium calculés par règles + variantes + packs", "P4, P24"],
-      ["Vue logement pièce par pièce + « Autre choix » par ligne", "P6"],
-      ["Connectivité conclue des usages, jamais demandée + 4 situations vécues", "P11, P12"],
-      ["Règles de portée radio → répéteur ajouté, jamais de blocage", "P10"],
-      ["Module remplacement (concurrents + anciens Salus), tolérant aux fautes", "P14"],
-      ["Dossier qualifié : tertiaire, >12 zones, générateur non couvert", "P9, P15"],
-      ["Vidéos attachées au bon moment du parcours", "P16"],
-      ["Schéma système généré (filaire plein / radio pointillé)", "P17"],
-      ["Prix live, prix public conseillé, Club Pro par code postal", "P18"],
-      ["Économies en fourchette, méthode EN 15232 consultable", "P19"],
-      ["Guide d'installation unique en 5 séquences, généré en PDF", "P20"],
-      ["Bénéfices pièce par pièce depuis VOS pièces déclarées", "P21"],
-      ["Code projet + reprise exacte + lien email (alimente le CRM)", "P23"],
-      ["Budget : niveau au-dessus visible et grisé avec l'écart", "P24"],
-      ["Devis Zoho au prix public + message distributeur", "P25"],
-      ["Chaque configuration = un enregistrement Zoho (voir Coulisses)", "P26"],
-      ["Pré-visite installateur : lien client + 3 photos + config pré-remplie", "P8"],
-      ["Docs filtrés sur la configuration, les manquants affichés manquants", "P13"]
+      ["4 named steps, one question per screen", "P3, P5"],
+      ["Needs -> abstract system -> products (never a catalogue first)", "P2"],
+      ["3-state compatibility, greyed products with the reason, completeness checked", "P1"],
+      ["Early proposal updated live + 3 final actions", "P7"],
+      ["3 levels Essential / Comfort / Premium by rules + variants + packs", "P4, P24"],
+      ["Room-by-room home view + \u201cOther choice\u201d on every line", "P6"],
+      ["Connectivity concluded from usage, never asked + 4 real-life situations", "P11, P12"],
+      ["Radio range rules -> repeater added, never a dead end", "P10"],
+      ["Replacement module (competitors + legacy Salus), typo tolerant", "P14"],
+      ["Qualified file: commercial, >12 zones, uncovered heat source", "P9, P15"],
+      ["Videos attached at the right moment of the journey", "P16"],
+      ["Generated system diagram (solid wired / dotted radio)", "P17"],
+      ["Live price, recommended retail price, Club Pro by postcode", "P18"],
+      ["Savings as a range, EN 15232 method available", "P19"],
+      ["Single installation guide in 5 sequences, generated as PDF", "P20"],
+      ["Room-by-room benefits from YOUR declared rooms", "P21"],
+      ["Project code + exact resume + email link (feeds the CRM)", "P23"],
+      ["Budget: level above stays visible and greyed with the gap", "P24"],
+      ["Zoho quote at retail price + distributor message", "P25"],
+      ["Every configuration = one Zoho record (see Backstage)", "P26"],
+      ["Installer pre-visit: customer link + 3 photos + pre-filled config", "P8"],
+      ["Docs filtered on the configuration, missing ones shown as missing", "P13"]
     ];
     const additions = [
-      "Écran de comparaison des niveaux (couvre P22, seul problème sans solution dans le fichier atelier)",
-      "Bouton scénario démo (présentation interne en un clic)",
-      "Cette page « À propos » elle-même"
+      "Level comparison screen (covers P22, the only problem with no solution row in the workshop file)",
+      "Demo scenario button (internal presentation in one click)",
+      "This \u201cAbout\u201d page itself"
     ];
     return h("div", { className: "max-w-3xl mx-auto px-4 py-8 fadeUp" },
-      h(Btn, { kind: "subtle", className: "!text-xs mb-5", onClick: onBack }, "← Retour"),
-      h(SectionTitle, { sub: "Chaque écran de cette maquette vient d'un problème identifié par l'équipe dans l'atelier (fichier Problems / Solutions)." }, "À propos de cette BETA"),
-      h(InfoBox, { tone: "warn", title: "Ce qui est simulé dans cette version" },
-        "Prix (fictifs, mention sur chacun) · documents (substitution, structure réelle) · CRM Zoho (payloads visibles en coulisses, rien n'est envoyé) · emails et SMS · photos de pré-visite · installateurs Club Pro · visuels (placeholders). Les références produits sont réelles ; celles marquées « réf. à confirmer » sont à valider."),
+      h(Btn, { kind: "subtle", className: "!text-xs mb-5", onClick: onBack }, "\u2190 Back"),
+      h(SectionTitle, { sub: "Every screen in this mock-up comes from a problem the team identified in the workshop (Problems / Solutions file)." }, "About this BETA"),
+      h(InfoBox, { tone: "warn", title: "What is simulated in this build" },
+        "Prices (fictional, labelled on each one) / documents (placeholders, real structure) / Zoho CRM (payloads visible in the backstage panel, nothing is sent) / emails and SMS / pre-visit photos / Club Pro installers / visuals (placeholders). Product references are real; those marked \u201cref. to confirm\u201d still need validating."),
       h("div", { className: "rounded-2xl border border-slate-200 bg-white overflow-hidden mt-4" },
         h("table", { className: "w-full text-sm" },
           h("thead", null, h("tr", { className: "bg-salus-navy text-white text-left" },
-            h("th", { className: "px-4 py-2.5 font-semibold" }, "Fonctionnalité de la maquette"),
-            h("th", { className: "px-4 py-2.5 font-semibold w-24" }, "Atelier"))),
+            h("th", { className: "px-4 py-2.5 font-semibold" }, "Feature in the mock-up"),
+            h("th", { className: "px-4 py-2.5 font-semibold w-24" }, "Workshop"))),
           h("tbody", null, rows.map(([f, p], i) => h("tr", { key: i, className: i % 2 ? "bg-slate-50" : "" },
             h("td", { className: "px-4 py-2 text-slate-600" }, f),
             h("td", { className: "px-4 py-2 font-bold text-salus-cyan" }, p)))))),
       h("div", { className: "mt-4" },
-        h(InfoBox, { tone: "info", title: "Ajouts hors atelier (validés par Mathieu)" },
+        h(InfoBox, { tone: "info", title: "Additions outside the workshop file (approved by Mathieu)" },
           h("ul", { className: "list-disc ml-4 space-y-0.5 mt-1" }, additions.map((x, i) => h("li", { key: i }, x))))));
   }
 
@@ -644,7 +644,7 @@
       try {
         const saved = JSON.parse(localStorage.getItem(LS_KEY));
         if (saved && saved.answers) return { ...saved, view: "landing", backstage: false, _saved: saved };
-      } catch (e) { /* stockage indisponible : on démarre à vide */ }
+      } catch (e) { /* storage unavailable: start empty */ }
       return { view: "landing", answers: {}, pos: 0, maxPos: 0, selection: { level: "comfort" }, projectCode: null, backstage: false };
     });
     const { view, answers, pos, selection, projectCode, backstage } = state;
@@ -653,12 +653,12 @@
     const questions = useMemo(() => buildQuestions(isPro), [isPro]);
     const applicable = questions.filter(q => !q.applicable || q.applicable(answers, isPro));
 
-    /* Persistance (P23) */
+    /* Persistence (P23) */
     useEffect(() => {
       if (!projectCode) return;
       try {
         localStorage.setItem(LS_KEY, JSON.stringify({ answers, pos, maxPos, selection, projectCode, view: view === "landing" ? "wizard" : view, savedAt: Date.now() }));
-      } catch (e) { /* quota / navigation privée */ }
+      } catch (e) { /* quota / private browsing */ }
     }, [answers, pos, selection, projectCode, view]);
 
     const update = (patch) => setState(s => ({ ...s, ...patch }));
@@ -667,7 +667,7 @@
       let a = { ...s.answers, ...patch };
       if ("emitterMain" in patch || "emitterUpper" in patch || "floors" in patch) a = assignEmitters(a);
       const code = s.projectCode || ("SC-" + (1000 + Math.floor(Math.random() * 9000)));
-      if (!s.projectCode) CRM.logEvent("lead", "Lead créé à la première réponse — " + code,
+      if (!s.projectCode) CRM.logEvent("lead", "Lead created on the first answer - " + code,
         CRM.leadPayload(a, { projectCode: code }), CRM.flows.lead);
       const next = autoNext ? s.pos + 1 : s.pos;
       return { ...s, answers: a, projectCode: code, pos: next, maxPos: Math.max(s.maxPos || 0, next) };
@@ -681,7 +681,7 @@
     const goResult = () => {
       const a = assignEmitters(answers);
       const qf = E.qualifiedFileCheck(a);
-      CRM.logEvent("lead", "Parcours terminé — étape « Ma solution » atteinte",
+      CRM.logEvent("lead", "Journey completed - \u201cMy solution\u201d step reached",
         CRM.leadPayload(a, { projectCode, level: selection.level }), CRM.flows.lead);
       update({ answers: a, maxPos: applicable.length - 1, view: qf.qualified ? "qualified" : "result", qualifiedReasons: qf.reasons });
     };
@@ -689,17 +689,17 @@
     const loadDemo = () => {
       const a = assignEmitters({ ...COPY.demoScenario.answers });
       const code = "SC-4821";
-      CRM.logEvent("lead", "Scénario démo chargé — " + code, CRM.leadPayload(a, { projectCode: code, level: "comfort" }), CRM.flows.lead);
+      CRM.logEvent("lead", "Demo scenario loaded - " + code, CRM.leadPayload(a, { projectCode: code, level: "comfort" }), CRM.flows.lead);
       setState(s => ({ ...s, answers: a, projectCode: code, selection: { level: "comfort" }, pos: applicable.length - 1, maxPos: applicable.length - 1, view: "result", demo: true }));
     };
 
     const restart = () => {
-      try { localStorage.removeItem(LS_KEY); } catch (e) { /* ignoré */ }
-      CRM.logEvent("lead", "Projet réinitialisé", { module: "Leads", note: "En production : le lead resterait, marqué « abandonné » — relance à 48 h." }, CRM.flows.lead);
+      try { localStorage.removeItem(LS_KEY); } catch (e) { /* ignored */ }
+      CRM.logEvent("lead", "Project reset", { module: "Leads", note: "In production the lead would stay, marked \u201cabandoned\u201d - reminder after 48 h." }, CRM.flows.lead);
       setState({ view: "landing", answers: {}, pos: 0, maxPos: 0, selection: { level: "comfort" }, projectCode: null, backstage: false });
     };
 
-    /* --- Assistant (wizard) --- */
+    /* --- Wizard --- */
     const q = applicable[Math.min(pos, applicable.length - 1)];
     const stepOfQ = q ? q.step : 3;
     const maxStepReached = Math.max(...applicable.slice(0, Math.min(maxPos, applicable.length - 1) + 1).map(x => x.step), 0);
@@ -708,7 +708,7 @@
     const wizardNext = () => {
       if (pos >= applicable.length - 1) { goResult(); return; }
       const prevStep = applicable[pos].step, nextStep = applicable[pos + 1].step;
-      if (nextStep !== prevStep) CRM.logEvent("lead", "Étape « " + COPY.steps[prevStep].label + " » complétée — lead mis à jour",
+      if (nextStep !== prevStep) CRM.logEvent("lead", "Step \u201c" + COPY.steps[prevStep].label + "\u201d completed - lead updated",
         CRM.leadPayload(answers, { projectCode, abandonStep: COPY.steps[nextStep].label }), CRM.flows.lead);
       update({ pos: pos + 1, maxPos: Math.max(maxPos, pos + 1) });
     };
@@ -724,18 +724,18 @@
     const wizard = q && h("div", { className: "max-w-3xl mx-auto px-4 pb-28" },
       h("div", { className: "sticky top-[34px] z-[40] -mx-4 px-4 py-3 bg-[#f5fbff]/90 backdrop-blur border-b border-slate-200/60 mb-8 flex items-center justify-between gap-2" },
         h(StepBar, { steps: COPY.steps, current: stepOfQ, maxReached: maxStepReached, onJump: jumpToStep }),
-        isPro && h(Btn, { kind: "ghost", className: "!px-3 !py-1.5 !text-[11px] shrink-0", onClick: () => update({ view: "previsit" }) }, "Préparer une visite")),
+        isPro && h(Btn, { kind: "ghost", className: "!px-3 !py-1.5 !text-[11px] shrink-0", onClick: () => update({ view: "previsit" }) }, "Prepare a visit")),
       h("div", { key: q.id, className: "fadeUp" },
         h("div", { className: "text-[11px] font-bold uppercase tracking-wider text-salus-cyan mb-2" },
-          COPY.steps[q.step].label + " · question " + (applicable.filter(x => x.step === q.step).indexOf(q) + 1) + "/" + applicable.filter(x => x.step === q.step).length),
+          COPY.steps[q.step].label + " / question " + (applicable.filter(x => x.step === q.step).indexOf(q) + 1) + "/" + applicable.filter(x => x.step === q.step).length),
         h("h1", { className: "font-ubuntu text-2xl md:text-3xl font-bold text-salus-navy mb-1.5" },
           typeof q.title === "function" ? q.title(answers) : q.title),
         q.sub && h("p", { className: "text-sm text-slate-500 mb-6" }, typeof q.sub === "function" ? q.sub(answers) : q.sub),
         q.render(answers, setAnswers),
         h("div", { className: "flex items-center justify-between mt-8" },
-          h(Btn, { kind: "subtle", onClick: wizardBack }, "← Précédent"),
+          h(Btn, { kind: "subtle", onClick: wizardBack }, "\u2190 Back"),
           h(Btn, { onClick: wizardNext, disabled: !q.valid(answers) },
-            pos >= applicable.length - 1 ? "Voir ma solution →" : (q.isConclusion ? "Continuer →" : "Suivant →")))));
+            pos >= applicable.length - 1 ? "See my solution \u2192" : (q.isConclusion ? "Continue \u2192" : "Next \u2192")))));
 
     return h(React.Fragment, null,
       h(BetaBanner, { onAbout: () => update({ view: "about", _backView: view }), onBackstage: () => update({ backstage: true }) }),
@@ -766,7 +766,7 @@
           onBack: () => update({ view: answers.profile ? "wizard" : "landing" }),
           onLoadPrefilled: () => {
             const a = assignEmitters({ ...COPY.demoScenario.answers, profile: "installer" });
-            CRM.logEvent("previsit", "Configuration pré-remplie ouverte par l'installateur (simulation)", CRM.leadPayload(a, { projectCode: "SC-4821" }), CRM.flows.previsit);
+            CRM.logEvent("previsit", "Pre-filled configuration opened by the installer (simulation)", CRM.leadPayload(a, { projectCode: "SC-4821" }), CRM.flows.previsit);
             setState(s => ({ ...s, answers: a, projectCode: "SC-4821", selection: { level: "comfort" }, view: "result" }));
           }
         }),
@@ -775,7 +775,7 @@
       view === "result" && h("button", {
         onClick: () => update({ backstage: true }),
         className: "fixed bottom-5 right-5 z-[55] rounded-full bg-salus-navy text-white shadow-2xl px-4 py-3 text-xs font-bold flex items-center gap-2 hover:bg-[#2a3a77] transition"
-      }, "⚙ Coulisses CRM"),
+      }, "\u2699 CRM backstage"),
       h(Backstage, { open: backstage, onClose: () => update({ backstage: false }), answers, projectCode, selection }));
   }
 

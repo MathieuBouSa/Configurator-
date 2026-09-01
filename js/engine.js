@@ -58,7 +58,7 @@
       // Une seule zone : thermostat autonome (échelle RT520RF / iT700 / iT800)
       sys.roles.push({
         role: a.hasThermostatWiring === "yes" ? "standaloneWired" : "standaloneRF",
-        qty: 1, why: "Régulation générale du logement, sans zonage."
+        qty: 1, why: "Whole-home control, no zoning."
       });
       return sys;
     }
@@ -67,24 +67,24 @@
       switch (room.emitter) {
         case "water_radiators":
           sys.roles.push({ role: "trv", roomId: room.id, qty: room.radiators || 1,
-            why: "Une tête par radiateur à réguler." });
+            why: "One head per radiator to control." });
           break;
         case "ufh_water":
           sys.roles.push({ role: "zonestat", roomId: room.id, qty: 1,
-            why: "Un thermostat par zone de plancher." });
+            why: "One thermostat per underfloor zone." });
           sys.roles.push({ role: "actuator", roomId: room.id, qty: loopsFor(room),
-            why: "Un actionneur par boucle du collecteur." });
+            why: "One actuator per manifold loop." });
           sys.needsWiringCentre = true;
           break;
         case "ufh_electric":
         case "electric_radiators":
           sys.roles.push({ role: "electricStat", roomId: room.id, qty: 1,
-            why: "Un thermostat fil pilote par pièce électrique." });
+            why: "One pilot-wire thermostat per electric room." });
           break;
         case "ducted_ac":
         case "fan_coils":
           sys.roles.push({ role: "acController", roomId: room.id, qty: 1,
-            why: "Un thermostat R-System par zone de soufflage." });
+            why: "One R-System thermostat per supply zone." });
           break;
       }
     });
@@ -119,7 +119,7 @@
       const ladder = a.hasThermostatWiring === "yes"
         ? { essential: "RT520", comfort: "WQ610", premium: "IT800WIFI" }
         : CAT.standaloneLadder.rf;
-      add(ladder[levelId], 1, null, "Régulation générale du logement.");
+      add(ladder[levelId], 1, null, "Whole-home control.");
       return finalizeLevel(a, levelId, items);
     }
 
@@ -138,29 +138,29 @@
       switch (room.emitter) {
         case "water_radiators": {
           const n = room.radiators || 1;
-          add("TRV3RF", n, room.id, "Une tête par radiateur — la pièce suit sa propre température.");
+          add("TRV3RF", n, room.id, "One head per radiator - the room follows its own temperature.");
           if (levelId === "premium" || (levelId === "comfort" && comfortRoom && room.id === comfortRoom.id)) {
             add("SQ610RF", 1, room.id, levelId === "premium"
-              ? "Thermostat d'ambiance dans chaque pièce (niveau Premium)."
-              : "Thermostat d'ambiance dans la pièce à vivre (niveau Comfort).");
+              ? "Room thermostat in every room (Premium level)."
+              : "Room thermostat in the main living room (Comfort level).");
           }
           break;
         }
         case "ufh_water": {
-          add("SQ610RF", 1, room.id, "Thermostat de zone du plancher chauffant.");
+          add("SQ610RF", 1, room.id, "Zone thermostat for the underfloor heating.");
           add(levelId === "premium" ? "THB" : "T30NC", loopsFor(room), room.id,
             levelId === "premium"
-              ? "Actionneur auto-équilibrant : le débit de chaque boucle s'ajuste seul (niveau Premium)."
-              : "Un actionneur par boucle du collecteur.");
+              ? "Auto-balancing actuator: each loop adjusts its own flow (Premium level)."
+              : "One actuator per manifold loop.");
           break;
         }
         case "ufh_electric":
         case "electric_radiators":
-          add("EL600F", 1, room.id, "Thermostat fil pilote de la pièce.");
+          add("EL600F", 1, room.id, "Pilot-wire thermostat for the room.");
           break;
         case "ducted_ac":
         case "fan_coils":
-          add("RSQ800WRF", 1, room.id, "Thermostat R-System de la zone de soufflage.");
+          add("RSQ800WRF", 1, room.id, "R-System thermostat for the supply zone.");
           break;
       }
     });
@@ -168,7 +168,7 @@
     /* Centre de câblage plancher : radio par défaut, filaire si gaines */
     if (hasUfh) {
       add(a.hasThermostatWiring === "yes" ? "CB500CO" : "CB12RF", 1, null,
-        "Le chef d'orchestre du plancher : il ouvre chaque boucle à la demande de sa pièce.");
+        "The conductor of the underfloor system: it opens each loop on demand from its room.");
     }
 
     return finalizeLevel(a, levelId, items, { hasTrv, hasUfh });
@@ -182,7 +182,7 @@
     const hasIntegrated = items.some(it => P()[it.ref] && P()[it.ref].integratedGateway);
     if (needsGw && !hasIntegrated) {
       items.unshift({ ref: "UG800", qty: 1, roomId: null,
-        reason: "Le cerveau du système : pilotage depuis le téléphone, alertes, partage d'accès.", auto: true });
+        reason: "The brain of the system: phone control, alerts, shared access.", auto: true });
     }
 
     /* Répéteur RE600 (règle Mathieu : >15 appareils / murs épais /
@@ -226,8 +226,8 @@
         total: price("RX30RF"),
         preChecked: a.boilerAccessible === "yes",
         note: a.boilerAccessible === "yes"
-          ? "Votre générateur est accessible : le récepteur s'installe simplement."
-          : "À valider selon l'accès à votre générateur."
+          ? "Your heat source is accessible: the receiver is straightforward to fit."
+          : "To be confirmed depending on access to your heat source."
       });
     }
 
@@ -240,7 +240,7 @@
         items: [{ ref: "OS600", qty }, { ref: "MS600", qty: 1 }],
         total: price("OS600") * qty + price("MS600"),
         preChecked: false,
-        note: `${qty} détecteur${qty > 1 ? "s" : ""} d'ouverture (vos ${windows || "?"} fenêtres) + 1 détecteur de présence.`
+        note: `${qty} opening sensor${qty > 1 ? "s" : ""} (your ${windows || "?"} windows) + 1 presence sensor.`
       });
     }
 
@@ -251,7 +251,7 @@
       items: [{ ref: "RS600", qty: Math.max(1, Math.min(rooms.length, 4)) }],
       total: price("RS600") * Math.max(1, Math.min(rooms.length, 4)),
       preChecked: false,
-      note: "Un module par volet à motoriser (quantité ajustable)."
+      note: "One module per shutter to motorise (quantity adjustable)."
     });
 
     /* Prise intelligente — relais SR600 dans la prise */
@@ -261,7 +261,7 @@
       items: [{ ref: "SR600", qty: 1 }],
       total: price("SR600"),
       preChecked: false,
-      note: "Le relais se loge dans la prise existante — la prise reste la vôtre."
+      note: "The relay sits inside the existing socket - the socket stays yours."
     });
 
     return packs;
@@ -273,14 +273,14 @@
     const reasons = [];
     const zigbeeCount = (items || []).reduce((s, it) =>
       s + ((P()[it.ref] || {}).protocol === "zigbee" ? it.qty : 0), 0);
-    if (zigbeeCount > 15) reasons.push(`plus de 15 appareils radio (${zigbeeCount})`);
-    if (a.walls === "thick") reasons.push("murs épais (pierre / béton)");
-    if ((a.floors || 0) >= 1) reasons.push("un étage à franchir");
+    if (zigbeeCount > 15) reasons.push(`more than 15 wireless devices (${zigbeeCount})`);
+    if (a.walls === "thick") reasons.push("thick walls (stone / concrete)");
+    if ((a.floors || 0) >= 1) reasons.push("a floor to cross");
     if (a.wifiQuality === "weak_spots" || a.wifiQuality === "has_repeaters")
-      reasons.push("zones où le wifi passe déjà mal");
+      reasons.push("areas where wi-fi already struggles");
     const needed = reasons.length > 0;
     const qty = needed ? Math.max(a.floors || 0, Math.ceil(Math.max(zigbeeCount - 15, 0) / 15), 1) : 0;
-    return { needed, qty, reasons: reasons.map(r => "Répéteur conseillé : " + r + ".") };
+    return { needed, qty, reasons: reasons.map(r => "Repeater advised: " + r + ".") };
   }
 
   /* ---------- Compatibilité 3 états (P1) ---------- */
@@ -289,7 +289,7 @@
      Retourne { state: "ok"|"limit"|"no", reason, missingRef? } */
   function compatCheck(a, items, candidateRef) {
     const prod = P()[candidateRef];
-    if (!prod) return { state: "no", reason: "Référence inconnue du catalogue BETA." };
+    if (!prod) return { state: "no", reason: "Reference not in the BETA catalogue." };
 
     const hasGateway = items.some(it => it.ref === "UG800") ||
                        items.some(it => (P()[it.ref] || {}).integratedGateway);
@@ -297,26 +297,26 @@
     if (prod.needsGateway && !hasGateway) {
       return {
         state: "no",
-        reason: `Ce produit a besoin d'une passerelle pour être piloté depuis votre téléphone — ajoutez l'UG800 ou choisissez le modèle autonome.`,
+        reason: `This product needs a gateway to be controlled from your phone - add the UG800 or pick the standalone model.`,
         missingRef: "UG800"
       };
     }
     if (prod.power === "230v" && prod.role === "roomstat" && a.hasThermostatWiring !== "yes") {
       return {
         state: "limit",
-        reason: "Version filaire : une alimentation 230 V est nécessaire au mur — sinon préférez la version sans fil."
+        reason: "Wired version: a 230 V supply is needed at the wall - otherwise prefer the wireless version."
       };
     }
     if (prod.ref === "CB500CO" && a.hasThermostatWiring !== "yes") {
       return {
         state: "limit",
-        reason: "Centre filaire : des gaines doivent relier les thermostats au collecteur — sinon préférez le CB12RF radio."
+        reason: "Wired centre: conduits must run from the thermostats to the manifold - otherwise prefer the wireless CB12RF."
       };
     }
     if (prod.limits && prod.limits.maxZones && (a.rooms || []).length > prod.limits.maxZones) {
       return {
         state: "limit",
-        reason: `Limité à ${prod.limits.maxZones} zones — votre projet en compte ${(a.rooms || []).length}.`
+        reason: `Limited to ${prod.limits.maxZones} zones - your project has ${(a.rooms || []).length}.`
       };
     }
     return { state: "ok", reason: "" };
@@ -334,7 +334,7 @@
       const delta = (alt.price - prod.price) * item.qty;
       return {
         ref, name: alt.name, price: alt.price, delta,
-        deltaLabel: delta === 0 ? "même prix" : (delta > 0 ? `+${delta} €` : `${delta} €`),
+        deltaLabel: delta === 0 ? "same price" : (delta > 0 ? `+${delta} €` : `${delta} €`),
         functionDelta: alt.descUser,
         state: check.state, reason: check.reason, missingRef: check.missingRef,
         img: alt.img, refToConfirm: alt.refToConfirm
@@ -351,7 +351,7 @@
     if (items.some(it => (P()[it.ref] || {}).needsGateway) && !hasGateway) {
       missing.push({
         ref: "UG800",
-        reason: "Vos appareils connectés ont besoin de la passerelle UG800 pour fonctionner ensemble."
+        reason: "Your connected devices need the UG800 gateway to work together."
       });
     }
     const hasUfhStat = items.some(it => it.roomId && (P()[it.ref] || {}).role === "roomstat" &&
@@ -360,7 +360,7 @@
     if (hasUfhStat && !hasWc) {
       missing.push({
         ref: "CB12RF",
-        reason: "Un plancher chauffant a besoin de son centre de câblage pour ouvrir et fermer les boucles."
+        reason: "Underfloor heating needs its wiring centre to open and close the loops."
       });
     }
     return missing;
@@ -371,19 +371,19 @@
   function qualifiedFileCheck(a) {
     const reasons = [];
     if (a.homeType === "tertiary")
-      reasons.push("Bâtiment tertiaire ou commercial : dimensionnement à valider par un technicien.");
+      reasons.push("Commercial building: sizing to be validated by a technician.");
     if ((a.rooms || []).length > MKT.qualifiedFileTriggers.maxAutoZones)
-      reasons.push(`Plus de ${MKT.qualifiedFileTriggers.maxAutoZones} zones : au-delà du parcours automatique.`);
+      reasons.push(`More than ${MKT.qualifiedFileTriggers.maxAutoZones} zones: beyond the automatic journey.`);
     const gen = MKT.generators[a.generator];
     if (gen && gen.covered === false)
-      reasons.push(gen.uncoveredNote || `Générateur « ${gen.label} » : validation humaine nécessaire.`);
+      reasons.push(gen.uncoveredNote || `Heat source "${gen.label}": human validation required.`);
     (a.rooms || []).forEach(r => {
       const em = MKT.emitters[r.emitter];
       if (em && em.covered === false && !reasons.some(x => x.includes(em.label)))
-        reasons.push(em.uncoveredNote || `Émetteur « ${em.label} » : validation humaine nécessaire.`);
+        reasons.push(em.uncoveredNote || `Emitter "${em.label}": human validation required.`);
     });
     if (a.hasBMS === "yes")
-      reasons.push("Une GTB (gestion technique du bâtiment) existe : l'intégration doit être étudiée.");
+      reasons.push("A BMS (building management system) is in place: the integration must be studied.");
     return { qualified: reasons.length > 0, reasons };
   }
 

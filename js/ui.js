@@ -1,8 +1,8 @@
 /* ============================================================
-   SALUS Configurateur BETA — Composants UI partagés
+   SALUS Configurator BETA - Shared UI components
    ------------------------------------------------------------
-   React 18 UMD sans build : h = React.createElement, dans la
-   continuité des configurateurs Salus existants.
+   React 18 UMD, no build step: h = React.createElement, in
+   continuity with the existing Salus configurators.
    ============================================================ */
 
 (function () {
@@ -10,13 +10,13 @@
 
   const cx = (...a) => a.filter(Boolean).join(" ");
 
-  const eur = (n) => (n == null ? "—" : n.toLocaleString("fr-FR") + " €");
+  const eur = (n) => (n == null ? "-" : n.toLocaleString("en-GB") + " €");
 
-  /* Badge « prix fictif » — obligatoire à côté de CHAQUE prix (règle BETA) */
+  /* "Fictional price" badge - mandatory next to EVERY price (BETA rule) */
   function PriceTag({ value, size }) {
     return h("span", { className: "inline-flex items-baseline gap-1.5 whitespace-nowrap" },
       h("span", { className: cx("font-bold text-salus-navy", size === "lg" ? "text-2xl" : "text-base") }, eur(value)),
-      h("span", { className: "text-[9px] uppercase tracking-wide bg-amber-100 text-amber-800 rounded px-1 py-0.5 font-semibold" }, "prix fictif · beta")
+      h("span", { className: "text-[9px] uppercase tracking-wide bg-amber-100 text-amber-800 rounded px-1 py-0.5 font-semibold" }, "fictional price / beta")
     );
   }
 
@@ -32,7 +32,7 @@
     return h("button", { onClick, disabled, title, className: cx(base, kinds[kind || "primary"], className) }, children);
   }
 
-  /* Carte-réponse cliquable avec image (une question par écran, P6) */
+  /* Clickable answer card with image (one question per screen, P6) */
   function ChoiceCard({ label, hint, img, selected, onClick, badge, disabled, reason }) {
     return h("button", {
       onClick, disabled,
@@ -72,19 +72,19 @@
     );
   }
 
-  /* Bloc vidéo placeholder (P17 : la vidéo au bon moment, jamais en bibliothèque) */
+  /* Placeholder video block (P17: the video at the right moment, never in a library) */
   function VideoPlaceholder({ label, duration }) {
     return h("div", { className: "relative rounded-xl overflow-hidden bg-salus-navy/90 text-white flex items-center justify-center h-36 select-none" },
       h("div", { className: "absolute inset-0 opacity-20", style: { background: "radial-gradient(400px 200px at 30% 20%, #00AEEF 0%, transparent 60%)" } }),
       h("div", { className: "text-center px-4" },
         h("div", { className: "w-11 h-11 mx-auto rounded-full bg-white/15 border border-white/40 flex items-center justify-center text-lg mb-2" }, "▶"),
         h("div", { className: "text-xs font-semibold" }, label),
-        h("div", { className: "text-[10px] text-white/60 mt-0.5" }, (duration || "0:45") + " · vidéo de substitution — BETA")
+        h("div", { className: "text-[10px] text-white/60 mt-0.5" }, (duration || "0:45") + " / placeholder video - BETA")
       )
     );
   }
 
-  /* Barre d'étapes nommées, toujours visible (P4) */
+  /* Named step bar, always visible (P4) */
   function StepBar({ steps, current, onJump, maxReached }) {
     return h("div", { className: "flex items-center gap-1 md:gap-2 flex-wrap" },
       steps.map((s, i) => h(React.Fragment, { key: s.id },

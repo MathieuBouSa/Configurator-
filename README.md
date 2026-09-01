@@ -1,70 +1,73 @@
-# Configurateur Salus — version BETA
+# Salus Configurator - BETA
 
-Maquette fonctionnelle du configurateur unifié Salus Controls, destinée à une **démonstration interne**.
-Ce n'est **pas un outil de production** : son seul but est de rendre le concept tangible — montrer comment
-le configurateur fonctionnerait, ce qu'il produirait en sortie, et quel potentiel il représente.
+A working mock-up of the unified Salus Controls configurator, built for an **internal demonstration**.
+This is **not a production tool**: its only purpose is to make the concept tangible - to show how the
+configurator would work, what it would produce, and what it could be worth to Salus.
 
-Un seul parcours : **Mon logement → Mon chauffage → Mes habitudes → Ma solution.**
-Chaque fonctionnalité vient de l'atelier Problems / Solutions — voir [CORRESPONDANCE.md](CORRESPONDANCE.md)
-et la page « À propos » dans l'outil.
+One journey only: **My home -> My heating -> My habits -> My solution.**
+Every feature traces back to the Problems / Solutions workshop - see [WORKSHOP-MAPPING.md](WORKSHOP-MAPPING.md)
+and the "About" page inside the tool.
 
-## Simulé vs réel — noir sur blanc
+> Interface language: **English**. The original French build is preserved in git history at commit `e2b2935`.
 
-| Élément | Dans cette BETA | En production |
+## Simulated vs real - in black and white
+
+| Item | In this BETA | In production |
 |---|---|---|
-| **Prix** | **Fictifs**, générés pour la démo. Mention « prix fictif · BETA » sur chaque prix affiché. | Prix publics conseillés issus de l'ERP / tarif officiel. |
-| **Références produits** | **Réelles** (UG800, TRV3RF, SQ610…, RT520, WQ610, iT700, iT800 WiFi, CB12RF, CB500CO, RX30RF, RE600, SR600, RS600, OS600, RSQ800WRF). Celles marquées « réf. à confirmer » (TRV3RF-AB, T30NC, THB, MS600) sont à valider. | Catalogue complet maintenu, disponibilité par pays. |
-| **Règles de compatibilité** | Réduites au catalogue BETA (3 états : compatible / grisé avec raison / avec limite ; complétude vérifiée). | Matrice complète : protocole, alimentation, rôle, quantités, firmware, disponibilité pays. |
-| **Documents** (fiches, guide d'installation, devis, pack) | **Documents de substitution** générés dynamiquement en PDF depuis la configuration : structure réelle, contenu factice, filigrane « DOCUMENT DE TEST ». | Matrice documentaire alimentée par les vraies notices, schémas de câblage et vidéos (un propriétaire unique du fichier, champ obligatoire à chaque création de code produit). |
-| **CRM Zoho** | **Aucune connexion.** Le panneau « Coulisses CRM » montre les payloads JSON exacts (Leads / Quotes / Deals), le service cible, les enregistrements créés, les notifications et les suites pour le commercial et l'installateur. Rien ne quitte le navigateur. | Création/mise à jour réelle des Leads, devis Zoho à numérotation nationale, affectation par code postal, relance automatique à 48 h, tableau de bord. |
-| **Emails / SMS** (liste, lien de reprise, pré-visite) | Simulés à l'écran (aperçu de l'email qui partirait). | Envois réels via le CRM. |
-| **Reprise de projet** | Code projet réel + sauvegarde **localStorage** du navigateur. Le lien email est simulé. | Lien de reprise réel envoyé par email, synchronisé au CRM. |
-| **Photos de pré-visite** | Emplacements simulés. | Upload réel de 3 photos demandées explicitement (générateur, radiateur + vanne, tableau électrique). |
-| **Installateurs Club Pro / distributeurs** | Noms fictifs, secteur simulé. | Annuaire réel géolocalisé par code postal, membres Club Pro servis en premier. |
-| **Économies estimées** | Fourchette calculée avec **coefficients et prix d'énergie fictifs** (méthode inspirée EN 15232, consultable dans l'outil). | Coefficients validés EN 15232, prix de l'énergie actualisés. |
-| **Vidéos** | Placeholders positionnés aux bons moments du parcours. | Vidéos réelles : courtes pour choisir (≤ 1 min), par étape pour installer. |
-| **Visuels** | Placeholders neutres aux bonnes dimensions (voir [VISUELS.md](VISUELS.md)) — remplacement par simple dépôt de fichier, sans toucher au code. | Photos produits, illustrations et bibliothèque d'icônes officielles. |
-| **Schéma du système** | Généré réellement en SVG depuis la configuration (règles fixes, filaire plein / radio pointillé) avec des **icônes placeholder**. | Même générateur avec la bibliothèque d'icônes vectorielles officielle + une dizaine de dessins de référence. |
-| **Reconnaissance d'étiquette** (module remplacement) | Bouton présent, fonction simulée. Table d'équivalence réduite à 10 entrées (Delta Dore, Netatmo, Honeywell, Tado, anciens Salus). | OCR de l'étiquette, table d'équivalence complète et enrichie par les demandes non trouvées. |
+| **Prices** | **Fictional**, generated for the demo. Every price on screen carries a "fictional price / beta" label. | Recommended retail prices from the ERP / official price list. |
+| **Product references** | **Real** (UG800, TRV3RF, SQ610..., RT520, WQ610, iT700, iT800 WiFi, CB12RF, CB500CO, RX30RF, RE600, SR600, RS600, OS600, RSQ800WRF). Those marked "ref. to confirm" (TRV3RF-AB, T30NC, THB, MS600) still need validating. | Full catalogue maintained, with availability per country. |
+| **Compatibility rules** | Limited to the BETA catalogue (3 states: compatible / greyed with the reason / with a limitation; completeness checked). | Full matrix: protocol, power supply, role, quantities, firmware, country availability. |
+| **Documents** (sheets, installation guide, quote, pack) | **Placeholder documents** generated dynamically as PDFs from the configuration: real structure, fictional content, "TEST DOCUMENT" watermark. | Documentation matrix fed by the real manuals, wiring diagrams and videos (a single owner of the file, a mandatory field whenever a product code is created). |
+| **Zoho CRM** | **No connection.** The "CRM backstage" panel shows the exact JSON payloads (Leads / Quotes / Deals), the target service, the records created, the notifications and what follows for the sales rep and the installer. Nothing leaves the browser. | Real creation / update of Leads, Zoho quotes with national numbering, assignment by postcode, automatic 48 h reminder, dashboard. |
+| **Emails / SMS** (list, resume link, pre-visit) | Simulated on screen (a preview of the email that would go out). | Real sends through the CRM. |
+| **Project resume** | Real project code + **localStorage** in the browser. The email link is simulated. | Real resume link sent by email, synced to the CRM. |
+| **Pre-visit photos** | Simulated slots. | Real upload of the 3 photos asked for explicitly (heat source, radiator + valve, electrical panel). |
+| **Club Pro installers / distributors** | Fictional names, simulated area. | Real directory geolocated by postcode, Club Pro members served first. |
+| **Estimated savings** | A range calculated with **fictional coefficients and energy prices** (method inspired by EN 15232, readable in the tool). | Validated EN 15232 coefficients, current energy prices. |
+| **Videos** | Placeholders positioned at the right moments of the journey. | Real videos: short ones to choose (<= 1 min), step-by-step ones to install. |
+| **Visuals** | Neutral placeholders at final dimensions (see [VISUALS.md](VISUALS.md)) - replaced by dropping a file in, with no code change. | Product photos, illustrations and the official icon library. |
+| **System diagram** | Genuinely generated as SVG from the configuration (fixed rules, solid = wired / dotted = radio) with **placeholder icons**. | The same generator with the official vector icon library plus a dozen reference drawings. |
+| **Label recognition** (replacement module) | Button present, function simulated. Equivalence table limited to 10 entries (Delta Dore, Netatmo, Honeywell, Tado, legacy Salus). | OCR of the label, full equivalence table enriched by the requests that come back empty. |
 
-## Choix assumés de la BETA (à arbitrer)
+## Deliberate BETA choices (open to review)
 
-- **Niveau Premium plancher chauffant** : ajoute des actionneurs auto-équilibrants (réf. THB à confirmer) —
-  interprétation à valider, la règle atelier ne parlait que des TRV.
-- **Bibliothèques embarquées** (`vendor/` : React 18, jsPDF, CSS Tailwind compilé) au lieu des CDN des
-  configurateurs précédents : la démo fonctionne **même sans internet** et ne dépend d'aucun service tiers.
-  Même stack, zéro build au déploiement (voir `build/README-build.md` pour recompiler le CSS si besoin).
-- **Connectivité** : le réglage pièce par pièce de radiateurs à eau passe toujours par la passerelle UG800
-  (réalité technique des TRV) ; la carte comparative l'explique au client.
+- **Premium level for underfloor heating** adds auto-balancing actuators (ref. THB to confirm) - an
+  interpretation to validate, since the workshop rule only mentioned TRVs.
+- **Bundled libraries** (`vendor/`: React 18, jsPDF, compiled Tailwind CSS) instead of the CDNs used by
+  the earlier configurators: the demo runs **even with no internet** and depends on no third-party
+  service. Same stack, zero build at deploy time (see `build/README-build.md` to recompile the CSS).
+- **Connectivity**: room-by-room control of water radiators always goes through the UG800 gateway
+  (a technical reality of TRVs); the comparison card explains this to the customer.
 
-## Lancer / déployer
+## Run / deploy
 
-Site 100 % statique — aucun build, aucune dépendance.
+A 100% static site - no build, no dependencies.
 
-- **En local** : ouvrir `index.html`, ou `python3 -m http.server` puis http://localhost:8000
-- **Netlify** : le dépôt est relié au site — chaque push déclenche un déploiement (`netlify.toml` : publish `.`)
+- **Locally**: open `index.html`, or run `python3 -m http.server` and go to http://localhost:8000
+- **Netlify**: the repository is linked to the site - every push triggers a deploy (`netlify.toml`: publish `.`)
 
 ## Structure
 
 ```
-index.html            Point d'entrée (bandeau BETA permanent)
-js/data/catalog.js    Catalogue produits (réels) + prix (fictifs) + règles
-js/data/markets.js    Générateurs & émetteurs FR / UK / DE / RO / DK
-js/data/copy.js       Textes, bénéfices par pièce, équivalences, scénario démo
-js/engine.js          Moteur : besoins → système abstrait → produits, niveaux,
-                      compatibilité 3 états, économies, dossier qualifié
-js/schematic.js       Générateur de schéma système (SVG)
-js/crm.js             Simulation Zoho CRM : payloads, flux expliqués, journal
-js/docs.js            Documents PDF de substitution (jsPDF)
-js/ui.js              Composants partagés · js/result.js Écran « Ma solution »
-js/app.js             Parcours, accueil, remplacement, pré-visite, coulisses
-assets/               Placeholders visuels (chemins figés — voir VISUELS.md)
-vendor/               React, jsPDF, CSS Tailwind compilé (autonome)
-build/                Config de recompilation du CSS (optionnel)
+index.html            Entry point (permanent BETA banner)
+js/data/catalog.js    Product catalogue (real) + prices (fictional) + rules
+js/data/markets.js    Heat sources & emitters across FR / UK / DE / RO / DK
+js/data/copy.js       Copy, room benefits, equivalences, demo scenario
+js/engine.js          Engine: needs -> abstract system -> products, levels,
+                      3-state compatibility, savings, qualified file
+js/schematic.js       System diagram generator (SVG)
+js/crm.js             Zoho CRM simulation: payloads, explained flows, log
+js/docs.js            Placeholder PDF documents (jsPDF)
+js/ui.js              Shared components  ·  js/result.js "My solution" screen
+js/app.js             Journey, landing, replacement, pre-visit, backstage
+assets/               Visual placeholders (fixed paths - see VISUALS.md)
+vendor/               React, jsPDF, compiled Tailwind CSS (self-contained)
+build/                CSS recompilation config (optional)
+tests/                Engine tests (plain node, no dependencies)
 ```
 
-## Tester
+## Test
 
-- Moteur : `node tests/test-engine.js` (33 assertions, aucune dépendance à installer).
-- Bouton **« Scénario démo — maison mixte »** sur l'accueil : parcours pré-rempli en un clic
-  (plancher RDC + radiateurs étage + chaudière gaz), pour la présentation de 5 minutes.
+- Engine: `node tests/test-engine.js` (33 assertions, nothing to install).
+- The **"Demo scenario - mixed house"** button on the landing page: a pre-filled journey in one click
+  (underfloor downstairs + radiators upstairs + gas boiler), for the 5-minute presentation.

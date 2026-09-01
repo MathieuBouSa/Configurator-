@@ -1,16 +1,16 @@
 /* ============================================================
-   SALUS Configurateur BETA — Générateur de schéma système (P18)
+   SALUS Configurator BETA - System diagram generator (P18)
    ------------------------------------------------------------
-   Le configurateur ne dessine pas librement : il produit d'abord
-   une description structurée du système (buildGraph), puis place
-   des blocs selon des règles fixes :
-   - générateur en bas à gauche,
-   - distribution (passerelle, centre de câblage, récepteurs) au
-     milieu,
-   - pièces en haut.
-   Liaisons filaires en trait plein, radio en pointillés.
-   Les icônes sont des placeholders vectoriels : la bibliothèque
-   d'icônes officielle Salus les remplacera (voir VISUELS.md).
+   The configurator does not draw freely: it first produces a
+   structured description of the system (buildGraph), then places
+   blocks following fixed rules:
+   - heat source bottom left,
+   - distribution (gateway, wiring centre, receivers) in the
+     middle,
+   - rooms on top.
+   Wired links as solid lines, radio links as dotted lines.
+   The icons are vector placeholders: the official Salus icon
+   library will replace them (see VISUALS.md).
    ============================================================ */
 
 (function () {
@@ -19,15 +19,15 @@
 
   const NAVY = "#1D2858", CYAN = "#00AEEF", TEAL = "#3FB8A5", GRAY = "#A8A8A9";
 
-  /* ---------- 1. Description structurée ---------- */
-  /* items : liste brute (avec roomId) d'un niveau du moteur */
+  /* ---------- 1. Structured description ---------- */
+  /* items: raw list (with roomId) from an engine level */
   function buildGraph(answers, items) {
     const P = CAT.products;
     const rooms = (answers.rooms || []).map(r => ({
       id: r.id, name: r.name || r.type, floor: r.floor || 0, emitter: r.emitter, devices: []
     }));
 
-    const dist = [];   // nœuds de distribution
+    const dist = [];   // distribution nodes
     const links = [];  // {from, to, type: "wired"|"radio"|"water"}
 
     const gen = MKT.generators[answers.generator] || MKT.generators.unknown;
@@ -43,17 +43,17 @@
       else if (p.role === "boilerReceiver") receiver = { id: "rx", label: p.ref, kind: "receiver" };
       else if (p.role === "repeater") repeaters.push({ id: "rep" + repeaters.length, label: p.ref, kind: "repeater" });
       else if (p.role === "standaloneRF" || p.role === "standaloneWired") {
-        // thermostat autonome : affiché comme pièce unique + récepteur
-        receiver = receiver || { id: "rx", label: "Récepteur " + p.ref, kind: "receiver" };
-        if (!rooms.length) rooms.push({ id: "z1", name: "Logement", floor: 0, emitter: null, devices: [] });
+        // standalone thermostat: shown as a single zone + receiver
+        receiver = receiver || { id: "rx", label: "Receiver " + p.ref, kind: "receiver" };
+        if (!rooms.length) rooms.push({ id: "z1", name: "Whole home", floor: 0, emitter: null, devices: [] });
         rooms[0].devices.push({ ref: p.ref, qty: it.qty, radio: p.protocol !== "wired" });
       }
       else if (it.roomId != null) {
         const room = rooms.find(r => r.id === it.roomId);
         if (room) {
           if (p.role === "actuator") {
-            // les actionneurs vivent au collecteur, pas dans la pièce
-            wiringCentre = wiringCentre || { id: "wc", label: "Collecteur", kind: "wiringCentre" };
+            // actuators live at the manifold, not in the room
+            wiringCentre = wiringCentre || { id: "wc", label: "Manifold", kind: "wiringCentre" };
             wiringCentre.actuators = (wiringCentre.actuators || 0) + it.qty;
           } else {
             room.devices.push({ ref: p.ref, qty: it.qty, radio: p.protocol !== "wired" });
@@ -63,13 +63,13 @@
     });
 
     if (gateway) {
-      router = { id: "net", label: "Box internet", kind: "router" };
+      router = { id: "net", label: "Internet router", kind: "router" };
       links.push({ from: "net", to: "gw", type: "wired" });
     }
 
     [gateway, wiringCentre, receiver, router, ...repeaters].forEach(n => { if (n) dist.push(n); });
 
-    /* Liaisons */
+    /* Links */
     rooms.forEach(room => {
       room.devices.forEach(d => {
         const p = P[d.ref] || {};
@@ -87,7 +87,7 @@
     return { generator: genNode, distribution: dist, rooms, links };
   }
 
-  /* ---------- 2. Icônes placeholder ---------- */
+  /* ---------- 2. Placeholder icons ---------- */
   function icon(kind, x, y, s) {
     const c = `translate(${x},${y}) scale(${s / 24})`;
     const paths = {
@@ -104,7 +104,7 @@
     return `<g transform="${c}">${paths[kind] || paths.room}</g>`;
   }
 
-  /* ---------- 3. Rendu SVG ---------- */
+  /* ---------- 3. SVG rendering ---------- */
   function renderSVG(graph, opts) {
     opts = opts || {};
     const W = 920;
@@ -128,8 +128,8 @@
         return icon(kind, x + 10 + j * 34, y + 42, 26) +
           (d.qty > 1 ? `<text x="${x + 34 + j * 34}" y="${y + 76}" font-size="10" fill="${NAVY}" font-family="sans-serif">×${d.qty}</text>` : "");
       }).join("");
-      const emitterLabel = room.emitter === "ufh_water" ? "plancher" :
-        room.emitter === "water_radiators" ? "radiateurs" :
+      const emitterLabel = room.emitter === "ufh_water" ? "underfloor" :
+        room.emitter === "water_radiators" ? "radiators" :
         room.emitter ? (MKT.emitters[room.emitter] || {}).label || "" : "";
       svgRooms += `
         <g>
@@ -141,7 +141,7 @@
         </g>`;
     });
 
-    /* Distribution au milieu */
+    /* Distribution in the middle */
     const distY = roomsH + 46;
     const distNodes = graph.distribution;
     const dw = 120, dGap = 24;
@@ -156,11 +156,11 @@
           <rect x="${x}" y="${y}" width="${dw}" height="64" rx="10" fill="#fff" stroke="${NAVY}" stroke-width="1.3"/>
           ${icon(n.kind, x + dw / 2 - 13, y + 6, 26)}
           <text x="${x + dw / 2}" y="${y + 48}" font-size="11" font-weight="600" text-anchor="middle" fill="${NAVY}" font-family="sans-serif">${esc(n.label)}</text>
-          ${n.actuators ? `<text x="${x + dw / 2}" y="${y + 60}" font-size="9" text-anchor="middle" fill="${GRAY}" font-family="sans-serif">${n.actuators} actionneur${n.actuators > 1 ? "s" : ""}</text>` : ""}
+          ${n.actuators ? `<text x="${x + dw / 2}" y="${y + 60}" font-size="9" text-anchor="middle" fill="${GRAY}" font-family="sans-serif">${n.actuators} actuator${n.actuators > 1 ? "s" : ""}</text>` : ""}
         </g>`;
     });
 
-    /* Générateur en bas à gauche */
+    /* Heat source bottom left */
     const genY = distY + 106;
     const genPos = { x: 110, y: genY };
     const svgGen = `
@@ -170,10 +170,10 @@
         <text x="${40 + 92}" y="${genY + 30}" font-size="11" font-weight="600" text-anchor="middle" fill="${NAVY}" font-family="sans-serif">
           ${esc(graph.generator.label).split(" ").slice(0, 2).join(" ")}
         </text>
-        <text x="${40 + 92}" y="${genY + 44}" font-size="9" text-anchor="middle" fill="${GRAY}" font-family="sans-serif">générateur</text>
+        <text x="${40 + 92}" y="${genY + 44}" font-size="9" text-anchor="middle" fill="${GRAY}" font-family="sans-serif">heat source</text>
       </g>`;
 
-    /* Liaisons */
+    /* Links */
     const pos = (id) => id === "gen" ? { x: genPos.x + 40, y: genPos.y + 32 }
       : distPos[id] ? { x: distPos[id].x, y: distPos[id].y + 32 }
       : roomPos[id] || null;
@@ -192,15 +192,15 @@
 
     const legend = `
       <g font-family="sans-serif" font-size="10" transform="translate(${W - 330},${H - 26})">
-        <line x1="0" y1="0" x2="26" y2="0" stroke="${NAVY}" stroke-width="1.8"/><text x="32" y="3.5" fill="${NAVY}">liaison filaire</text>
-        <line x1="112" y1="0" x2="138" y2="0" stroke="${CYAN}" stroke-width="1.8" stroke-dasharray="5 5"/><text x="144" y="3.5" fill="${NAVY}">liaison radio</text>
-        <line x1="222" y1="0" x2="248" y2="0" stroke="${TEAL}" stroke-width="1.8"/><text x="254" y="3.5" fill="${NAVY}">circuit d'eau</text>
+        <line x1="0" y1="0" x2="26" y2="0" stroke="${NAVY}" stroke-width="1.8"/><text x="32" y="3.5" fill="${NAVY}">wired link</text>
+        <line x1="112" y1="0" x2="138" y2="0" stroke="${CYAN}" stroke-width="1.8" stroke-dasharray="5 5"/><text x="144" y="3.5" fill="${NAVY}">radio link</text>
+        <line x1="222" y1="0" x2="248" y2="0" stroke="${TEAL}" stroke-width="1.8"/><text x="254" y="3.5" fill="${NAVY}">water circuit</text>
       </g>`;
 
     const betaTag = opts.noBetaTag ? "" :
-      `<text x="12" y="${H - 12}" font-size="9" fill="${GRAY}" font-family="sans-serif">Schéma généré automatiquement — icônes placeholder BETA (bibliothèque officielle à venir)</text>`;
+      `<text x="12" y="${H - 12}" font-size="9" fill="${GRAY}" font-family="sans-serif">Diagram generated automatically - BETA placeholder icons (official library to come)</text>`;
 
-    return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Schéma du système">
+    return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="System diagram">
       <rect x="0" y="0" width="${W}" height="${H}" rx="14" fill="#f5fbff"/>
       ${svgLinks}${svgRooms}${svgDist}${svgGen}${legend}${betaTag}
     </svg>`;

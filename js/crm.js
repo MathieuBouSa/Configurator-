@@ -1,18 +1,18 @@
 /* ============================================================
-   SALUS Configurateur BETA — Simulation CRM Zoho (P25 / P26)
+   SALUS Configurator BETA - Zoho CRM simulation (P25 / P26)
    ------------------------------------------------------------
-   AUCUNE connexion réelle. Ce module construit exactement ce qui
-   PARTIRAIT vers Zoho CRM en production : payloads JSON, service
-   cible, enregistrements créés, notifications déclenchées et
-   suites pour le commercial et l'installateur. Le panneau
-   « coulisses » de l'interface affiche ces données.
+   NO real connection. This module builds exactly what WOULD go
+   to Zoho CRM in production: JSON payloads, target service,
+   records created, notifications triggered and what follows for
+   the sales rep and the installer. The "backstage" panel in the
+   interface displays this data.
    ============================================================ */
 
 (function () {
   const CAT = globalThis.SALUS_CATALOG;
   const COPY = globalThis.SALUS_COPY;
 
-  /* Journal des événements CRM simulés de la session */
+  /* Log of the simulated CRM events for this session */
   const eventLog = [];
 
   function logEvent(kind, title, payload, explain) {
@@ -35,22 +35,22 @@
       endpoint: "POST https://www.zohoapis.eu/crm/v8/Leads",
       trigger: ["workflow", "blueprint"],
       data: [{
-        Lead_Source: "Configurateur Web",
-        Layout: "Configurateur",
-        Company: answers.profile === "installer" ? "(société installateur)" : "Particulier",
-        Last_Name: "(nom saisi à l'étape contact)",
-        Email: "(email saisi — sert aussi au lien de reprise)",
-        Zip_Code: answers.postalCode || "(code postal)",
+        Lead_Source: "Web Configurator",
+        Layout: "Configurator",
+        Company: answers.profile === "installer" ? "(installer company)" : "Homeowner",
+        Last_Name: "(name entered at the contact step)",
+        Email: "(email entered - also used for the resume link)",
+        Zip_Code: answers.postalCode || "(postcode)",
         Country: "France",
-        Profil: answers.profile === "installer" ? "Installateur" : "Particulier",
-        Type_de_projet: describeProject(answers),
-        Generateur: answers.generator || null,
-        Nombre_de_zones: rooms.length,
-        Niveau_choisi: meta.level || "(non choisi)",
-        Montant_estime: meta.total || null,
-        Etape_d_abandon: meta.abandonStep || null,
-        Code_projet: meta.projectCode || null,
-        Configuration_JSON: "(configuration complète sérialisée — reprise & SAV)"
+        Profile: answers.profile === "installer" ? "Installer" : "Homeowner",
+        Project_Type: describeProject(answers),
+        Heat_Source: answers.generator || null,
+        Number_of_zones: rooms.length,
+        Level_chosen: meta.level || "(not chosen)",
+        Estimated_amount: meta.total || null,
+        Drop_off_step: meta.abandonStep || null,
+        Project_code: meta.projectCode || null,
+        Configuration_JSON: "(full configuration serialised - resume & after-sales)"
       }]
     };
   }
@@ -72,16 +72,16 @@
       endpoint: "POST https://www.zohoapis.eu/crm/v8/Quotes",
       trigger: ["workflow"],
       data: [{
-        Subject: "Devis configurateur " + (meta.projectCode || ""),
-        Quote_Number: "(numérotation unique nationale — modèle unique)",
+        Subject: "Configurator quote " + (meta.projectCode || ""),
+        Quote_Number: "(single national numbering - single template)",
         Quote_Stage: "Draft",
-        Valid_Till: "(date + 30 jours)",
+        Valid_Till: "(date + 30 days)",
         Billing_Code: answers.postalCode || null,
-        Adjusted_By: "Configurateur",
-        Niveau: meta.level,
-        Prix_affiche: "Prix public conseillé (jamais de prix net dans l'outil)",
-        Message_installateur: answers.profile === "installer"
-          ? "Présentez ce devis à votre distributeur Salus (" + COPY.distributors.join(", ") + ") pour obtenir votre remise professionnelle."
+        Adjusted_By: "Configurator",
+        Level: meta.level,
+        Price_shown: "Recommended retail price (never a net price in the tool)",
+        Installer_message: answers.profile === "installer"
+          ? "Present this quote to your Salus distributor (" + COPY.distributors.join(", ") + ") to get your trade discount."
           : null,
         Product_Details: lines,
         Grand_Total: lines.reduce((s, l) => s + l.Total, 0)
@@ -95,83 +95,83 @@
       endpoint: "POST https://www.zohoapis.eu/crm/v8/Deals",
       trigger: ["workflow", "approval"],
       data: [{
-        Deal_Name: "Projet à valider — " + describeProject(answers),
-        Stage: "Validation technique",
-        Lead_Source: "Configurateur Web",
-        Zip_Code: answers.postalCode || "(code postal)",
-        Motifs_de_sortie: reasons,
-        Recommandation_configurateur: "(recommandation partielle + hypothèses + points à vérifier)",
-        Assigne_a: "(commercial du secteur — règle d'affectation par code postal)",
-        SLA: "Rappel sous 48 h"
+        Deal_Name: "Project to validate - " + describeProject(answers),
+        Stage: "Technical validation",
+        Lead_Source: "Web Configurator",
+        Zip_Code: answers.postalCode || "(postcode)",
+        Exit_reasons: reasons,
+        Configurator_recommendation: "(partial recommendation + assumptions + points to check)",
+        Assigned_to: "(area sales rep - postcode assignment rule)",
+        SLA: "Call back within 48 h"
       }]
     };
   }
 
-  /* ---------- Explications « ce qui se passerait en vrai » ---------- */
+  /* ---------- "What would happen for real" explanations ---------- */
 
   const flows = {
     lead: {
-      title: "Création / mise à jour du lead",
-      what: "Dès la première réponse, un enregistrement Lead est créé dans Zoho CRM, puis mis à jour à chaque étape (module Leads, layout « Configurateur »).",
-      dataSent: "Profil, code postal, type de projet, générateur, nombre de zones, niveau choisi, montant estimé, étape d'abandon, code projet, configuration complète en JSON.",
-      record: "1 Lead par configuration (dédupliqué par email + code projet).",
+      title: "Lead creation / update",
+      what: "From the very first answer, a Lead record is created in Zoho CRM, then updated at every step (Leads module, \"Configurator\" layout).",
+      dataSent: "Profile, postcode, project type, heat source, number of zones, level chosen, estimated amount, drop-off step, project code, full configuration as JSON.",
+      record: "1 Lead per configuration (deduplicated by email + project code).",
       notifications: [
-        "Règle d'affectation Zoho : le lead est assigné au commercial du secteur (code postal).",
-        "Workflow « abandon » : si aucune activité pendant 48 h, email automatique de reprise avec le lien du projet.",
-        "Tableau de bord Zoho Analytics : volumes, niveaux choisis, étapes d'abandon — ce que le marché demande vraiment."
+        "Zoho assignment rule: the lead is assigned to the area sales rep (by postcode).",
+        "\"Drop-off\" workflow: after 48 h with no activity, an automatic email goes out with the project resume link.",
+        "Zoho Analytics dashboard: volumes, levels chosen, drop-off steps - what the market is really asking for."
       ],
-      next: "Le commercial voit arriver des leads qualifiés avec la configuration complète ; l'installateur Club Pro du secteur reçoit les demandes de mise en relation en priorité."
+      next: "The sales rep receives qualified leads with the full configuration; the area Club Pro installer gets the contact requests first."
     },
     quote: {
-      title: "Génération du devis",
-      what: "La configuration part vers Zoho CRM qui produit le devis (module Quotes) avec un modèle unique et une numérotation nationale.",
-      dataSent: "Lignes produits (codes exacts, quantités, prix publics conseillés), total, code postal, niveau choisi.",
-      record: "1 Quote rattaché au Lead / Contact.",
+      title: "Quote generation",
+      what: "The configuration goes to Zoho CRM, which produces the quote (Quotes module) with a single template and a national numbering.",
+      dataSent: "Product lines (exact codes, quantities, recommended retail prices), total, postcode, level chosen.",
+      record: "1 Quote attached to the Lead / Contact.",
       notifications: [
-        "Particulier : le devis part par email, l'enregistrement entre au CRM.",
-        "Installateur : devis au prix public + message « présentez ce devis à votre distributeur Salus pour votre remise professionnelle » — aucun prix net dans l'outil, le rôle du distributeur est protégé.",
-        "Le distributeur chiffre sans retaper : les codes produits exacts sont sur le devis."
+        "Homeowner: the quote goes out by email, the record enters the CRM.",
+        "Installer: quote at retail price + the message \"present this quote to your Salus distributor for your trade discount\" - no net price in the tool, the distributor's role is protected.",
+        "The distributor prices it without retyping: the exact product codes are on the quote."
       ],
-      next: "Le projet revient dans le réseau de distribution (Espace Aubade, Algorel, Richardson…)."
+      next: "The project comes back into the distribution network (Espace Aubade, Algorel, Richardson...)."
     },
     qualified: {
-      title: "Dossier qualifié — reprise humaine",
-      what: "Quand le projet sort du parcours automatique (tertiaire, >12 zones, générateur non couvert, GTB), le configurateur ne bloque pas : il prépare le dossier avec sa recommandation partielle et l'envoie au commercial du secteur (module Deals, étape « Validation technique »).",
-      dataSent: "Configuration complète, motifs de sortie, recommandation du configurateur, hypothèses, points à vérifier, contact et code postal.",
-      record: "1 Deal assigné au commercial du secteur.",
+      title: "Qualified file - human takeover",
+      what: "When a project leaves the automatic journey (commercial building, >12 zones, uncovered heat source, BMS), the configurator does not block: it prepares the file with its partial recommendation and sends it to the area sales rep (Deals module, \"Technical validation\" stage).",
+      dataSent: "Full configuration, exit reasons, the configurator's recommendation, assumptions, points to check, contact and postcode.",
+      record: "1 Deal assigned to the area sales rep.",
       notifications: [
-        "Notification immédiate au commercial (règle d'affectation par code postal).",
-        "SLA : rappel du client sous 48 h.",
-        "Chaque correction du commercial devient une règle à ajouter au configurateur — c'est ainsi que l'outil s'améliore."
+        "Immediate notification to the sales rep (postcode assignment rule).",
+        "SLA: customer called back within 48 h.",
+        "Every correction made by the sales rep becomes a rule to add to the configurator - this is how the tool improves."
       ],
-      next: "Le commercial oriente vers le distributeur capable de tout fournir ; le client a vu un message clair : « votre projet mérite une validation, un technicien Salus vous rappelle sous 48 h »."
+      next: "The sales rep directs the project to the distributor able to supply everything; the customer has seen a clear message: \"your project needs a validation, a Salus technician will call you back within 48 h\"."
     },
     previsit: {
-      title: "Questionnaire pré-visite (installateur)",
-      what: "Le bouton « préparer une visite » crée un lien unique envoyé au client. Ses réponses et ses 3 photos pré-remplissent la configuration.",
-      dataSent: "Réponses du questionnaire particulier + 3 photos demandées explicitement : le générateur, un radiateur avec sa vanne, le tableau électrique.",
-      record: "La configuration liée au Lead passe à l'état « pré-visite complétée ».",
-      notifications: ["L'installateur reçoit une notification : configuration pré-remplie à valider ou corriger avant de se déplacer."],
-      next: "L'installateur arrive sur site avec le matériel déjà chiffré."
+      title: "Pre-visit questionnaire (installer)",
+      what: "The \"prepare a visit\" button creates a unique link sent to the customer. Their answers and 3 photos pre-fill the configuration.",
+      dataSent: "Answers to the homeowner questionnaire + 3 photos asked for explicitly: the heat source, one radiator with its valve, the electrical panel.",
+      record: "The configuration linked to the Lead moves to \"pre-visit completed\".",
+      notifications: ["The installer gets a notification: configuration pre-filled, to validate or correct before travelling."],
+      next: "The installer arrives on site with the material already priced."
     },
     resume: {
-      title: "Lien de reprise (email)",
-      what: "Le code projet est créé à la première réponse et conservé dans le navigateur. L'email saisi pour recevoir le lien de reprise alimente aussi le CRM (P23 + P26 traités ensemble).",
-      dataSent: "Email + code projet + étape courante.",
-      record: "Le Lead existant est complété avec l'email.",
-      notifications: ["Email immédiat « continuez votre configuration où vous l'avez laissée »", "Relance automatique à 48 h si le client n'est pas revenu."],
-      next: "Le client rouvre le parcours exactement à l'étape quittée, toutes réponses conservées."
+      title: "Resume link (email)",
+      what: "The project code is created at the first answer and kept in the browser. The email entered to receive the resume link also feeds the CRM (P23 + P26 answered together).",
+      dataSent: "Email + project code + current step.",
+      record: "The existing Lead is completed with the email.",
+      notifications: ["Immediate email \"continue your configuration where you left it\"", "Automatic reminder after 48 h if the customer has not come back."],
+      next: "The customer reopens the journey exactly at the step they left, with every answer kept."
     }
   };
 
   function describeProject(a) {
     const rooms = a.rooms || [];
     const emitters = [...new Set(rooms.map(r => r.emitter).filter(Boolean))];
-    const labels = { water_radiators: "radiateurs eau", ufh_water: "plancher chauffant", ufh_electric: "plancher électrique", electric_radiators: "radiateurs électriques", ducted_ac: "gainable", fan_coils: "ventilo-convecteurs" };
+    const labels = { water_radiators: "water radiators", ufh_water: "underfloor heating", ufh_electric: "electric underfloor", electric_radiators: "electric radiators", ducted_ac: "ducted AC", fan_coils: "fan coils" };
     return [
-      a.homeType === "house" ? "Maison" : a.homeType === "flat" ? "Appartement" : "Bâtiment",
-      a.surface ? a.surface + " m²" : null,
-      rooms.length ? rooms.length + " pièces" : null,
+      a.homeType === "house" ? "House" : a.homeType === "flat" ? "Flat" : "Building",
+      a.surface ? a.surface + " m2" : null,
+      rooms.length ? rooms.length + " rooms" : null,
       emitters.map(e => labels[e] || e).join(" + ") || null
     ].filter(Boolean).join(" · ");
   }
