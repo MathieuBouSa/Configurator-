@@ -14,9 +14,9 @@ its human takeover, the outputs of one configuration, the CRM loop) plus the 26 
 part of the mechanism that answers them, each tagged live / test content / simulated / placeholder.
 Open the file directly, or reach it on the deployed site at `/how-it-works.html`.
 
-**Live demo:** https://effulgent-pie-e51188.netlify.app/
-(Netlify auto-deploys `main`. The site name is still Netlify's generated one - rename it under
-Site configuration -> Site details -> Change site name.)
+**Live demo:** https://configurator-salus-test.netlify.app/
+(Netlify auto-deploys `main`; every pull request gets a deploy preview at
+`deploy-preview-<n>--configurator-salus-test.netlify.app`.)
 
 > Interface language: **English**. The original French build is preserved in git history at commit `e2b2935`.
 
@@ -96,13 +96,13 @@ Carried over, in priority order:
 3. **Two assets that have no placeholder**: the vector icon library for the system diagram
    (plus ~10 hand-drawn reference diagrams) - the Iconify route used for the pictograms is a
    candidate here too - and the videos. Also in VISUALS.md.
-4. **Netlify site name** is still the generated one. Rename under
-   Site configuration -> Site details -> Change site name.
+4. **Netlify site name - done.** The site is `configurator-salus-test.netlify.app`. The generated
+   `effulgent-pie-e51188` name is gone and now answers a bare Netlify 404.
 5. **GitHub Pages** is optional and one toggle away: Settings -> Pages -> Source: GitHub Actions.
    The workflow is already committed; until then its Pages job is non-blocking and the test job is
    the real build signal.
-6. **`main` is not the repository default branch** (the feature branch became default when it was
-   the only one). Switch it under Settings -> General -> Default branch if you want tidy PRs.
+6. **Default branch - done.** `main` is the repository default branch since 2026-09-02. The former
+   default, `claude/salus-configurator-beta-xju3qx`, only carries PR #5 and goes away with it.
 
 ## Test
 
