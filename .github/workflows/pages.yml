@@ -1,26 +1,31 @@
 # CI for the static BETA configurator.
 #
-# job "test"  : always runs the engine test suite.
-# job "pages" : optional GitHub Pages deployment. It only succeeds once
-#               Pages has been switched on for the repository
-#               (Settings -> Pages -> Source: GitHub Actions), because a
-#               workflow token is not allowed to enable Pages the first
-#               time. Until then it is marked non-blocking so the run
-#               still reflects the real state of the build.
+# job "test"  : the real build signal. Runs the engine test suite on every
+#               push to main AND on every pull request targeting main, so a
+#               PR cannot be merged without its tests having run on its own
+#               head commit.
+# job "pages" : optional GitHub Pages deployment. Push-only - a pull request
+#               must never deploy. It also only succeeds once Pages has been
+#               switched on for the repository (Settings -> Pages -> Source:
+#               GitHub Actions), because a workflow token is not allowed to
+#               enable Pages the first time. Until then it stays non-blocking
+#               so the run still reflects the real state of the build.
 name: CI
 
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
+# Only the deploy job needs write scopes; they live on that job.
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
+# One run per branch or PR: a new push supersedes the previous run.
 concurrency:
-  group: pages
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -33,8 +38,17 @@ jobs:
 
   pages:
     needs: test
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     continue-on-error: true
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    # Deploys are serialised and never cancelled half-way.
+    concurrency:
+      group: pages
+      cancel-in-progress: false
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
