@@ -14,6 +14,11 @@ its human takeover, the outputs of one configuration, the CRM loop) plus the 26 
 part of the mechanism that answers them, each tagged live / test content / simulated / placeholder.
 Open the file directly, or reach it on the deployed site at `/how-it-works.html`.
 
+**Presenting it (20 minutes):** [presentation.html](presentation.html) is a self-contained slide deck for the
+internal presentation - where the 26 problems come from, the five groups that answer them, what is real in the
+build, and what we need next. Arrow keys to move, `N` for speaker notes, `O` for all slides, and a 20-minute
+timer in the footer. Each group slide carries its own live-demo cue, so the deck and the tool alternate.
+
 **Live demo:** https://configurator-salus-test.netlify.app/
 (Netlify auto-deploys `main`; every pull request gets a deploy preview at
 `deploy-preview-<n>--configurator-salus-test.netlify.app`.)
@@ -61,6 +66,7 @@ A 100% static site - no build, no dependencies.
 ```
 index.html            Entry point (permanent BETA banner)
 how-it-works.html     Standalone walkthrough: 5 diagrams + the 26 problems, tagged by status
+presentation.html     20-minute slide deck for the internal presentation (notes, timer, demo cues)
 js/data/catalog.js    Product catalogue (real) + prices (fictional) + rules
 js/data/markets.js    Heat sources & emitters across FR / UK / DE / RO / DK
 js/data/copy.js       Copy, room benefits, equivalences, demo scenario
