@@ -124,7 +124,7 @@
         h("tbody", null, rows.map(([label, fn], ri) => h("tr", { key: ri, className: ri % 2 ? "bg-slate-50" : "" },
           h("td", { className: "px-4 py-2.5 text-slate-600" }, label),
           ["essential", "comfort", "premium"].map(l => h("td", { key: l, className: "px-4 py-2.5 text-center font-semibold text-salus-navy" }, fn(l))))))),
-      h("div", { className: "px-4 py-2 text-[11px] text-slate-400" }, "* Fictional estimate range (BETA) - EN 15232 method, see the Savings card.")
+      h("div", { className: "px-4 py-2 text-[11px] text-slate-400" }, "* Fictional estimate range (BETA) - degree-day method, see the Savings card.")
     );
   }
 

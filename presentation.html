@@ -227,6 +227,17 @@
   .closing .q b{font-family:var(--cond); font-size:19px; font-weight:600}
   .closing .q span{font-size:14.5px; color:var(--muted)}
 
+  .closing-slide{justify-content:center; gap:30px}
+  .biglinks{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px}
+  .biglink{
+    border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:10px;
+    background:var(--card); padding:22px 24px; text-decoration:none;
+    display:flex; flex-direction:column; gap:10px; box-shadow:var(--shadow);
+  }
+  .biglink:hover{border-color:var(--accent)}
+  .biglink .l{font-family:var(--cond); font-weight:600; font-size:22px; color:var(--ink)}
+  .biglink .u{font-family:var(--mono); font-size:clamp(13px,1.5vw,16px); color:var(--accent-deep); word-break:break-all; line-height:1.4}
+
   .links{display:flex; flex-wrap:wrap; gap:10px 26px; font-family:var(--mono); font-size:13.5px}
   .links a{color:var(--accent-deep); text-decoration:none; border-bottom:1px solid rgba(0,174,239,.4)}
   .links a:hover{border-bottom-color:var(--accent-deep)}
@@ -451,7 +462,7 @@
       <div class="answers">
         <div class="answer"><p><b>Nothing is written in advance.</b> The diagram, the room-by-room benefits, the savings and the installation guide are all generated from the same configuration.</p></div>
         <div class="answer"><p><b>So the quote, the guide and the drawing can never disagree</b> &mdash; and the customer never re-enters anything to get them.</p></div>
-        <div class="answer"><p><b>Savings come out as a range,</b> from four inputs the customer already knows, with the method readable on screen.</p></div>
+        <div class="answer"><p><b>Savings come out as a range, never a single figure.</b> What the home uses today, from area, construction period and energy, then a saving band for the control level &mdash; built on a degree-day model of the local climate, the basis the recognised savings protocols use. The method is on screen.</p></div>
       </div>
       <div class="demo">
         <div class="head">Live demo <span class="min">3 min</span></div>
@@ -540,32 +551,28 @@
       <h2>What we need, and from whom</h2>
       <div class="asks">
         <div class="ask"><span class="n">01</span><p><b>Real prices</b>, per country, from the ERP price list.</p><span class="owner">Pricing / ERP</span></div>
-        <div class="ask"><span class="n">02</span><p>Validate three references: <span class="mono">TRV3RF-AB</span>, <span class="mono">T30NC</span>, <span class="mono">THB</span>.</p><span class="owner">Product</span></div>
-        <div class="ask"><span class="n">03</span><p><b>An owner for the documentation matrix</b> &mdash; and a document as a required field whenever a product code is created.</p><span class="owner">Technical</span></div>
-        <div class="ask"><span class="n">04</span><p>Go-ahead to <b>connect Zoho</b>: Leads, Quotes, Deals, routing by postcode.</p><span class="owner">Sales / IT</span></div>
-        <div class="ask"><span class="n">05</span><p>Validated <b>EN 15232 coefficients</b> and current energy prices.</p><span class="owner">Technical</span></div>
-        <div class="ask"><span class="n">06</span><p>The <b>official icon library</b> for the diagram, and the short videos.</p><span class="owner">Marketing</span></div>
-        <div class="ask"><span class="n">07</span><p><b>Country availability</b> in the catalogue, so one tool can serve several markets.</p><span class="owner">Product</span></div>
+        <div class="ask"><span class="n">02</span><p><b>An owner for the documentation matrix</b> &mdash; and a document as a required field whenever a product code is created.</p><span class="owner">Technical</span></div>
+        <div class="ask"><span class="n">03</span><p>Go-ahead to <b>connect Zoho</b>: Leads, Quotes, Deals, routing by postcode.</p><span class="owner">Sales / IT</span></div>
+        <div class="ask"><span class="n">04</span><p>Sign off <b>how the saving band is built</b>: a degree-day model per market, plus current energy prices.</p><span class="owner">Technical</span></div>
+        <div class="ask"><span class="n">05</span><p>The <b>official icon library</b> for the diagram, and the short videos.</p><span class="owner">Marketing</span></div>
+        <div class="ask"><span class="n">06</span><p><b>Country availability</b> in the catalogue, so one tool can serve several markets.</p><span class="owner">Product</span></div>
       </div>
-      <div class="notes"><span class="say">Say</span>Do not read all seven. Read one, two and four, then say the rest is on the slide and in the repository. The point of the slide is that none of these are development work &mdash; they are decisions and data owners.</div>
     </section>
 
     <!-- 13 -->
-    <section class="slide" data-title="The ask" data-min="0.5">
-      <div class="eyebrow">Closing</div>
-      <h2>Three questions for you today</h2>
-      <div class="closing">
-        <div class="q"><b>Is the direction right?</b><span>One journey, one engine, the catalogue behind a seam.</span></div>
-        <div class="q"><b>Who owns each item on the list?</b><span>Seven decisions, no development needed.</span></div>
-        <div class="q"><b>Can we pilot it in one market?</b><span>Real prices in one country is enough to test it for real.</span></div>
+    <section class="slide closing-slide" data-title="The two links" data-min="0.5">
+      <div class="eyebrow">Everything is here</div>
+      <h2>Try it yourself</h2>
+      <div class="biglinks">
+        <a class="biglink" href="https://configurator-salus-test.netlify.app/">
+          <span class="l">The configurator</span>
+          <span class="u">configurator-salus-test.netlify.app</span>
+        </a>
+        <a class="biglink" href="https://configurator-salus-test.netlify.app/how-it-works.html">
+          <span class="l">How it works</span>
+          <span class="u">configurator-salus-test.netlify.app/how-it-works.html</span>
+        </a>
       </div>
-      <p class="lede rule">The demo stays online and the traceability is public: every feature carries the number of the problem it answers, so we can keep having this conversation with the file open.</p>
-      <div class="links">
-        <span>Demo</span> <a href="https://configurator-salus-test.netlify.app/">configurator-salus-test.netlify.app</a>
-        <span>How it works</span> <a href="how-it-works.html">how-it-works.html</a>
-        <span>Traceability</span> <span class="mono">WORKSHOP-MAPPING.md</span>
-      </div>
-      <div class="notes"><span class="say">Say</span>End on the third question. It is the only one that needs a decision in the room, and it is small: one market, real prices. Then open the floor.</div>
     </section>
 
   </main>

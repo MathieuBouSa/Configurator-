@@ -605,7 +605,7 @@
       ["Videos attached at the right moment of the journey", "P16"],
       ["Generated system diagram (solid wired / dotted radio)", "P17"],
       ["Live price, recommended retail price, Club Pro by postcode", "P18"],
-      ["Savings as a range, EN 15232 method available", "P19"],
+      ["Savings as a range, degree-day method available", "P19"],
       ["Single installation guide in 5 sequences, generated as PDF", "P20"],
       ["Room-by-room benefits from YOUR declared rooms", "P21"],
       ["Project code + exact resume + email link (feeds the CRM)", "P23"],
