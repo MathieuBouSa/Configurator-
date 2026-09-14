@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>26 Problems, One Configurator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --paper:#FBFCFE;
+    --card:#FFFFFF;
+    --ink:#131C3D;
+    --ink-2:#1D2858;
+    --muted:#69718C;
+    --line:#DCE3EE;
+    --line-soft:#EAEFF6;
+    --accent:#00AEEF;
+    --accent-deep:#0079A8;
+    --live:#2E9B8A;
+    --test:#B87914;
+    --sim:#5A66B4;
+    --hold:#8A8F9C;
+    --rail:#F2F6FB;
+    --shadow:0 1px 2px rgba(19,28,61,.06), 0 12px 32px -20px rgba(19,28,61,.35);
+    --sans:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+    --cond:"IBM Plex Sans Condensed", "IBM Plex Sans", system-ui, Arial, sans-serif;
+    --mono:"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  *{box-sizing:border-box}
+  [hidden]{display:none !important}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--sans); font-size:16px; line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .deck{
+    min-height:100svh; display:flex; flex-direction:column;
+    padding:16px 16px 0;
+  }
+  .stage{
+    flex:1; display:flex; align-items:stretch; justify-content:center;
+    padding-block:8px;
+  }
+  .slide{
+    width:100%; max-width:1080px; margin:0 auto;
+    display:flex; flex-direction:column; gap:22px;
+    padding-block:8px 4px;
+    animation:rise .28s ease both;
+  }
+  @keyframes rise{from{opacity:.4;transform:translateY(6px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){ .slide{animation:none} }
+
+  /* ---------- type ---------- */
+  .eyebrow{
+    font-family:var(--mono); font-size:12px; font-weight:500;
+    letter-spacing:.14em; text-transform:uppercase; color:var(--accent-deep);
+    display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+  }
+  .eyebrow .dot{width:5px;height:5px;border-radius:50%;background:var(--accent)}
+  h1{
+    font-family:var(--cond); font-weight:700; font-size:clamp(38px,6.2vw,72px);
+    line-height:1.02; margin:0; letter-spacing:-.015em; text-wrap:balance; color:var(--ink);
+  }
+  h2{
+    font-family:var(--cond); font-weight:700; font-size:clamp(28px,4.2vw,46px);
+    line-height:1.06; margin:0; letter-spacing:-.012em; text-wrap:balance; color:var(--ink);
+  }
+  h3{
+    font-family:var(--cond); font-weight:600; font-size:19px; margin:0;
+    letter-spacing:-.005em;
+  }
+  p{margin:0; max-width:66ch}
+  .lede{font-size:clamp(17px,2vw,21px); line-height:1.45; color:var(--ink-2); max-width:62ch}
+  .sub{color:var(--muted)}
+  .mono{font-family:var(--mono)}
+  strong{font-weight:600}
+
+  /* ---------- title slide ---------- */
+  .title-slide{justify-content:center; gap:28px}
+  .title-meta{
+    display:flex; flex-wrap:wrap; gap:10px 28px; align-items:baseline;
+    font-family:var(--mono); font-size:13px; color:var(--muted);
+    border-top:1px solid var(--line); padding-top:18px;
+  }
+  .title-meta b{color:var(--ink-2); font-weight:500}
+
+  /* ---------- generic blocks ---------- */
+  .cols{display:grid; gap:18px}
+  .cols-2{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+  .cols-3{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+  .panel{
+    background:var(--card); border:1px solid var(--line); border-radius:10px;
+    padding:18px 20px; display:flex; flex-direction:column; gap:8px;
+    box-shadow:var(--shadow);
+  }
+  .panel .k{
+    font-family:var(--mono); font-size:11px; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--muted);
+  }
+  .panel p{font-size:15px; color:var(--ink-2)}
+  .flat{background:transparent; box-shadow:none; border:0; border-left:2px solid var(--line); border-radius:0; padding:2px 0 2px 18px}
+
+  .rule{border-top:1px solid var(--line); padding-top:16px}
+  .note{
+    font-size:14px; color:var(--muted); display:flex; gap:10px; align-items:flex-start;
+  }
+  .note::before{content:""; flex:0 0 auto; width:16px; height:1px; background:var(--accent); margin-top:10px}
+
+  /* ---------- agenda ---------- */
+  .agenda{display:flex; flex-direction:column; gap:0}
+  .agenda li{
+    list-style:none; display:grid; grid-template-columns:78px 1fr;
+    gap:18px; align-items:baseline; padding:13px 0; border-bottom:1px solid var(--line-soft);
+  }
+  .agenda li:last-child{border-bottom:0}
+  .agenda .t{font-family:var(--mono); font-size:13px; color:var(--accent-deep); font-variant-numeric:tabular-nums}
+  .agenda .d{font-size:16px; color:var(--ink-2)}
+  .agenda .d b{color:var(--ink)}
+
+  /* ---------- quotes / problems ---------- */
+  .voices{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px}
+  .voice{
+    border:1px solid var(--line); border-radius:10px; background:var(--card);
+    padding:16px 18px; display:flex; flex-direction:column; gap:10px;
+  }
+  .voice q{font-size:16px; line-height:1.35; color:var(--ink); quotes:"\201C" "\201D"}
+  .voice .who{font-family:var(--mono); font-size:11.5px; color:var(--muted); letter-spacing:.06em}
+  .voice .who b{color:var(--accent-deep); font-weight:500}
+
+  /* ---------- groups ---------- */
+  .groups{display:grid; grid-template-columns:repeat(auto-fit,minmax(185px,1fr)); gap:12px}
+  .group{
+    border:1px solid var(--line); border-radius:10px; background:var(--card);
+    padding:16px; display:flex; flex-direction:column; gap:9px; min-height:150px;
+  }
+  .group .letter{
+    font-family:var(--cond); font-weight:700; font-size:30px; line-height:1;
+    color:var(--accent); letter-spacing:-.02em;
+  }
+  .group h3{font-size:16.5px; line-height:1.2}
+  .group .count{
+    margin-top:auto; font-family:var(--mono); font-size:11.5px; color:var(--muted);
+    letter-spacing:.06em; text-transform:uppercase;
+  }
+
+  /* ---------- seam diagram ---------- */
+  .seam{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:0;
+    border:1px solid var(--line); border-radius:10px; background:var(--card);
+    overflow:hidden;
+  }
+  .stagebox{padding:16px 16px 18px; border-left:1px solid var(--line-soft); display:flex; flex-direction:column; gap:7px}
+  .stagebox:first-child{border-left:0}
+  .stagebox.after{background:var(--rail); border-left:2px dashed var(--accent)}
+  .stagebox .n{font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted)}
+  .stagebox .name{font-family:var(--cond); font-weight:600; font-size:18px}
+  .stagebox .ex{font-family:var(--mono); font-size:12.5px; line-height:1.6; color:var(--ink-2)}
+  .seam-caption{display:flex; gap:22px; flex-wrap:wrap; font-size:13.5px; color:var(--muted)}
+  .seam-caption b{color:var(--ink-2); font-weight:500}
+  @media (max-width:720px){ .seam{grid-template-columns:1fr 1fr} .stagebox.after{border-left:2px dashed var(--accent)} }
+
+  /* ---------- problem chips ---------- */
+  .plist{display:flex; flex-wrap:wrap; gap:8px}
+  .p{
+    display:inline-flex; align-items:center; gap:8px;
+    border:1px solid var(--line); border-radius:7px; background:var(--card);
+    padding:7px 11px; font-size:14px; color:var(--ink-2);
+  }
+  .p .id{font-family:var(--mono); font-size:12px; color:var(--accent-deep); font-weight:500}
+
+  /* ---------- answers ---------- */
+  .answers{display:flex; flex-direction:column; gap:11px}
+  .answer{display:grid; grid-template-columns:22px 1fr; gap:12px; align-items:start}
+  .answer::before{
+    content:""; width:9px; height:9px; margin-top:7px; margin-left:6px;
+    border-radius:2px; background:var(--accent);
+  }
+  .answer p{font-size:16.5px; color:var(--ink-2)}
+  .answer p b{color:var(--ink)}
+
+  /* ---------- demo cue ---------- */
+  .demo{
+    border:2px dashed var(--accent); border-radius:10px; background:#F2FAFE;
+    padding:16px 18px; display:flex; flex-direction:column; gap:10px;
+  }
+  .demo .head{
+    display:flex; align-items:center; gap:10px; font-family:var(--mono);
+    font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent-deep);
+  }
+  .demo .head .min{margin-left:auto; color:var(--muted); letter-spacing:.06em}
+  .demo ol{margin:0; padding-left:20px; display:flex; flex-direction:column; gap:6px}
+  .demo li{font-size:15px; color:var(--ink-2)}
+  .demo li b{color:var(--ink); font-weight:600}
+
+  /* ---------- status ---------- */
+  .stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px}
+  .stat{border:1px solid var(--line); border-radius:10px; background:var(--card); padding:15px 16px; display:flex; flex-direction:column; gap:4px}
+  .stat .n{font-family:var(--cond); font-weight:700; font-size:40px; line-height:1; font-variant-numeric:tabular-nums}
+  .stat .l{font-family:var(--mono); font-size:11.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted)}
+  .stat .d{font-size:13.5px; color:var(--muted)}
+  .stat.live{border-top:3px solid var(--live)} .stat.live .n{color:var(--live)}
+  .stat.test{border-top:3px solid var(--test)} .stat.test .n{color:var(--test)}
+  .stat.sim{border-top:3px dashed var(--sim)} .stat.sim .n{color:var(--sim)}
+  .stat.hold{border-top:3px dotted var(--hold)} .stat.hold .n{color:var(--hold)}
+
+  .holds{display:flex; flex-direction:column; gap:10px}
+  .hold-line{display:grid; grid-template-columns:130px 1fr; gap:16px; align-items:baseline; padding-bottom:10px; border-bottom:1px solid var(--line-soft)}
+  .hold-line:last-child{border-bottom:0}
+  .hold-line .w{font-family:var(--mono); font-size:12.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted)}
+  .hold-line p{font-size:15.5px; color:var(--ink-2)}
+  @media (max-width:620px){ .hold-line{grid-template-columns:1fr; gap:4px} }
+
+  /* ---------- asks ---------- */
+  .asks{display:flex; flex-direction:column; gap:0}
+  .ask{display:grid; grid-template-columns:26px 1fr 150px; gap:14px; align-items:baseline; padding:11px 0; border-bottom:1px solid var(--line-soft)}
+  .ask:last-child{border-bottom:0}
+  .ask .n{font-family:var(--mono); font-size:12.5px; color:var(--accent-deep)}
+  .ask p{font-size:15.5px; color:var(--ink-2)}
+  .ask p b{color:var(--ink)}
+  .ask .owner{font-family:var(--mono); font-size:12px; color:var(--muted); text-align:right}
+  @media (max-width:720px){ .ask{grid-template-columns:26px 1fr} .ask .owner{grid-column:2; text-align:left} }
+
+  .closing{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px}
+  .closing .q{border-left:2px solid var(--accent); padding-left:16px; display:flex; flex-direction:column; gap:6px}
+  .closing .q b{font-family:var(--cond); font-size:19px; font-weight:600}
+  .closing .q span{font-size:14.5px; color:var(--muted)}
+
+  .closing-slide{justify-content:center; gap:30px}
+  .biglinks{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px}
+  .biglink{
+    border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:10px;
+    background:var(--card); padding:22px 24px; text-decoration:none;
+    display:flex; flex-direction:column; gap:10px; box-shadow:var(--shadow);
+  }
+  .biglink:hover{border-color:var(--accent)}
+  .biglink .l{font-family:var(--cond); font-weight:600; font-size:22px; color:var(--ink)}
+  .biglink .u{font-family:var(--mono); font-size:clamp(13px,1.5vw,16px); color:var(--accent-deep); word-break:break-all; line-height:1.4}
+
+  .links{display:flex; flex-wrap:wrap; gap:10px 26px; font-family:var(--mono); font-size:13.5px}
+  .links a{color:var(--accent-deep); text-decoration:none; border-bottom:1px solid rgba(0,174,239,.4)}
+  .links a:hover{border-bottom-color:var(--accent-deep)}
+  .links span{color:var(--muted)}
+
+  /* ---------- notes ---------- */
+  .notes{
+    max-width:1080px; margin:0 auto; width:100%;
+    border-top:1px dashed var(--line); padding:12px 0 4px;
+    font-size:14px; color:var(--muted); line-height:1.5;
+  }
+  .notes b{color:var(--ink-2); font-weight:500}
+  .notes .say{font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--accent-deep); display:block; margin-bottom:4px}
+
+  /* ---------- footer ---------- */
+  .bar{
+    position:sticky; bottom:0; background:linear-gradient(to top, var(--paper) 72%, rgba(251,252,254,0));
+    padding:10px 0 12px;
+  }
+  .bar-in{
+    max-width:1080px; margin:0 auto; display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+    font-family:var(--mono); font-size:12px; color:var(--muted);
+  }
+  .progress{flex:1 1 120px; height:2px; background:var(--line); border-radius:2px; overflow:hidden; min-width:80px}
+  .progress i{display:block; height:100%; background:var(--accent); width:0; transition:width .25s ease}
+  button{
+    font-family:var(--mono); font-size:12px; color:var(--ink-2);
+    background:var(--card); border:1px solid var(--line); border-radius:6px;
+    padding:6px 10px; cursor:pointer; letter-spacing:.04em;
+  }
+  button:hover{border-color:var(--accent); color:var(--accent-deep)}
+  button:focus-visible, a:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+  #clock{font-variant-numeric:tabular-nums; color:var(--ink-2)}
+  #clock.over{color:var(--test)}
+  .hint{color:var(--hold)}
+  @media (max-width:640px){ .hint{display:none} }
+
+  /* ---------- overview ---------- */
+  .overview{
+    position:fixed; inset:0; background:rgba(251,252,254,.97); z-index:20;
+    padding:24px 16px; overflow:auto;
+  }
+  .ov-grid{
+    max-width:1080px; margin:0 auto; display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:10px;
+  }
+  .ov-grid button{
+    text-align:left; padding:12px 14px; display:flex; flex-direction:column; gap:6px;
+    border-radius:8px; min-height:82px;
+  }
+  .ov-grid .oi{color:var(--accent-deep)}
+  .ov-grid .ot{font-family:var(--cond); font-size:16px; font-weight:600; color:var(--ink); letter-spacing:-.005em}
+  .ov-grid .om{margin-top:auto; color:var(--muted); font-size:11px}
+  .ov-head{max-width:1080px; margin:0 auto 16px; display:flex; align-items:baseline; gap:14px; font-family:var(--mono); font-size:12px; color:var(--muted)}
+  .ov-head b{font-family:var(--cond); font-size:20px; color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="deck">
+  <main class="stage" id="stage">
+
+    <!-- 1 -->
+    <section class="slide title-slide" data-title="Title" data-min="0.5">
+      <div class="eyebrow"><span class="dot"></span> Salus Controls <span class="dot"></span> Internal <span class="dot"></span> BETA build</div>
+      <h1>The Salus Configurator</h1>
+      <p class="lede">One workshop gave us 26 problems. This is how a single tool answers them &mdash; and what is real in the build today.</p>
+      <div class="title-meta">
+        <span><b>Mathieu Bouyer</b> &middot; Salus Controls France</span>
+        <span>20 minutes</span>
+        <span>Live demo included</span>
+        <span class="mono">configurator-salus-test.netlify.app</span>
+      </div>
+      <div class="notes"><span class="say">Say</span>Short version up front: we ran a first session to write down the problems, and this session shows how they get solved. I will stop on each group and show it live in the tool.</div>
+    </section>
+
+    <!-- 2 -->
+    <section class="slide" data-title="Where this comes from" data-min="1.5">
+      <div class="eyebrow">Session 1 &rarr; today</div>
+      <h2>We started from problems, not from features</h2>
+      <div class="cols cols-2">
+        <div class="panel">
+          <span class="k">Session 1 &mdash; the workshop</span>
+          <h3>We wrote down what goes wrong</h3>
+          <p>Sales, technical and field feedback in one room. Everything people struggle with when they choose, price or install a Salus system went into one file: a <b>Problems</b> tab and a <b>Solutions</b> tab, 26 lines.</p>
+        </div>
+        <div class="panel">
+          <span class="k">Today &mdash; the answer</span>
+          <h3>A working demo build</h3>
+          <p>Every screen in the tool points back to a numbered problem. Nothing was added because it looked good. One exception is flagged in the file: the level comparison screen, which we added afterwards.</p>
+        </div>
+      </div>
+      <div class="rule">
+        <ul class="agenda">
+          <li><span class="t">5 min</span><span class="d"><b>The list</b> &mdash; the 26 problems, how they group, and the idea underneath</span></li>
+          <li><span class="t">12 min</span><span class="d"><b>Five groups, five answers</b> &mdash; each one shown live in the tool</span></li>
+          <li><span class="t">3 min</span><span class="d"><b>What we need</b> &mdash; to turn the demo into a product</span></li>
+        </ul>
+      </div>
+      <div class="notes"><span class="say">Say</span>The rule we set for ourselves: if a feature does not answer a line in that file, it does not go in the tool. That is why the demo is small and why it holds together. <b>Keep this slide short, 2 minutes.</b></div>
+    </section>
+
+    <!-- 3 -->
+    <section class="slide" data-title="The 26 problems" data-min="1">
+      <div class="eyebrow">Session 1 &middot; the raw material</div>
+      <h2>What the list actually sounds like</h2>
+      <div class="voices">
+        <div class="voice"><q>I can't tell which devices work together.</q><span class="who"><b>P1</b> &middot; customer</span></div>
+        <div class="voice"><q>I don't know which products suit my home.</q><span class="who"><b>P4</b> &middot; customer</span></div>
+        <div class="voice"><q>Too many steps before I can buy anything.</q><span class="who"><b>P7</b> &middot; customer</span></div>
+        <div class="voice"><q>I have to be on site before I can quote.</q><span class="who"><b>P8</b> &middot; installer</span></div>
+        <div class="voice"><q>I'm drowning in documentation.</q><span class="who"><b>P13</b> &middot; installer</span></div>
+        <div class="voice"><q>The configurator sends me nothing.</q><span class="who"><b>P26</b> &middot; sales</span></div>
+      </div>
+      <p class="note">26 problems in total. Customers, installers and our own sales team all ended up on the same list &mdash; and often on the same line.</p>
+      <div class="notes"><span class="say">Say</span>Read two or three of them out loud, they are recognisable to everyone in the room. Point out that three different audiences are in the same list: that is the reason the tool has a homeowner mode and an installer mode.</div>
+    </section>
+
+    <!-- 4 -->
+    <section class="slide" data-title="Five groups" data-min="1">
+      <div class="eyebrow">How we sorted them</div>
+      <h2>26 problems, but only five things to build</h2>
+      <p class="lede">Sorted by the part of the tool that answers them, the list collapses. Each group is one mechanism, not a pile of features.</p>
+      <div class="groups">
+        <div class="group"><span class="letter">A</span><h3>The engine decides, so the customer doesn't have to</h3><span class="count">6 problems</span></div>
+        <div class="group"><span class="letter">B</span><h3>The shape of the journey</h3><span class="count">5 problems</span></div>
+        <div class="group"><span class="letter">C</span><h3>Making the system understandable</h3><span class="count">8 problems</span></div>
+        <div class="group"><span class="letter">D</span><h3>The installer's own tools</h3><span class="count">4 problems</span></div>
+        <div class="group"><span class="letter">E</span><h3>When the tool can't decide, and how it learns</h3><span class="count">3 problems</span></div>
+      </div>
+      <p class="note">This is the plan for the next 13 minutes: one group, one answer, one live look at the tool.</p>
+      <div class="notes"><span class="say">Say</span>This is the slide to land. Five mechanisms is what makes the project buildable. If someone brings up a new problem later, the first question is which group it falls into.</div>
+    </section>
+
+    <!-- 5 -->
+    <section class="slide" data-title="The one idea" data-min="1">
+      <div class="eyebrow">Before the groups &middot; the idea underneath</div>
+      <h2>The questions never name a product</h2>
+      <p class="lede">Every configurator we have today asks the customer to pick from a catalogue. This one asks about the home, turns the answers into roles, and only picks product codes at the last moment.</p>
+      <div class="seam">
+        <div class="stagebox"><span class="n">Stage 1</span><span class="name">Questions</span><span class="ex">Under 10 screens.<br>Illustrated cards.<br>No catalogue.</span></div>
+        <div class="stagebox"><span class="n">Stage 2</span><span class="name">Attributes</span><span class="ex">homeType, walls,<br>rooms + emitter,<br>remote, budget</span></div>
+        <div class="stagebox"><span class="n">Stage 3</span><span class="name">Roles</span><span class="ex">trv &times;4<br>zonestat &times;1<br>gateway &times;1</span></div>
+        <div class="stagebox after"><span class="n">Stage 4 &middot; the seam</span><span class="name">Products</span><span class="ex">TRV3RF &middot; SQ610RF<br>T30NC &middot; UG800<br>price, protocol, docs</span></div>
+      </div>
+      <div class="seam-caption">
+        <span><b>Left of the seam:</b> questions, wording, composition rules. Never move.</span>
+        <span><b>Right of the seam:</b> new reference, new price, country availability. A catalogue edit.</span>
+      </div>
+      <div class="notes"><span class="say">Say</span>This is the answer to "the catalogue changes all the time". A price list update or a new product is one edit on the right side. The questionnaire is untouched. Worth one extra minute here &mdash; the rest of the deck rests on it.</div>
+    </section>
+
+    <!-- 6 -->
+    <section class="slide" data-title="Group A — the engine" data-min="2.5">
+      <div class="eyebrow">Group A <span class="dot"></span> 6 problems</div>
+      <h2>The engine decides, so the customer doesn't have to</h2>
+      <div class="plist">
+        <span class="p"><span class="id">P1</span> Which devices work together</span>
+        <span class="p"><span class="id">P2</span> Matching needs to devices</span>
+        <span class="p"><span class="id">P4</span> Which products suit me</span>
+        <span class="p"><span class="id">P6</span> Seeing all the options</span>
+        <span class="p"><span class="id">P10</span> Will it work in my house</span>
+        <span class="p"><span class="id">P24</span> The right system for my budget</span>
+      </div>
+      <div class="answers">
+        <div class="answer"><p><b>Three states instead of yes or no.</b> Compatible, compatible with a stated limit, or greyed out with the reason in one sentence and the missing part on an add button.</p></div>
+        <div class="answer"><p><b>Nobody picks devices.</b> The tool proposes Essential, Comfort and Premium, built from composition rules: no thermostat, one in the living room, or one per room.</p></div>
+        <div class="answer"><p><b>Budget is shown, not applied as a filter.</b> A level above budget stays visible and greyed, with the gap written next to it.</p></div>
+      </div>
+      <div class="demo">
+        <div class="head">Live demo <span class="min">2 min</span></div>
+        <ol>
+          <li>Landing page &rarr; <b>Demo scenario, mixed house</b> in one click.</li>
+          <li>On the result screen, open <b>Other choice</b> on a line, then pick a device that needs a gateway: greyed, with the reason and the <b>add UG800</b> button.</li>
+          <li>Move the <b>budget slider</b> down &mdash; Premium stays on screen with the gap.</li>
+        </ol>
+      </div>
+      <div class="notes"><span class="say">Say</span>The third state is the one that matters. A customer never hits a dead end, they get a sentence and a button. Also mention the completeness check: the whole basket is tested, so a missing wiring centre is caught even if nobody clicked anything.</div>
+    </section>
+
+    <!-- 7 -->
+    <section class="slide" data-title="Group B — the journey" data-min="2.5">
+      <div class="eyebrow">Group B <span class="dot"></span> 5 problems</div>
+      <h2>The shape of the journey</h2>
+      <div class="plist">
+        <span class="p"><span class="id">P3</span> Unclear journey</span>
+        <span class="p"><span class="id">P5</span> Not intuitive</span>
+        <span class="p"><span class="id">P7</span> Too many steps before buying</span>
+        <span class="p"><span class="id">P11</span> Online or offline</span>
+        <span class="p"><span class="id">P23</span> Starting over every time</span>
+      </div>
+      <div class="answers">
+        <div class="answer"><p><b>One path, four named steps.</b> My home, my heating, my habits, my solution. The bar is always visible and going back costs nothing.</p></div>
+        <div class="answer"><p><b>The two hardest questions are never asked.</b> "Do I need connected?" becomes a conclusion after three questions about daily life. "What will it cost?" appears as a running total from step two.</p></div>
+        <div class="answer"><p><b>A project is never lost, only paused.</b> A project code from the first answer, the exact step restored, and a resume link by email &mdash; the same email that feeds the CRM.</p></div>
+      </div>
+      <div class="demo">
+        <div class="head">Live demo <span class="min">2 min</span></div>
+        <ol>
+          <li>Start a fresh journey: <b>homeowner</b>, then one question per screen.</li>
+          <li>Show the <b>running total</b> appearing at the end of "My heating".</li>
+          <li>Answer the three habit questions &rarr; the <b>connected conclusion</b> and the comparison card, shown once.</li>
+          <li>Reload the page &rarr; the <b>project code</b> brings the answers back.</li>
+        </ol>
+      </div>
+      <div class="notes"><span class="say">Say</span>Profile is chosen up front, homeowner or installer, and the wording changes with it. If you are short on time, cut step 4 here and mention the resume link instead of showing it.</div>
+    </section>
+
+    <!-- 8 -->
+    <section class="slide" data-title="Group C — understanding" data-min="3">
+      <div class="eyebrow">Group C <span class="dot"></span> 8 problems &mdash; the biggest group</div>
+      <h2>One configuration, eight outputs</h2>
+      <div class="plist">
+        <span class="p"><span class="id">P12</span> Why remote access helps</span>
+        <span class="p"><span class="id">P17</span> Hard to picture the system</span>
+        <span class="p"><span class="id">P18</span> Working out the total price</span>
+        <span class="p"><span class="id">P19</span> Estimating the savings</span>
+        <span class="p"><span class="id">P20</span> No step-by-step guide</span>
+        <span class="p"><span class="id">P21</span> Benefits poorly explained</span>
+        <span class="p"><span class="id">P22</span> Comparing the options</span>
+        <span class="p"><span class="id">P16</span> No guided videos</span>
+      </div>
+      <div class="answers">
+        <div class="answer"><p><b>Nothing is written in advance.</b> The diagram, the room-by-room benefits, the savings and the installation guide are all generated from the same configuration.</p></div>
+        <div class="answer"><p><b>So the quote, the guide and the drawing can never disagree</b> &mdash; and the customer never re-enters anything to get them.</p></div>
+        <div class="answer"><p><b>Savings come out as a range, never a single figure.</b> What the home uses today, from area, construction period and energy, then a saving band for the control level &mdash; built on a degree-day model of the local climate, the basis the recognised savings protocols use. The method is on screen.</p></div>
+      </div>
+      <div class="demo">
+        <div class="head">Live demo <span class="min">3 min</span></div>
+        <ol>
+          <li><b>Room by room</b> at the top of the result screen &mdash; benefits written from the rooms they declared.</li>
+          <li>The <b>system diagram</b>: solid lines are wired, dotted lines are radio.</li>
+          <li>The <b>savings range</b>, then "see the method".</li>
+          <li><b>Compare the three levels</b> side by side, then open the <b>installation guide PDF</b>.</li>
+        </ol>
+      </div>
+      <div class="notes"><span class="say">Say</span>Flag it while the PDF is open: test content, TEST DOCUMENT watermark, the structure is real and the words are not. Videos are the one placeholder in this group &mdash; the slots are positioned, the videos do not exist yet.</div>
+    </section>
+
+    <!-- 9 -->
+    <section class="slide" data-title="Group D — installers" data-min="2">
+      <div class="eyebrow">Group D <span class="dot"></span> 4 problems</div>
+      <h2>The installer is a second user</h2>
+      <div class="plist">
+        <span class="p"><span class="id">P8</span> Having to be on site to specify</span>
+        <span class="p"><span class="id">P13</span> Drowning in documentation</span>
+        <span class="p"><span class="id">P14</span> Finding a replacement device</span>
+        <span class="p"><span class="id">P25</span> Turning a configuration into a quote</span>
+      </div>
+      <div class="answers">
+        <div class="answer"><p><b>Arrive prepared.</b> A pre-visit link goes to the customer, who answers the home questions and sends three photos we ask for by name: heat source, radiator with its valve, electrical panel.</p></div>
+        <div class="answer"><p><b>Only the documents that matter.</b> The matrix is queried with the selected products, and a document that does not exist is shown as missing instead of hidden.</p></div>
+        <div class="answer"><p><b>The quote protects the distributor.</b> Retail price with the exact product codes, plus the line "present this quote to your Salus distributor". No net price in the tool.</p></div>
+      </div>
+      <div class="demo">
+        <div class="head">Live demo <span class="min">2 min</span></div>
+        <ol>
+          <li><b>Replacement search</b> &mdash; type a competitor name with a typo (Delta Dore, Netatmo, Honeywell, Tado) and show the extra products the swap needs.</li>
+          <li>The <b>documents block</b> on the result screen, with one entry marked missing.</li>
+          <li>Generate the <b>quote PDF</b>.</li>
+        </ol>
+      </div>
+      <div class="notes"><span class="say">Say</span>The replacement table only has 10 entries today. That is on purpose: a search that comes back empty is exactly what tells us which entry to add next.</div>
+    </section>
+
+    <!-- 10 -->
+    <section class="slide" data-title="Group E — handover and CRM" data-min="2">
+      <div class="eyebrow">Group E <span class="dot"></span> 3 problems &mdash; least code, most value</div>
+      <h2>When the tool can't decide, and how it learns</h2>
+      <div class="plist">
+        <span class="p"><span class="id">P9</span> No single supplier for everything</span>
+        <span class="p"><span class="id">P15</span> Market configurators are too limited</span>
+        <span class="p"><span class="id">P26</span> Not connected to the CRM</span>
+      </div>
+      <div class="answers">
+        <div class="answer"><p><b>The limit becomes a handover, not a refusal.</b> Commercial building, more than 12 zones, a heat source we don't cover: the tool keeps the part of the recommendation it could build, prepares the file and promises a call back within 48 hours.</p></div>
+        <div class="answer"><p><b>A configuration is a qualified lead from the first answer</b> &mdash; profile, postcode, project, zones, level, amount, and the step where the customer stopped.</p></div>
+        <div class="answer"><p><b>The loop that keeps it from ageing.</b> Every correction a sales rep makes by hand is a rule the engine was missing. That is the only feedback loop in the system, and it is the one worth having.</p></div>
+      </div>
+      <div class="demo">
+        <div class="head">Live demo <span class="min">1&ndash;2 min</span></div>
+        <ol>
+          <li>Open the <b>CRM backstage</b> panel: the Lead, Quote and Deal payloads, the event log, what the rep sees next.</li>
+          <li>Trigger an <b>out-of-scope project</b> to show the handover message.</li>
+        </ol>
+      </div>
+      <div class="notes"><span class="say">Say</span>This is the commercial slide. Even if the rest stayed a demo, a configurator that creates a qualified lead at the first answer pays for itself. Nothing is connected today &mdash; the panel shows exactly what would be sent.</div>
+    </section>
+
+    <!-- 11 -->
+    <section class="slide" data-title="What is real" data-min="1.5">
+      <div class="eyebrow">Before anyone asks</div>
+      <h2>What is real in this build, and what is not</h2>
+      <div class="stats">
+        <div class="stat live"><span class="n">16</span><span class="l">Live</span><span class="d">The logic really runs in the browser.</span></div>
+        <div class="stat test"><span class="n">5</span><span class="l">Test content</span><span class="d">Real structure, fictional words and figures.</span></div>
+        <div class="stat sim"><span class="n">4</span><span class="l">Simulated</span><span class="d">The payload is shown, nothing is sent.</span></div>
+        <div class="stat hold"><span class="n">1</span><span class="l">Placeholder</span><span class="d">The slot is there, the content is not.</span></div>
+      </div>
+      <div class="holds rule">
+        <div class="hold-line"><span class="w">Prices</span><p>Fictional and labelled on every line. Production takes the recommended retail price from the ERP list.</p></div>
+        <div class="hold-line"><span class="w">Documents</span><p>Real PDFs generated from the configuration, with a TEST DOCUMENT watermark and fictional content.</p></div>
+        <div class="hold-line"><span class="w">Zoho CRM</span><p>Not connected. Nothing leaves the browser. The backstage panel shows the exact payloads.</p></div>
+        <div class="hold-line"><span class="w">References</span><p>Real product codes, except three still marked "ref. to confirm".</p></div>
+      </div>
+      <div class="notes"><span class="say">Say</span>Say this before someone asks, not after. The tool labels all of it on screen, but it lands much better coming from us first. It is also what makes the next slide a fair ask.</div>
+    </section>
+
+    <!-- 12 -->
+    <section class="slide" data-title="What we need" data-min="1">
+      <div class="eyebrow">From demo to product</div>
+      <h2>What we need, and from whom</h2>
+      <div class="asks">
+        <div class="ask"><span class="n">01</span><p><b>Real prices</b>, per country, from the ERP price list.</p><span class="owner">Pricing / ERP</span></div>
+        <div class="ask"><span class="n">02</span><p><b>An owner for the documentation matrix</b> &mdash; and a document as a required field whenever a product code is created.</p><span class="owner">Technical</span></div>
+        <div class="ask"><span class="n">03</span><p>Go-ahead to <b>connect Zoho</b>: Leads, Quotes, Deals, routing by postcode.</p><span class="owner">Sales / IT</span></div>
+        <div class="ask"><span class="n">04</span><p>Sign off <b>how the saving band is built</b>: a degree-day model per market, plus current energy prices.</p><span class="owner">Technical</span></div>
+        <div class="ask"><span class="n">05</span><p>The <b>official icon library</b> for the diagram, and the short videos.</p><span class="owner">Marketing</span></div>
+        <div class="ask"><span class="n">06</span><p><b>Country availability</b> in the catalogue, so one tool can serve several markets.</p><span class="owner">Product</span></div>
+      </div>
+    </section>
+
+    <!-- 13 -->
+    <section class="slide closing-slide" data-title="The two links" data-min="0.5">
+      <div class="eyebrow">Everything is here</div>
+      <h2>Try it yourself</h2>
+      <div class="biglinks">
+        <a class="biglink" href="https://configurator-salus-test.netlify.app/">
+          <span class="l">The configurator</span>
+          <span class="u">configurator-salus-test.netlify.app</span>
+        </a>
+        <a class="biglink" href="https://configurator-salus-test.netlify.app/how-it-works.html">
+          <span class="l">How it works</span>
+          <span class="u">configurator-salus-test.netlify.app/how-it-works.html</span>
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="bar">
+    <div class="bar-in">
+      <button id="prev" type="button" aria-label="Previous slide">&larr;</button>
+      <button id="next" type="button" aria-label="Next slide">&rarr;</button>
+      <span id="count">1 / 13</span>
+      <div class="progress" aria-hidden="true"><i id="bar"></i></div>
+      <button id="timer" type="button">Start 20:00</button>
+      <span id="clock">00:00</span>
+      <button id="notesBtn" type="button">Notes on</button>
+      <button id="ovBtn" type="button">All slides</button>
+      <span class="hint">&larr; &rarr; move &middot; N notes &middot; O all slides</span>
+    </div>
+  </div>
+</div>
+
+<div class="overview" id="overview" hidden>
+  <div class="ov-head"><b>All slides</b><span>Click one to jump there &middot; Esc to close</span></div>
+  <div class="ov-grid" id="ovGrid"></div>
+</div>
+
+<script>
+(function () {
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var total = slides.length;
+  var i = 0, notesOn = true, started = 0, tick = null;
+
+  var elCount = document.getElementById('count');
+  var elBar = document.getElementById('bar');
+  var elClock = document.getElementById('clock');
+  var elTimer = document.getElementById('timer');
+  var elNotes = document.getElementById('notesBtn');
+  var overview = document.getElementById('overview');
+  var ovGrid = document.getElementById('ovGrid');
+
+  var mins = slides.map(function (s) { return parseFloat(s.getAttribute('data-min')) || 1; });
+  var cumul = [], run = 0;
+  mins.forEach(function (m) { run += m; cumul.push(run); });
+
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function mmss(sec) { return pad(Math.floor(sec / 60)) + ':' + pad(sec % 60); }
+
+  function show(n) {
+    i = Math.max(0, Math.min(total - 1, n));
+    slides.forEach(function (s, k) { s.hidden = k !== i; });
+    elCount.textContent = (i + 1) + ' / ' + total;
+    elBar.style.width = ((i + 1) / total * 100) + '%';
+    paintClock();
+    window.scrollTo(0, 0);
+  }
+
+  function paintClock() {
+    var elapsed = started ? Math.floor((Date.now() - started) / 1000) : 0;
+    var target = cumul[i] * 60;
+    elClock.textContent = mmss(elapsed) + ' / ' + mmss(target);
+    elClock.classList.toggle('over', started > 0 && elapsed > target);
+  }
+
+  function toggleNotes(force) {
+    notesOn = typeof force === 'boolean' ? force : !notesOn;
+    document.querySelectorAll('.notes').forEach(function (n) { n.hidden = !notesOn; });
+    elNotes.textContent = notesOn ? 'Notes on' : 'Notes off';
+  }
+
+  function toggleOverview(force) {
+    var open = typeof force === 'boolean' ? force : overview.hidden;
+    overview.hidden = !open;
+  }
+
+  slides.forEach(function (s, k) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.innerHTML = '<span class="oi mono">' + (k + 1) + '</span>' +
+                  '<span class="ot">' + s.getAttribute('data-title') + '</span>' +
+                  '<span class="om">' + mins[k] + ' min &middot; cumul ' + cumul[k] + ' min</span>';
+    b.addEventListener('click', function () { show(k); toggleOverview(false); });
+    ovGrid.appendChild(b);
+  });
+
+  document.getElementById('prev').addEventListener('click', function () { show(i - 1); });
+  document.getElementById('next').addEventListener('click', function () { show(i + 1); });
+  elNotes.addEventListener('click', function () { toggleNotes(); });
+  document.getElementById('ovBtn').addEventListener('click', function () { toggleOverview(); });
+
+  elTimer.addEventListener('click', function () {
+    if (started) {
+      started = 0; clearInterval(tick); tick = null;
+      elTimer.textContent = 'Start 20:00';
+      paintClock();
+    } else {
+      started = Date.now();
+      elTimer.textContent = 'Reset';
+      tick = setInterval(paintClock, 1000);
+      paintClock();
+    }
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    var k = e.key;
+    if (k === 'ArrowRight' || k === 'PageDown' || k === ' ') { e.preventDefault(); show(i + 1); }
+    else if (k === 'ArrowLeft' || k === 'PageUp') { e.preventDefault(); show(i - 1); }
+    else if (k === 'Home') { show(0); }
+    else if (k === 'End') { show(total - 1); }
+    else if (k === 'n' || k === 'N') { toggleNotes(); }
+    else if (k === 'o' || k === 'O') { toggleOverview(); }
+    else if (k === 'Escape') { toggleOverview(false); }
+  });
+
+  show(0);
+  toggleNotes(true);
+})();
+</script>
+</body>
+</html>

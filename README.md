@@ -14,6 +14,13 @@ its human takeover, the outputs of one configuration, the CRM loop) plus the 26 
 part of the mechanism that answers them, each tagged live / test content / simulated / placeholder.
 Open the file directly, or reach it on the deployed site at `/how-it-works.html`.
 
+**Presenting it (20 minutes):** [presentation.html](presentation.html) is a self-contained slide deck for the
+internal presentation - where the 26 problems come from, the five groups that answer them, what is real in the
+build, and what we need next. Arrow keys to move, `N` for speaker notes, `O` for all slides, and a 20-minute
+timer in the footer. Each group slide carries its own live-demo cue, so the deck and the tool alternate.
+The same deck is also committed as `Salus-Configurator-presentation.pptx`, for anyone who would rather
+project from PowerPoint - speaker notes included.
+
 **Live demo:** https://configurator-salus-test.netlify.app/
 (Netlify auto-deploys `main`; every pull request gets a deploy preview at
 `deploy-preview-<n>--configurator-salus-test.netlify.app`.)
@@ -33,7 +40,7 @@ Open the file directly, or reach it on the deployed site at `/how-it-works.html`
 | **Project resume** | Real project code + **localStorage** in the browser. The email link is simulated. | Real resume link sent by email, synced to the CRM. |
 | **Pre-visit photos** | Simulated slots. | Real upload of the 3 photos asked for explicitly (heat source, radiator + valve, electrical panel). |
 | **Club Pro installers / distributors** | Fictional names, simulated area. | Real directory geolocated by postcode, Club Pro members served first. |
-| **Estimated savings** | A range calculated with **fictional coefficients and energy prices** (method inspired by EN 15232, readable in the tool). | Validated EN 15232 coefficients, current energy prices. |
+| **Estimated savings** | A range calculated with **fictional coefficients and energy prices** (degree-day method, readable in the tool). | Saving bands built from a degree-day model per market, with current energy prices. |
 | **Videos** | Placeholders positioned at the right moments of the journey. | Real videos: short ones to choose (<= 1 min), step-by-step ones to install. |
 | **Visuals** | **Real**, all of them: the 24 product photos are genuine Salus cut-outs, the logo is the official one, and every pictogram is an Iconify vector icon bundled offline (see [VISUALS.md](VISUALS.md)). | The official Salus icon library for the system diagram, and the videos. |
 | **System diagram** | Genuinely generated as SVG from the configuration (fixed rules, solid = wired / dotted = radio) with **placeholder icons**. | The same generator with the official vector icon library plus a dozen reference drawings. |
@@ -61,6 +68,8 @@ A 100% static site - no build, no dependencies.
 ```
 index.html            Entry point (permanent BETA banner)
 how-it-works.html     Standalone walkthrough: 5 diagrams + the 26 problems, tagged by status
+presentation.html     20-minute slide deck for the internal presentation (notes, timer, demo cues)
+Salus-Configurator-presentation.pptx   The same deck as PowerPoint
 js/data/catalog.js    Product catalogue (real) + prices (fictional) + rules
 js/data/markets.js    Heat sources & emitters across FR / UK / DE / RO / DK
 js/data/copy.js       Copy, room benefits, equivalences, demo scenario

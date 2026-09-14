@@ -113,10 +113,10 @@ globalThis.SALUS_COPY = {
   ],
   distributors: ["Espace Aubade", "Algorel", "Richardson"],
 
-  /* --- Savings method (solution P20) - EN 15232, FICTIONAL --- */
+  /* --- Savings method (solution P20) - degree-day method, FICTIONAL --- */
   savingsMethod: {
-    standard: "EN 15232 - efficiency classes of control systems",
-    text: "The estimate compares your home's current control class (from your answers) with the class reached by the proposed solution, using the efficiency factors of the EN 15232 standard, applied to a heating consumption estimated from floor area, construction period and energy used. The result is a range: the real figure depends on how the home is actually used.",
+    standard: "Degree-day method - the basis used by ASHRAE Guideline 14 and the IPMVP",
+    text: "We estimate what your home uses for heating today from its floor area, its construction period and the energy it runs on. The proposed control level then applies a saving band to that figure. The band comes from a degree-day model: how much heating your climate calls for over a year, and how much of it a lower setpoint, a night setback and room-by-room zoning take away. The result is always a range, because the real figure depends on how the home is actually used.",
     betaNote: "/!\\ BETA build: fictional coefficients and energy prices, for demonstration only."
   },
 
@@ -135,7 +135,8 @@ globalThis.SALUS_COPY = {
     heat_pump_aa: 0.08, electric: 0.25, district: 0.10, biomass: 0.07, unknown: 0.12
   },
 
-  /* Savings ranges (%) by level - FICTIONAL, inspired by EN 15232 */
+  /* Savings ranges (%) by level - FICTIONAL. In production these bands come
+     from a degree-day model per market, not from a fixed table. */
   savingsRange: {
     essential: [8, 14],
     comfort: [12, 18],
