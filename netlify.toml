@@ -2,3 +2,15 @@
   publish = "."
 
 # Site statique — aucun build. Netlify sert le dépôt tel quel.
+
+# Configurateur R-System (plénum motorisé) : URL courte, et autorisation
+# d'intégration en iframe depuis le site r-system-by-salus.com.
+[[redirects]]
+  from = "/configurateur"
+  to = "/r-system/index.html"
+  status = 200
+
+[[headers]]
+  for = "/r-system/*"
+  [headers.values]
+    Content-Security-Policy = "frame-ancestors 'self' https://r-system-by-salus.com https://*.r-system-by-salus.com https://*.super.site"
