@@ -37,7 +37,7 @@ export default {
      are given at recording time:
        --clip presentation=<Découvrez R-System en 2 minutes, youtu.be/U4zsIexkAy8>
        --clip usine=<La réalisation du plénum à Bordeaux, youtu.be/tJVTvYfFSmQ>
-     Without them, the thumbnails stay as on the site. */
+     Without them, each thumbnail stays, without its play button, in a slow zoom. */
   clips: [
     { key: "presentation", replace: '.video-poster[data-video="U4zsIexkAy8"]', start: 0, length: 20 },
     { key: "usine", replace: '.video-poster[data-video="tJVTvYfFSmQ"]', start: 0, length: 20 },

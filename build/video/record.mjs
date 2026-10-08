@@ -160,6 +160,21 @@ const LAY_CLIPS = (clips) => Promise.all(clips.map(c => new Promise(ok => {
   v.addEventListener("error", () => ok(c.key + ": the clip does not play"), { once: true });
 })));
 
+/* Without its file, a clip's thumbnail still loses its play button and its
+   label, and the picture drifts in a slow zoom: no dead button on a screen
+   nobody can click. */
+const STILL_CLIPS = (clips) => clips.map(c => {
+  const host = document.querySelector(c.replace);
+  if (!host) return c.key + ": nothing matches " + c.replace;
+  for (const k of host.children) if (k.tagName !== "IMG" && k.tagName !== "PICTURE") k.style.visibility = "hidden";
+  host.style.overflow = "hidden";
+  host.dataset.videoFrame = "";
+  const img = host.querySelector("img");
+  if (img) img.animate([{ transform: "scale(1)" }, { transform: "scale(1.1)" }],
+    { duration: 8000, direction: "alternate", iterations: Infinity, easing: "ease-in-out" });
+  return null;
+});
+
 /* ---------- the clock ----------
    Runs inside the stage and inside the site. Every animation it has not
    seen yet is paused and stamped with the current video time; then each
@@ -271,7 +286,7 @@ const SECTION_STOPS = ({ sections, header, bar, margin }) => {
     const sw = sec.getBoundingClientRect().width;
     let top = Infinity, bottom = -Infinity;
     for (const e of sec.querySelectorAll("*")) {
-      const r = e.getBoundingClientRect();
+      const r = (e.closest("[data-video-frame]") || e).getBoundingClientRect();   // a zoomed still is measured by its frame
       if (!r.width || !r.height) continue;
       const a = Y(r);
       if (a.top < from || a.bottom > to) continue;
@@ -572,11 +587,9 @@ if (scenario.clock) await context.clock.install();
 for (const [pattern, file] of VENDOR) {
   await context.route(pattern, route => route.fulfill({ contentType: "text/javascript", body: readFileSync(join(ROOT, file)) }));
 }
-const CLIPS = (scenario.clips || []).filter(c => {
-  if (CLIP_FILES[c.key]) return true;
-  console.log(`clip ${c.key}: no file given (--clip ${c.key}=<file>), the thumbnail stays`);
-  return false;
-});
+const CLIPS = (scenario.clips || []).filter(c => CLIP_FILES[c.key]);
+const STILLS_ONLY = (scenario.clips || []).filter(c => !CLIP_FILES[c.key]);
+for (const c of STILLS_ONLY) console.log(`clip ${c.key}: no file given (--clip ${c.key}=<file>), the thumbnail stays, in a slow zoom`);
 if (CLIPS.length) {
   const data = {};
   for (const c of CLIPS) { console.log(`Preparing clip ${c.key} ...`); data[c.key] = prepareClip(c); }
@@ -612,6 +625,7 @@ if (DIRECT) {
   await siteReady(site);
   if (scenario.preload) await preload(site);
   if (CLIPS.length) for (const problem of await site.evaluate(LAY_CLIPS, CLIPS)) if (problem) console.log("clip " + problem);
+  if (STILLS_ONLY.length) for (const problem of await site.evaluate(STILL_CLIPS, STILLS_ONLY)) if (problem) console.log("clip " + problem);
   await mountOverlay(["intro"]);
 } else {
   await page.goto(`${base}/build/video/stage.html`, { waitUntil: "load" });
