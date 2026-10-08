@@ -138,7 +138,7 @@
         fill($("#panel"), cfg.panel);
         fill($(".bar"), { url: cfg.url });
         $(".url").style.display = cfg.url ? "" : "none";
-        stage.cards(cfg.cards, cfg.logo);
+        stage.cards(cfg.cards, cfg.look);
         steps = cfg.panel.steps;
         $(".steps").innerHTML = steps.map((s, i) =>
           `<li><span class="n">${i < steps.length - 1 ? i + 1 : "&#10003;"}</span><span>${s}</span></li>`).join("");

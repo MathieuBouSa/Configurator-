@@ -23,15 +23,21 @@
     }
     @keyframes ripple{ from{ transform:scale(.2); opacity:1; } to{ transform:scale(1.5); opacity:0; } }
 
+    /* The look comes from the scenario (stage.cards): these are the defaults, SALUS configurator style. */
+    .layer{ --bg:#1D2858; --accent:#00AEEF; --display:'Ubuntu',sans-serif; --display-weight:700; --tracking:0; --leading:1.1;
+      --label:'Ubuntu',sans-serif; --body:'Open Sans',system-ui,sans-serif; --logo-h:46px; }
     .card{
       position:absolute; inset:0; z-index:4; overflow:hidden;
       display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:#fff;
+      font-family:var(--body);
       background:
         radial-gradient(900px 620px at -12% 112%, rgba(0,174,239,.24) 0%, transparent 60%),
         radial-gradient(760px 520px at 112% -12%, rgba(0,174,239,.15) 0%, transparent 60%),
-        #1D2858;
+        var(--bg);
       opacity:0; transition:opacity .7s ease;
     }
+    .flat .card{ background:var(--bg); }
+    .flat .card::before, .flat .card::after{ display:none; }
     .card::before, .card::after{
       content:""; position:absolute; border-radius:50%;
       border:1.5px solid rgba(0,174,239,.20);
@@ -42,13 +48,16 @@
     .card.show{ opacity:1; }
     .inner{ position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; transform:translateY(14px); transition:transform 1s ease; }
     .card.show .inner{ transform:none; }
-    .logo{ height:46px; width:auto; filter:brightness(0) invert(1); }
-    .eyebrow{ margin-top:46px; font:700 14px/1 'Ubuntu',sans-serif; letter-spacing:.16em; text-transform:uppercase; color:#00AEEF; }
-    h2{ margin:16px 0 0; max-width:980px; font:700 54px/1.1 'Ubuntu',sans-serif; }
+    .logo{ height:var(--logo-h); width:auto; }
+    .invert .logo{ filter:brightness(0) invert(1); }
+    .eyebrow{ margin-top:46px; font:700 14px/1 var(--label); letter-spacing:.16em; text-transform:uppercase; color:var(--accent); }
+    h2{ margin:16px 0 0; max-width:980px; font:var(--display-weight) 54px/var(--leading) var(--display); letter-spacing:var(--tracking); }
+    h2 .thin{ font-weight:200; }
     p{ margin:20px 0 0; max-width:820px; font-size:20px; line-height:1.5; color:rgba(255,255,255,.72); }
-    .big{ margin-top:30px; font:700 26px/1 'Ubuntu',sans-serif; color:#00AEEF; letter-spacing:.01em; }
+    .big{ margin-top:30px; font:var(--display-weight) 26px/1 var(--display); color:var(--accent); letter-spacing:.01em; }
     .chips{ display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:34px; }
     .chip{ font-size:15px; font-weight:600; padding:9px 18px; border-radius:999px; background:rgba(255,255,255,.09); color:rgba(255,255,255,.82); }
+    .flat .chip{ font:500 13px/1 var(--label); letter-spacing:.08em; text-transform:uppercase; border-radius:2px; border:1px solid rgba(255,255,255,.22); background:none; padding:10px 14px; }
   `;
   const CURSOR = `<svg width="28" height="34" viewBox="0 0 28 34"><path d="M2 2 L2 27 L8.6 20.8 L13.4 31.4 L17.8 29.4 L13.1 19.2 L22 19.2 Z" fill="#fff" stroke="#1D2858" stroke-width="2.2" stroke-linejoin="round"/></svg>`;
 
@@ -72,15 +81,22 @@
     root,                                  // record.mjs steps its animations: document.getAnimations() skips shadow trees
     ready: linkLoaded.then(() => Promise.all(["500 20px Ubuntu", "700 20px Ubuntu", "400 20px 'Open Sans'", "600 20px 'Open Sans'"]
       .map(f => document.fonts.load(f).catch(() => null)))),
-    /* (Re)build the cards; those listed in `shown` start visible, without a fade. */
-    cards(cards, logo, shown = ["intro"]) {
+    /* (Re)build the cards; those listed in `shown` start visible, without a fade.
+       look: { logo, invertLogo, logoHeight, flat, bg, accent, display, displayWeight, tracking, leading, label, body } */
+    cards(cards, look, shown = ["intro"]) {
       root.querySelectorAll(".card").forEach(c => c.remove());
+      const vars = { bg: look.bg, accent: look.accent, display: look.display, "display-weight": look.displayWeight,
+        tracking: look.tracking, leading: look.leading, label: look.label, body: look.body,
+        "logo-h": look.logoHeight && look.logoHeight + "px" };
+      for (const [k, v] of Object.entries(vars)) if (v != null) layer.style.setProperty("--" + k, v);
+      layer.classList.toggle("flat", !!look.flat);
+      layer.classList.toggle("invert", !!look.invertLogo);
       for (const [id, d] of Object.entries(cards)) {
         const card = document.createElement("div");
         card.id = id;
         card.className = "card" + (shown.includes(id) ? " show" : "");
         card.innerHTML = `<div class="inner">
-          <img class="logo" src="${logo}" alt="SALUS Controls" />
+          <img class="logo" src="${look.logo}" alt="" />
           ${d.eyebrow ? `<div class="eyebrow">${d.eyebrow}</div>` : ""}
           ${d.title ? `<h2>${d.title}</h2>` : ""}
           ${d.text ? `<p>${d.text}</p>` : ""}

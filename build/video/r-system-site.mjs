@@ -1,42 +1,67 @@
 /* Trade-show video - the public R-System site, https://r-system-by-salus.com/
-   The site full screen, scrolled top to bottom with a pause on each
-   section heading, between an intro and an outro card.
+   (repository MathieuBouSa/rsystem-landing). The installer landing full
+   screen, scrolled top to bottom with a pause on each section heading,
+   between an intro and an outro card dressed in the site's own charter:
+   R-System logo, Bricolage Grotesque, flat navy, no gradient.
    Ends on the intro card, so the video loops without a visible cut.
 
-   The visit is generic (it follows the page's headings), so it keeps
-   working when the site's content changes: re-record to refresh it. */
+       node build/video/record.mjs r-system-site                  the live site
+       node build/video/record.mjs r-system-site --root ../rsystem-landing --url /
+                                                                  a local checkout, offline
+
+   The visit follows the page's headings, so re-recording picks up any
+   change of content without touching this file. */
 
 export default {
   lang: "fr",
   layout: "direct",
   url: "https://r-system-by-salus.com/",
+  preload: true,                             // lazy images and the embedded configurator, before the camera
+  clock: true,                               // counters and scroll effects run on the video clock
 
+  /* The consent banner is answered before the page loads (refused: nothing
+     is measured), so it never covers the video. */
+  beforeLoad: () => {
+    try { localStorage.setItem("rsystem-consentement", JSON.stringify({ accepte: false, t: Date.now() })); } catch (e) { /* storage blocked */ }
+  },
+
+  look: {
+    logo: "/assets/logo/logo-r-system-navy-en-blanc.png",
+    logoHeight: 76,
+    flat: true,
+    bg: "#1D2858",
+    accent: "#00AEEF",
+    display: "'Bricolage Grotesque', system-ui, sans-serif",
+    displayWeight: 800,
+    tracking: "-.03em",
+    leading: ".98",
+    label: "'JetBrains Mono', ui-monospace, monospace",
+    body: "'Bricolage Grotesque', system-ui, sans-serif",
+  },
   cards: {
     intro: {
-      eyebrow: "R-System by SALUS",
-      title: "Le confort pièce par pièce,<br>sur votre gainable",
-      text: "Plénum motorisé, thermostats sans fil et application : la régulation zone par zone pour pompe à chaleur gainable.",
-      chips: ["Daikin", "Mitsubishi", "Toshiba", "Panasonic"],
+      eyebrow: "SALUS Controls",
+      title: "Régulation multizone<br>pour climatisation <span class=\"thin\">gainable.</span>",
+      text: "Plénum motorisé, moteurs Belimo, thermostats de zone et application gratuite.",
+      chips: ["Garanti 5 ans", "Fabriqué à Bordeaux", "Zigbee"],
     },
     outro: {
-      eyebrow: "R-System by SALUS",
-      title: "Découvrez R-System",
-      text: "Configuration en ligne, documentation et demande de chiffrage sur le site.",
+      eyebrow: "SALUS Controls",
+      title: "Composez votre système<br><span class=\"thin\">en quelques étapes.</span>",
+      text: "Configurateur en ligne et contact commercial sur le site.",
       big: "r-system-by-salus.com",
-      chips: ["Garantie 5 ans", "Assemblé en France", "Avec ou sans internet"],
+      chips: ["Garanti 5 ans", "Fabriqué à Bordeaux", "Application gratuite"],
     },
   },
 
   async run(r) {
-    await r.preload();                       // behind the intro card
-
     /* Intro */
     await r.wait(3.6);
     await r.card("intro", false);
-    await r.wait(1.8);
+    await r.wait(2.0);
 
     /* The page, section by section */
-    await r.tour({ css: "h1, h2", place: 0.16, pause: 2.4 });
+    await r.tour({ css: "h1, h2", place: 0.14, pause: 2.6 });
     await r.wait(1.0);
 
     /* Outro, then back to the intro card: the loop point */

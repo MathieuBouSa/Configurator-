@@ -20,6 +20,7 @@
    Options
        --out <file>     output path (default video/<name>-salon.mp4)
        --url <url>      record another page with the same scenario
+       --root <dir>     serve the site from this folder (a local checkout)
        --fps <n>        frames per second (default 30)
        --crf <n>        x264 quality, lower is better (default 18)
 
@@ -42,7 +43,7 @@ import { createRequire } from "node:module";
 import { spawn, execFileSync } from "node:child_process";
 import { createServer } from "node:http";
 import { readFileSync, existsSync, statSync, mkdirSync, mkdtempSync, writeFileSync, rmSync } from "node:fs";
-import { join, dirname, extname, normalize, relative } from "node:path";
+import { join, dirname, extname, normalize, relative, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -69,7 +70,9 @@ catch { console.error("Playwright is missing: npm install --no-save playwright")
 
 const scenario = (await import(pathToFileURL(join(HERE, `${name}.mjs`)).href)).default;
 
-/* ---------- local static server (the repository, as Netlify serves it) ---------- */
+/* ---------- local static server (the repository, as Netlify serves it) ----------
+   --root serves another site (a local checkout of it); the stage itself
+   always comes from this repository. */
 
 const MIME = {
   ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".mjs": "text/javascript; charset=utf-8",
@@ -77,12 +80,15 @@ const MIME = {
   ".webp": "image/webp", ".svg": "image/svg+xml", ".woff2": "font/woff2", ".pdf": "application/pdf",
 };
 
+const SITE_ROOT = resolve(ROOT, opt("root", "."));
+
 function serve() {
   const srv = createServer((req, res) => {
     let p = decodeURIComponent(new URL(req.url, "http://local").pathname);
     if (p.endsWith("/")) p += "index.html";
-    const file = normalize(join(ROOT, p));
-    if (relative(ROOT, file).startsWith("..") || !existsSync(file) || statSync(file).isDirectory()) {
+    const root = p.startsWith("/build/video/") || p.startsWith("/assets/hero/") ? ROOT : SITE_ROOT;
+    const file = normalize(join(root, p));
+    if (relative(root, file).startsWith("..") || !existsSync(file) || statSync(file).isDirectory()) {
       res.writeHead(404); res.end(); return;
     }
     res.writeHead(200, { "content-type": MIME[extname(file)] || "application/octet-stream" });
@@ -122,7 +128,9 @@ function tailwindShim(page) {
    one is set to (now - stamp). Returns true while anything is moving
    (one extra frame, so the finished state is captured too). The
    overlay's shadow root is stepped too, and a <video> is paused and
-   seeked the same way, looping. */
+   seeked the same way, looping. With `clock: true` the scenario also puts
+   the page's JavaScript time (timers, requestAnimationFrame, Date) on
+   the video clock, so a script-driven counter counts at the right speed. */
 
 const SYNC_ANIMATIONS = async ([t, dt]) => {
   const seen = window.__videoClock || (window.__videoClock = new WeakMap());
@@ -144,16 +152,23 @@ const SYNC_ANIMATIONS = async ([t, dt]) => {
     if (!(v.duration > 0)) continue;
     moving = true;
     v.currentTime = ((t - t0) / 1000) % v.duration;
-    seeks.push(new Promise(ok => { v.addEventListener("seeked", ok, { once: true }); setTimeout(ok, 1500); }));
+    seeks.push(new Promise(ok => v.addEventListener("seeked", ok, { once: true })));
   }
-  await Promise.all(seeks);
+  await Promise.all(seeks);                    // no timer here: the page's timers may be on the video clock
+  if (window.__videoMutated) { window.__videoMutated = false; moving = true; }
   return moving;
 };
 
-/* Finds an element of the site from a small spec: a CSS selector, then
-   optionally the text it contains, the alt of an image inside it, and
-   which match to take. Installed in every frame before any page script. */
-const PICK = () => {
+/* Installed in every frame before any page script:
+   - __pick finds an element of the site from a small spec: a CSS selector,
+     then optionally the text it contains, the alt of an image inside it,
+     and which match to take;
+   - __videoMutated flags any DOM change, so a frame the page's own scripts
+     changed (a counter, a scroll effect) is screenshotted again. */
+const HELPERS = () => {
+  window.__videoMutated = true;
+  new MutationObserver(() => { window.__videoMutated = true; })
+    .observe(document, { subtree: true, childList: true, attributes: true, characterData: true });
   window.__pick = (spec) => {
     let els = [...document.querySelectorAll(spec.css)];
     if (spec.text) els = els.filter(e => e.textContent.replace(/\s+/g, " ").includes(spec.text));
@@ -192,8 +207,12 @@ class Recorder {
 
   /* One output frame: settle the animations, screenshot if anything changed, write. */
   async tick() {
+    if (scenario.clock) await this.page.clock.runFor(Math.round(this.t + this.dt) - Math.round(this.t));
     const docs = this.direct ? [this.page] : [this.page, this.site];
-    const moving = await Promise.all(docs.map(d => d.evaluate(SYNC_ANIMATIONS, [this.t, this.dt])));
+    const moving = await Promise.all(docs.map(d => Promise.race([
+      d.evaluate(SYNC_ANIMATIONS, [this.t, this.dt]),
+      new Promise(ok => setTimeout(ok, 5000, true)),     // a video that never reports its seek
+    ])));
     if (this.dirty || moving.includes(true) || !this.last) {
       this.last = await this.page.screenshot({ type: "png" });
       this.shots++;
@@ -299,22 +318,6 @@ class Recorder {
     if (this.direct) await this.mountOverlay([...this.shown]);
     this.dirty = true;
   }
-  /* Off camera: run down the page once so lazy images and scroll-revealed
-     blocks are loaded before the camera gets there. */
-  async preload() {
-    await this.site.evaluate(async () => {
-      const pause = ms => new Promise(ok => setTimeout(ok, ms));
-      for (let y = 0; y < document.documentElement.scrollHeight; y += innerHeight * 0.7) {
-        window.scrollTo({ top: y, behavior: "instant" });
-        await pause(150);
-      }
-      await pause(500);
-      await Promise.all([...document.images].map(i => i.complete ? null
-        : new Promise(ok => { i.onload = i.onerror = ok; setTimeout(ok, 10000); })));
-      window.scrollTo({ top: 0, behavior: "instant" });
-    });
-    this.dirty = true;
-  }
   /* The visit of a page: scroll it top to bottom, stopping on each heading
      (placed at `place` of the window), and every ~0.9 window in between
      when a section runs long. */
@@ -362,11 +365,27 @@ class Recorder {
   async scrollToEnd(sec, curve = sine) { await this.scrollTo(1e6, sec, curve); }
 }
 
+/* Off camera, before the clock stops: everything the page would load on the
+   way down - lazy images, iframes armed on approach - is loaded now, without
+   scrolling, so nothing scroll-triggered (a counter, a reveal) is spent. */
+async function preload(frame) {
+  await frame.evaluate(() => {
+    document.querySelectorAll("img[loading=lazy]").forEach(i => { i.loading = "eager"; });
+    document.querySelectorAll("iframe[data-src]:not([src])").forEach(f => { f.src = f.dataset.src; });
+  });
+  await frame.waitForFunction(() => [...document.images].every(i => i.complete)
+    && [...document.querySelectorAll("iframe")].every(f => { try { return f.contentDocument.readyState === "complete"; } catch (e) { return true; } }),
+    null, { polling: 100, timeout: 30000 });
+  await frame.waitForTimeout(800);             // iframes report their height, the layout settles
+}
+
 async function siteReady(frame) {
   if (scenario.ready) await frame.waitForSelector(scenario.ready);
   await frame.evaluate(async () => {
     await document.fonts.ready;
-    await Promise.all([...document.images].map(i => i.complete ? null : new Promise(ok => { i.onload = i.onerror = ok; })));
+    // a lazy image off screen never loads by itself: preload() takes care of those
+    await Promise.all([...document.images].filter(i => i.loading !== "lazy")
+      .map(i => i.complete ? null : new Promise(ok => { i.onload = i.onerror = ok; })));
   });
 }
 
@@ -375,7 +394,12 @@ async function siteReady(frame) {
 const DIRECT = scenario.layout === "direct";
 /* Where the real mouse rests when the cursor is hidden: on the panel, or on the page's right edge. */
 const PARK = DIRECT ? [1279, 360] : [200, 600];
-const LOGO = "data:image/png;base64," + readFileSync(join(ROOT, "assets/hero/logo-salus.png")).toString("base64");
+/* The cards' look: SALUS logo and configurator style unless the scenario sets its own (see overlay.js). */
+const LOOK = {
+  logo: "data:image/png;base64," + readFileSync(join(ROOT, "assets/hero/logo-salus.png")).toString("base64"),
+  invertLogo: !(scenario.look && scenario.look.logo),      // the SALUS logo is navy: white on the cards
+  ...scenario.look,
+};
 const OVERLAY = readFileSync(join(HERE, "overlay.js"), "utf8");
 
 const server = await serve();
@@ -387,7 +411,9 @@ const context = await browser.newContext({
   bypassCSP: DIRECT,                              // the overlay's own styles and fonts, on someone else's page
 });
 
-await context.addInitScript(PICK);
+await context.addInitScript(HELPERS);
+if (scenario.beforeLoad) await context.addInitScript(scenario.beforeLoad);
+if (scenario.clock) await context.clock.install();
 for (const [pattern, file] of VENDOR) {
   await context.route(pattern, route => route.fulfill({ contentType: "text/javascript", body: readFileSync(join(ROOT, file)) }));
 }
@@ -404,17 +430,18 @@ let site;
 const mountOverlay = async (shown) => {
   await page.evaluate(OVERLAY);
   await page.addStyleTag({ content: "html{scrollbar-width:none}::-webkit-scrollbar{display:none}" + (scenario.css || "") });
-  await page.evaluate(([cards, logo, shown]) => { stage.cards(cards, logo, shown); return stage.ready; }, [scenario.cards, LOGO, shown]);
+  await page.evaluate(([cards, look, shown]) => { stage.cards(cards, look, shown); return stage.ready; }, [scenario.cards, LOOK, shown]);
 };
 
 if (DIRECT) {
   await page.goto(siteUrl, { waitUntil: "load" });
   site = page.mainFrame();
   await siteReady(site);
+  if (scenario.preload) await preload(site);
   await mountOverlay(["intro"]);
 } else {
   await page.goto(`${base}/build/video/stage.html`, { waitUntil: "load" });
-  await page.evaluate(cfg => stage.init(cfg), { lang: scenario.lang, url: scenario.windowUrl, panel: scenario.panel, cards: scenario.cards, logo: LOGO });
+  await page.evaluate(cfg => stage.init(cfg), { lang: scenario.lang, url: scenario.windowUrl, panel: scenario.panel, cards: scenario.cards, look: LOOK });
   await page.evaluate(src => new Promise(ok => {
     const f = document.getElementById("site");
     f.addEventListener("load", ok, { once: true });
@@ -425,10 +452,13 @@ if (DIRECT) {
   await page.evaluate(async () => {
     await stage.ready;
     await document.fonts.ready;
-    await Promise.all([...document.images].map(i => i.complete ? null : new Promise(ok => { i.onload = i.onerror = ok; })));
+    // a lazy image off screen never loads by itself: preload() takes care of those
+    await Promise.all([...document.images].filter(i => i.loading !== "lazy")
+      .map(i => i.complete ? null : new Promise(ok => { i.onload = i.onerror = ok; })));
   });
 }
 await page.mouse.move(...PARK);
+if (scenario.clock) await page.clock.pauseAt(await page.evaluate(() => Date.now()) + 100);
 
 mkdirSync(dirname(OUT), { recursive: true });
 const ffmpeg = spawn("ffmpeg", [
