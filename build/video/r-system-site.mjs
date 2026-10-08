@@ -62,14 +62,14 @@ export default {
       eyebrow: "SALUS Controls",
       title: "Régulation multizone<br>pour climatisation <span class=\"thin\">gainable.</span>",
       text: "Plénum motorisé, moteurs Belimo, thermostats de zone et application gratuite.",
-      chips: ["Garanti 5 ans", "Fabriqué à Bordeaux", "Zigbee"],
+      chips: ["Garanti 5 ans", "Assemblé à Bordeaux", "Zigbee"],
     },
     outro: {
       eyebrow: "SALUS Controls",
       title: "Composez votre système<br><span class=\"thin\">en quelques étapes.</span>",
       text: "Configurateur en ligne et contact commercial sur le site.",
       big: "r-system-by-salus.com",
-      chips: ["Garanti 5 ans", "Fabriqué à Bordeaux", "Application gratuite"],
+      chips: ["Garanti 5 ans", "Assemblé à Bordeaux", "Application gratuite"],
     },
   },
 
