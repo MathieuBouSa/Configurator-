@@ -1,8 +1,9 @@
 /* Trade-show video - the public R-System site, https://r-system-by-salus.com/
    (repository MathieuBouSa/rsystem-landing). The installer landing full
    screen, scrolled top to bottom with a pause on each section heading,
-   between an intro and an outro card dressed in the site's own charter:
-   R-System logo, Bricolage Grotesque, flat navy, no gradient.
+   between an intro and an outro card dressed like the site: white
+   R-System logo, Open Sans 800 / 300 (the SALUS charter the landing
+   uses), flat navy, no gradient.
    Ends on the intro card, so the video loops without a visible cut.
 
        node build/video/record.mjs r-system-site                  the live site
@@ -31,12 +32,13 @@ export default {
     flat: true,
     bg: "#1D2858",
     accent: "#00AEEF",
-    display: "'Bricolage Grotesque', system-ui, sans-serif",
+    display: "'Open Sans', system-ui, sans-serif",
     displayWeight: 800,
-    tracking: "-.03em",
-    leading: ".98",
-    label: "'JetBrains Mono', ui-monospace, monospace",
-    body: "'Bricolage Grotesque', system-ui, sans-serif",
+    thinWeight: 300,
+    tracking: "-.02em",
+    leading: "1.05",
+    label: "'Open Sans', system-ui, sans-serif",
+    body: "'Open Sans', system-ui, sans-serif",
   },
   cards: {
     intro: {
@@ -61,7 +63,7 @@ export default {
     await r.wait(2.0);
 
     /* The page, section by section */
-    await r.tour({ css: "h1, h2", place: 0.14, pause: 2.6 });
+    await r.tour({ css: "h1, h2", place: 0.14, pause: 2.6, pass: 1.4 });
     await r.wait(1.0);
 
     /* Outro, then back to the intro card: the loop point */

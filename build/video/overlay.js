@@ -25,7 +25,7 @@
 
     /* The look comes from the scenario (stage.cards): these are the defaults, SALUS configurator style. */
     .layer{ --bg:#1D2858; --accent:#00AEEF; --display:'Ubuntu',sans-serif; --display-weight:700; --tracking:0; --leading:1.1;
-      --label:'Ubuntu',sans-serif; --body:'Open Sans',system-ui,sans-serif; --logo-h:46px; }
+      --thin-weight:300; --label:'Ubuntu',sans-serif; --body:'Open Sans',system-ui,sans-serif; --logo-h:46px; }
     .card{
       position:absolute; inset:0; z-index:4; overflow:hidden;
       display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:#fff;
@@ -52,7 +52,7 @@
     .invert .logo{ filter:brightness(0) invert(1); }
     .eyebrow{ margin-top:46px; font:700 14px/1 var(--label); letter-spacing:.16em; text-transform:uppercase; color:var(--accent); }
     h2{ margin:16px 0 0; max-width:980px; font:var(--display-weight) 54px/var(--leading) var(--display); letter-spacing:var(--tracking); }
-    h2 .thin{ font-weight:200; }
+    h2 .thin{ font-weight:var(--thin-weight); }
     p{ margin:20px 0 0; max-width:820px; font-size:20px; line-height:1.5; color:rgba(255,255,255,.72); }
     .big{ margin-top:30px; font:var(--display-weight) 26px/1 var(--display); color:var(--accent); letter-spacing:.01em; }
     .chips{ display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:34px; }
@@ -82,10 +82,10 @@
     ready: linkLoaded.then(() => Promise.all(["500 20px Ubuntu", "700 20px Ubuntu", "400 20px 'Open Sans'", "600 20px 'Open Sans'"]
       .map(f => document.fonts.load(f).catch(() => null)))),
     /* (Re)build the cards; those listed in `shown` start visible, without a fade.
-       look: { logo, invertLogo, logoHeight, flat, bg, accent, display, displayWeight, tracking, leading, label, body } */
+       look: { logo, invertLogo, logoHeight, flat, bg, accent, display, displayWeight, thinWeight, tracking, leading, label, body } */
     cards(cards, look, shown = ["intro"]) {
       root.querySelectorAll(".card").forEach(c => c.remove());
-      const vars = { bg: look.bg, accent: look.accent, display: look.display, "display-weight": look.displayWeight,
+      const vars = { bg: look.bg, accent: look.accent, display: look.display, "display-weight": look.displayWeight, "thin-weight": look.thinWeight,
         tracking: look.tracking, leading: look.leading, label: look.label, body: look.body,
         "logo-h": look.logoHeight && look.logoHeight + "px" };
       for (const [k, v] of Object.entries(vars)) if (v != null) layer.style.setProperty("--" + k, v);

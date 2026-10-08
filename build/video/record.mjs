@@ -319,33 +319,32 @@ class Recorder {
     this.dirty = true;
   }
   /* The visit of a page: scroll it top to bottom, stopping on each heading
-     (placed at `place` of the window), and every ~0.9 window in between
-     when a section runs long. */
-  async tour({ css = "h1, h2", place = 0.18, pause = 2.2, speed = 380, min = 1.2 } = {}) {
+     (placed at `place` of the window) for `pause` seconds, and every ~0.9
+     window in between when a section runs long, for `pass` seconds. */
+  async tour({ css = "h1, h2", place = 0.18, pause = 2.2, pass = 1.4, speed = 380, min = 1.2 } = {}) {
     const stops = await this.site.evaluate(([css, place]) => {
       const vh = innerHeight, max = document.documentElement.scrollHeight - vh;
-      const ys = [...document.querySelectorAll(css)]
+      const heads = [...document.querySelectorAll(css)]
         .filter(e => e.getClientRects().length && getComputedStyle(e).visibility !== "hidden")
         .map(e => Math.round(e.getBoundingClientRect().top + scrollY - vh * place))
         .map(y => Math.max(0, Math.min(max, y)))
         .concat([0, max])
         .sort((a, b) => a - b);
       const out = [];
-      for (const y of ys) {
-        const last = out.length ? out[out.length - 1] : null;
+      for (const y of heads) {
+        const last = out.length ? out[out.length - 1].y : null;
         if (last !== null && y - last < vh * 0.45) continue;
-        if (last !== null) for (let k = last + vh * 0.9; k < y - vh * 0.45; k += vh * 0.9) out.push(Math.round(k));
-        out.push(y);
+        if (last !== null) for (let k = last + vh * 0.9; k < y - vh * 0.45; k += vh * 0.9) out.push({ y: Math.round(k), head: false });
+        out.push({ y, head: true });
       }
       return out;
     }, [css, place]);
-    for (const y of stops) {
+    for (const { y, head } of stops) {
       const y0 = await this.site.evaluate(() => window.scrollY);
       if (Math.abs(y - y0) >= 1) await this.scrollTo(y, Math.max(min, Math.abs(y - y0) / speed), sine);
-      await this.wait(pause);
+      await this.wait(head ? pause : pass);
     }
   }
-
   async scrollTo(y, sec = 1.2, curve = ease) {
     const { y0, max } = await this.site.evaluate(() => ({ y0: window.scrollY, max: document.documentElement.scrollHeight - window.innerHeight }));
     const y1 = Math.max(0, Math.min(max, y));
