@@ -1,6 +1,7 @@
 /* Trade-show video - the public R-System site, https://r-system-by-salus.com/
    (repository MathieuBouSa/rsystem-landing). The installer landing full
-   screen, scrolled top to bottom with a pause on each section heading,
+   screen, scrolled top to bottom, one section per stop, framed between
+   the site's sticky header and its bottom contact bar,
    between an intro and an outro card dressed like the site: white
    R-System logo, Open Sans 800 / 300 (the SALUS charter the landing
    uses), flat navy, no gradient.
@@ -10,8 +11,9 @@
        node build/video/record.mjs r-system-site --root ../rsystem-landing --url /
                                                                   a local checkout, offline
 
-   The visit follows the page's headings, so re-recording picks up any
-   change of content without touching this file. */
+   The stops are computed from the page's sections, so re-recording picks
+   up any change of content without touching this file. Add --stills <dir>
+   to get one image per stop and check the framing. */
 
 export default {
   lang: "fr",
@@ -25,6 +27,10 @@ export default {
   beforeLoad: () => {
     try { localStorage.setItem("rsystem-consentement", JSON.stringify({ accepte: false, t: Date.now() })); } catch (e) { /* storage blocked */ }
   },
+
+  /* The sticky "Être contacté" bar is for a visitor who can click: on a stand
+     screen it would only take 70 px off every view. */
+  css: ".cta-bar{display:none !important}",
 
   look: {
     logo: "/assets/logo/logo-r-system-navy-en-blanc.png",
@@ -63,7 +69,7 @@ export default {
     await r.wait(2.0);
 
     /* The page, section by section */
-    await r.tour({ css: "h1, h2", place: 0.14, pause: 2.6, pass: 1.4 });
+    await r.tour({ sections: "main > section, body > footer", header: "body > header", pause: 2.6, pass: 2.0 });
     await r.wait(1.0);
 
     /* Outro, then back to the intro card: the loop point */

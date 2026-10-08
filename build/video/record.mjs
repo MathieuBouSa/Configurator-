@@ -21,6 +21,7 @@
        --out <file>     output path (default video/<name>-salon.mp4)
        --url <url>      record another page with the same scenario
        --root <dir>     serve the site from this folder (a local checkout)
+       --stills <dir>   also save one PNG per visit stop, to check the framing
        --fps <n>        frames per second (default 30)
        --crf <n>        x264 quality, lower is better (default 18)
 
@@ -62,6 +63,7 @@ if (!name || !existsSync(join(HERE, `${name}.mjs`))) {
 const FPS = Number(opt("fps", 30));
 const CRF = String(opt("crf", 18));
 const OUT = join(ROOT, opt("out", `video/${name}-salon.mp4`));
+const STILLS = opt("stills", null) && resolve(ROOT, opt("stills"));   // a PNG of every visit stop, to check the framing
 
 const require = createRequire(import.meta.url);
 let chromium;
@@ -186,6 +188,123 @@ const BOX = (spec) => {
     scrollY: window.scrollY, vh: window.innerHeight,
     max: document.documentElement.scrollHeight - window.innerHeight,
   };
+};
+
+/* Stops on headings: one per heading, one every ~0.9 window in long stretches. */
+const HEADING_STOPS = ([css, place]) => {
+  const vh = innerHeight, max = document.documentElement.scrollHeight - vh;
+  const heads = [...document.querySelectorAll(css)]
+    .filter(e => e.getClientRects().length && getComputedStyle(e).visibility !== "hidden")
+    .map(e => Math.round(e.getBoundingClientRect().top + scrollY - vh * place))
+    .map(y => Math.max(0, Math.min(max, y)))
+    .concat([0, max])
+    .sort((a, b) => a - b);
+  const out = [];
+  for (const y of heads) {
+    const last = out.length ? out[out.length - 1].y : null;
+    if (last !== null && y - last < vh * 0.45) continue;
+    if (last !== null) for (let k = last + vh * 0.9; k < y - vh * 0.45; k += vh * 0.9) out.push({ y: Math.round(k), head: false });
+    out.push({ y, head: true });
+  }
+  return out;
+};
+
+/* Stops on sections. A section's content is the union of its text, media,
+   controls and drawn boxes (bordered or filled, narrower than the section),
+   its padding left out. Between two neighbours closer than a window, the
+   window is centred on the gap, so both only show their padding. A section holding a sticky element is a scroll
+   scene: one stop where the scene starts, one where it ends, the scroll in
+   between showing it play; what follows the scene is planned on its own.
+   The window is what the page's fixed header (and bottom bar) leave free. */
+const SECTION_STOPS = ({ sections, header, bar, margin }) => {
+  const vh = innerHeight, max = document.documentElement.scrollHeight - vh;
+  const height = sel => { const e = sel && document.querySelector(sel); return e ? e.getBoundingClientRect().height : 0; };
+  const H = height(header), W = vh - H - height(bar);
+  const Y = r => ({ top: r.top + scrollY, bottom: r.bottom + scrollY });
+  const LEAVES = "h1,h2,h3,h4,h5,h6,p,li,img,svg,video,iframe,canvas,button,a,figcaption,input,select,textarea,label,table,blockquote,dt,dd";
+  const drawn = cs => (parseFloat(cs.borderTopWidth) > 0 && cs.borderTopStyle !== "none")
+    || (parseFloat(cs.borderBottomWidth) > 0 && cs.borderBottomStyle !== "none")
+    || !/^(transparent|rgba\(0, 0, 0, 0\))$/.test(cs.backgroundColor) || cs.backgroundImage !== "none";
+  /* content of a section between two page heights */
+  const contentOf = (sec, from = -Infinity, to = Infinity) => {
+    const sw = sec.getBoundingClientRect().width;
+    let top = Infinity, bottom = -Infinity;
+    for (const e of sec.querySelectorAll("*")) {
+      const r = e.getBoundingClientRect();
+      if (!r.width || !r.height) continue;
+      const a = Y(r);
+      if (a.top < from || a.bottom > to) continue;
+      const cs = getComputedStyle(e);
+      const text = [...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim());
+      if (cs.visibility === "hidden" || !(text || e.matches(LEAVES) || (r.width < sw * 0.95 && drawn(cs)))) continue;
+      top = Math.min(top, a.top); bottom = Math.max(bottom, a.bottom);
+    }
+    return top === Infinity ? null : { top, bottom };
+  };
+  const headsOf = (sec, from = -Infinity) => [...sec.querySelectorAll("h2, h3")]
+    .filter(h => h.getClientRects().length).map(h => Y(h.getBoundingClientRect()).top).filter(t => t >= from).sort((a, b) => a - b);
+
+  const blocks = [];
+  for (const sec of document.querySelectorAll(sections)) {
+    if (!sec.getClientRects().length) continue;
+    const S = Y(sec.getBoundingClientRect());
+    const sticky = [...sec.querySelectorAll("*")].find(e => getComputedStyle(e).position === "sticky");
+    if (!sticky) { blocks.push({ C: contentOf(sec) || S, heads: headsOf(sec) }); continue; }
+    const T = Y(sticky.parentElement.getBoundingClientRect());        // the track the scene plays along
+    const pin = parseFloat(getComputedStyle(sticky).top) || 0, h = sticky.getBoundingClientRect().height;
+    const before = contentOf(sec, -Infinity, T.top);
+    blocks.push({ C: { top: before ? before.top : T.top, bottom: T.bottom }, scene: { start: T.top - pin, end: T.bottom - pin - h } });
+    const after = contentOf(sec, T.bottom - 1);
+    if (after) blocks.push({ C: after, heads: headsOf(sec, T.bottom - 1) });
+  }
+
+  const toY = ws => Math.round(Math.max(0, Math.min(max, ws - H)));   // window top -> scroll position
+  const stops = [];
+  let shown = null;                                                    // the window of the last stop
+  /* need: the content a stop was placed for. A new stop close to the last one
+     (under 0.2 window) that still shows all of it replaces it: no nudges. */
+  const push = (y, head, slow, need) => {
+    y = Math.round(Math.max(0, Math.min(max, y)));
+    const last = stops[stops.length - 1];
+    if (last && Math.abs(y - last.y) < 8) return;
+    if (last && !slow && !last.slow && last.need && Math.abs(y - last.y) < W * 0.2
+        && last.need.top >= y + H && last.need.bottom <= y + H + W) { stops.pop(); head = head || last.head; }
+    stops.push({ y, head, slow: !!slow, need });
+    shown = { top: y + H, bottom: y + H + W };
+  };
+  blocks.forEach(({ C, heads, scene }, i) => {
+    if (scene) { push(scene.start, true); push(scene.end, false, true); return; }
+    if (shown && C.top >= shown.top && C.bottom <= shown.bottom) return;   // already seen whole
+    const lo = i > 0 ? blocks[i - 1].C.bottom : -Infinity;             // previous content stays out
+    const hi = i < blocks.length - 1 ? blocks[i + 1].C.top : Infinity; // and so does the next one
+    let top = C.top - margin, bottom = C.bottom + margin;
+    if (bottom - top > W && C.bottom - C.top <= W) { top = C.top; bottom = C.bottom; }   // fits without the margin
+    if (bottom - top <= W) {                                           // fits: centred, neighbours out
+      const ws = hi - lo < W ? (lo + hi - W) / 2 : Math.max(Math.min(top - (W - (bottom - top)) / 2, hi - W), lo);
+      push(toY(ws), true, false, C);
+      return;
+    }
+    if (bottom - top - W < W * 0.12) { push(toY(Math.max(top, lo)), true); return; }   // a little too tall: one stop
+    /* taller than the window: from its top, then down by at most 0.85 window,
+       stopping earlier on a sub-heading the window would cut */
+    const end = Math.min(bottom, hi);
+    let ws = Math.max(top, lo), anchor = null;                         // anchor: the sub-heading the last stop is set on
+    push(toY(ws), true);
+    while (ws + W < end - 4) {
+      let next = ws + W * 0.85, on = null;
+      const cut = heads.find(t => t > ws + 40 && t + 140 > ws + W);
+      // a sub-heading the window shows without its content: the next stop starts on it
+      if (cut !== undefined && cut - margin > ws + W * 0.3 && cut - margin < ws + W) { next = cut - margin; on = cut; }
+      next = Math.min(next, end - W);
+      if (next <= ws + 8) break;
+      if (next - ws < W * 0.2 && anchor !== null && next < anchor) {   // a last nudge that keeps the sub-heading in view:
+        stops.pop();                                                   // the previous stop moves there instead
+      }
+      push(toY(next), false);
+      ws = next; anchor = on;
+    }
+  });
+  return stops;
 };
 
 const ease = p => (p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);   // cubic in-out
@@ -318,31 +437,27 @@ class Recorder {
     if (this.direct) await this.mountOverlay([...this.shown]);
     this.dirty = true;
   }
-  /* The visit of a page: scroll it top to bottom, stopping on each heading
-     (placed at `place` of the window) for `pause` seconds, and every ~0.9
-     window in between when a section runs long, for `pass` seconds. */
-  async tour({ css = "h1, h2", place = 0.18, pause = 2.2, pass = 1.4, speed = 380, min = 1.2 } = {}) {
-    const stops = await this.site.evaluate(([css, place]) => {
-      const vh = innerHeight, max = document.documentElement.scrollHeight - vh;
-      const heads = [...document.querySelectorAll(css)]
-        .filter(e => e.getClientRects().length && getComputedStyle(e).visibility !== "hidden")
-        .map(e => Math.round(e.getBoundingClientRect().top + scrollY - vh * place))
-        .map(y => Math.max(0, Math.min(max, y)))
-        .concat([0, max])
-        .sort((a, b) => a - b);
-      const out = [];
-      for (const y of heads) {
-        const last = out.length ? out[out.length - 1].y : null;
-        if (last !== null && y - last < vh * 0.45) continue;
-        if (last !== null) for (let k = last + vh * 0.9; k < y - vh * 0.45; k += vh * 0.9) out.push({ y: Math.round(k), head: false });
-        out.push({ y, head: true });
-      }
-      return out;
-    }, [css, place]);
-    for (const { y, head } of stops) {
+  /* The visit of a page, top to bottom. Two ways to place the stops:
+     - sections (a selector): each stop frames the content of ONE section in
+       the window left between the page's own fixed `header` and `bar`, and
+       never shows the content of the next or previous one; a section too
+       tall for the window gets several stops, from its top to its bottom,
+       placed on its sub-headings; a scroll scene plays at `sceneSpeed`;
+     - otherwise, headings (`css`): a stop on each, placed at `place` of the
+       window, plus one every ~0.9 window in long stretches.
+     The first stop of a section or a heading lasts `pause`, the others `pass`. */
+  async tour({ css = "h1, h2", sections = null, header = null, bar = null, place = 0.18, margin = 28,
+               pause = 2.2, pass = 1.4, speed = 380, sceneSpeed = 220, min = 1.2 } = {}) {
+    const stops = sections
+      ? await this.site.evaluate(SECTION_STOPS, { sections, header, bar, margin })
+      : await this.site.evaluate(HEADING_STOPS, [css, place]);
+    console.log(`\r  visit: ${stops.length} stops`);
+    for (const [k, { y, head, slow }] of stops.entries()) {
       const y0 = await this.site.evaluate(() => window.scrollY);
-      if (Math.abs(y - y0) >= 1) await this.scrollTo(y, Math.max(min, Math.abs(y - y0) / speed), sine);
-      await this.wait(head ? pause : pass);
+      if (Math.abs(y - y0) >= 1) await this.scrollTo(y, Math.max(min, Math.abs(y - y0) / (slow ? sceneSpeed : speed)), sine);
+      await this.wait(0.3);
+      if (STILLS) writeFileSync(join(STILLS, `stop-${String(k + 1).padStart(2, "0")}.png`), this.last);
+      await this.wait((head ? pause : pass) - 0.3);
     }
   }
   async scrollTo(y, sec = 1.2, curve = ease) {
@@ -460,6 +575,7 @@ await page.mouse.move(...PARK);
 if (scenario.clock) await page.clock.pauseAt(await page.evaluate(() => Date.now()) + 100);
 
 mkdirSync(dirname(OUT), { recursive: true });
+if (STILLS) mkdirSync(STILLS, { recursive: true });
 const ffmpeg = spawn("ffmpeg", [
   "-y", "-loglevel", "error",
   "-f", "image2pipe", "-c:v", "png", "-framerate", String(FPS), "-i", "pipe:0",
