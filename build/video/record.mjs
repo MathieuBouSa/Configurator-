@@ -22,6 +22,8 @@
        --url <url>      record another page with the same scenario
        --root <dir>     serve the site from this folder (a local checkout)
        --stills <dir>   also save one PNG per visit stop, to check the framing
+       --clip <key>=<file>   a video file for one of the scenario's clips
+                        (a thumbnail on the page that should play)
        --fps <n>        frames per second (default 30)
        --crf <n>        x264 quality, lower is better (default 18)
 
@@ -64,6 +66,9 @@ const FPS = Number(opt("fps", 30));
 const CRF = String(opt("crf", 18));
 const OUT = join(ROOT, opt("out", `video/${name}-salon.mp4`));
 const STILLS = opt("stills", null) && resolve(ROOT, opt("stills"));   // a PNG of every visit stop, to check the framing
+/* --clip <key>=<file>, repeatable: the video files behind the scenario's clips. */
+const CLIP_FILES = Object.fromEntries(argv.flatMap((a, i) => a === "--clip" && argv[i + 1] ? [argv[i + 1].split(/=(.*)/s).slice(0, 2)] : [])
+  .map(([k, f]) => [k, resolve(process.cwd(), f)]));
 
 const require = createRequire(import.meta.url);
 let chromium;
@@ -124,13 +129,44 @@ function tailwindShim(page) {
   } finally { rmSync(dir, { recursive: true, force: true }); }
 }
 
+/* ---------- clips: a video playing where the page shows a thumbnail ----------
+   A scenario lists clips { key, replace, start, length }: `replace` is the
+   element holding the thumbnail, the file comes from --clip <key>=<file>.
+   The excerpt is re-encoded for Chromium (VP9, every frame a keyframe so
+   the clock can seek frame by frame), muted, served under /__clips/ and
+   laid over the thumbnail; its play button and label are hidden. */
+
+function prepareClip({ key, start = 0, length = 12 }) {
+  const dir = mkdtempSync(join(tmpdir(), "salus-clip-"));
+  try {
+    const out = join(dir, "clip.webm");
+    execFileSync("ffmpeg", ["-y", "-loglevel", "error", "-ss", String(start), "-t", String(length), "-i", CLIP_FILES[key], "-an",
+      "-vf", `fps=${FPS},scale=-2:'min(960,ih)'`, "-c:v", "libvpx-vp9", "-g", "1", "-crf", "33", "-b:v", "0",
+      "-deadline", "good", "-cpu-used", "4", "-row-mt", "1", out]);
+    return readFileSync(out);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+}
+
+const LAY_CLIPS = (clips) => Promise.all(clips.map(c => new Promise(ok => {
+  const host = document.querySelector(c.replace);
+  if (!host) { ok(c.key + ": nothing matches " + c.replace); return; }
+  const v = document.createElement("video");
+  Object.assign(v, { muted: true, playsInline: true, preload: "auto", src: "/__clips/" + encodeURIComponent(c.key) + ".webm" });
+  v.style.cssText = "position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:5;pointer-events:none";
+  for (const k of host.children) if (k.tagName !== "IMG" && k.tagName !== "PICTURE") k.style.visibility = "hidden";
+  if (getComputedStyle(host).position === "static") host.style.position = "relative";
+  host.appendChild(v);
+  v.addEventListener("loadeddata", () => ok(null), { once: true });
+  v.addEventListener("error", () => ok(c.key + ": the clip does not play"), { once: true });
+})));
+
 /* ---------- the clock ----------
    Runs inside the stage and inside the site. Every animation it has not
    seen yet is paused and stamped with the current video time; then each
    one is set to (now - stamp). Returns true while anything is moving
    (one extra frame, so the finished state is captured too). The
    overlay's shadow root is stepped too, and a <video> is paused and
-   seeked the same way, looping. With `clock: true` the scenario also puts
+   seeked the same way, looping, from the frame it first comes on screen. With `clock: true` the scenario also puts
    the page's JavaScript time (timers, requestAnimationFrame, Date) on
    the video clock, so a script-driven counter counts at the right speed. */
 
@@ -149,11 +185,16 @@ const SYNC_ANIMATIONS = async ([t, dt]) => {
   }
   const seeks = [];
   for (const v of document.querySelectorAll("video")) {
+    v.pause();
+    const r = v.getBoundingClientRect();
+    const onScreen = r.width > 0 && r.bottom > 0 && r.top < innerHeight;
     let t0 = seen.get(v);
-    if (t0 === undefined) { t0 = t; seen.set(v, t0); v.pause(); }
+    if (t0 === undefined) { if (!onScreen) continue; t0 = t; seen.set(v, t0); }   // starts when it comes on screen
     if (!(v.duration > 0)) continue;
-    moving = true;
-    v.currentTime = ((t - t0) / 1000) % v.duration;
+    if (onScreen) moving = true;
+    const at = ((t - t0) / 1000) % v.duration;
+    if (Math.abs(v.currentTime - at) < 0.001) continue;
+    v.currentTime = at;
     seeks.push(new Promise(ok => v.addEventListener("seeked", ok, { once: true })));
   }
   await Promise.all(seeks);                    // no timer here: the page's timers may be on the video clock
@@ -531,6 +572,24 @@ if (scenario.clock) await context.clock.install();
 for (const [pattern, file] of VENDOR) {
   await context.route(pattern, route => route.fulfill({ contentType: "text/javascript", body: readFileSync(join(ROOT, file)) }));
 }
+const CLIPS = (scenario.clips || []).filter(c => {
+  if (CLIP_FILES[c.key]) return true;
+  console.log(`clip ${c.key}: no file given (--clip ${c.key}=<file>), the thumbnail stays`);
+  return false;
+});
+if (CLIPS.length) {
+  const data = {};
+  for (const c of CLIPS) { console.log(`Preparing clip ${c.key} ...`); data[c.key] = prepareClip(c); }
+  await context.route(/\/__clips\//, route => {
+    const body = data[decodeURIComponent(new URL(route.request().url()).pathname.split("/").pop()).replace(/\.webm$/, "")];
+    if (!body) return route.fulfill({ status: 404 });
+    const m = /bytes=(\d+)-(\d*)/.exec(route.request().headers().range || "");
+    if (!m) return route.fulfill({ status: 200, contentType: "video/webm", headers: { "accept-ranges": "bytes" }, body });
+    const a = +m[1], b = m[2] ? Math.min(+m[2], body.length - 1) : body.length - 1;
+    return route.fulfill({ status: 206, contentType: "video/webm", body: body.subarray(a, b + 1),
+      headers: { "accept-ranges": "bytes", "content-range": `bytes ${a}-${b}/${body.length}` } });
+  });
+}
 if (scenario.tailwindCdn) {
   console.log("Compiling Tailwind for " + scenario.tailwindCdn + " ...");
   const shim = tailwindShim(scenario.tailwindCdn);
@@ -552,6 +611,7 @@ if (DIRECT) {
   site = page.mainFrame();
   await siteReady(site);
   if (scenario.preload) await preload(site);
+  if (CLIPS.length) for (const problem of await site.evaluate(LAY_CLIPS, CLIPS)) if (problem) console.log("clip " + problem);
   await mountOverlay(["intro"]);
 } else {
   await page.goto(`${base}/build/video/stage.html`, { waitUntil: "load" });

@@ -32,6 +32,17 @@ export default {
      screen it would only take 70 px off every view. */
   css: ".cta-bar{display:none !important}",
 
+  /* The two YouTube thumbnails play instead of standing still: an excerpt of
+     each film, muted, looping from the moment it comes on screen. The files
+     are given at recording time:
+       --clip presentation=<Découvrez R-System en 2 minutes, youtu.be/U4zsIexkAy8>
+       --clip usine=<La réalisation du plénum à Bordeaux, youtu.be/tJVTvYfFSmQ>
+     Without them, the thumbnails stay as on the site. */
+  clips: [
+    { key: "presentation", replace: '.video-poster[data-video="U4zsIexkAy8"]', start: 0, length: 20 },
+    { key: "usine", replace: '.video-poster[data-video="tJVTvYfFSmQ"]', start: 0, length: 20 },
+  ],
+
   look: {
     logo: "/assets/logo/logo-r-system-navy-en-blanc.png",
     logoHeight: 76,
