@@ -1,13 +1,16 @@
 /* ============================================================
    SALUS Configurator - trade-show video recorder
    ------------------------------------------------------------
-   Plays a scripted walkthrough of one of the configurators and
-   records it as a looping 1920 x 1080 MP4 for a screen on a
-   stand: the live site inside a browser window, a brand panel
-   with the steps and a caption, a visible cursor, intro and
-   outro cards. No sound - a stand screen plays muted.
+   Plays a scripted walkthrough of a site and records it as a
+   looping 1920 x 1080 MP4 for a screen on a stand. No sound - a
+   stand screen plays muted. Two layouts:
+     - stage (the configurators): the page inside a browser window,
+       next to a brand panel with the steps and a caption;
+     - direct (an external site): the site full screen.
+   Both get a visible cursor and intro / outro cards (overlay.js).
 
        npm install --no-save playwright
+       node build/video/record.mjs r-system-site
        node build/video/record.mjs r-system
        node build/video/record.mjs configurator
 
@@ -16,20 +19,23 @@
 
    Options
        --out <file>     output path (default video/<name>-salon.mp4)
+       --url <url>      record another page with the same scenario
        --fps <n>        frames per second (default 30)
        --crf <n>        x264 quality, lower is better (default 18)
 
-   Needs ffmpeg on the PATH, Playwright's Chromium, and the npm
-   registry once per run for the R-System page (its Tailwind CDN
-   build is compiled locally, see tailwindShim below).
+   Needs ffmpeg on the PATH, Playwright's Chromium, network access
+   to an external site, and the npm registry once per run for the
+   R-System configurator (its Tailwind CDN build is compiled
+   locally, see tailwindShim below).
 
    How it stays smooth: the page is never filmed in real time.
    Every output frame is staged, then screenshotted. The script
    owns the clock: each frame it pauses every CSS animation and
    transition of the stage and the site and sets them to the
    frame's time, so a 0.35 s fade lasts exactly 0.35 s of video
-   however slow the machine is. A frame where nothing moves is
-   not screenshotted again, only repeated.
+   however slow the machine is; videos on the page are stepped the
+   same way. A frame where nothing moves is not screenshotted
+   again, only repeated.
    ============================================================ */
 
 import { createRequire } from "node:module";
@@ -49,7 +55,7 @@ const argv = process.argv.slice(2);
 const opt = (n, d) => { const i = argv.indexOf(`--${n}`); return i >= 0 && argv[i + 1] ? argv[i + 1] : d; };
 const name = argv.find(a => !a.startsWith("--") && !argv[argv.indexOf(a) - 1]?.startsWith("--"));
 if (!name || !existsSync(join(HERE, `${name}.mjs`))) {
-  console.error("Usage: node build/video/record.mjs <r-system|configurator> [--out file] [--fps 30] [--crf 18]");
+  console.error("Usage: node build/video/record.mjs <scenario> [--out file] [--url url] [--fps 30] [--crf 18]");
   process.exit(1);
 }
 const FPS = Number(opt("fps", 30));
@@ -114,12 +120,16 @@ function tailwindShim(page) {
    Runs inside the stage and inside the site. Every animation it has not
    seen yet is paused and stamped with the current video time; then each
    one is set to (now - stamp). Returns true while anything is moving
-   (one extra frame, so the finished state is captured too). */
+   (one extra frame, so the finished state is captured too). The
+   overlay's shadow root is stepped too, and a <video> is paused and
+   seeked the same way, looping. */
 
-const SYNC_ANIMATIONS = ([t, dt]) => {
+const SYNC_ANIMATIONS = async ([t, dt]) => {
   const seen = window.__videoClock || (window.__videoClock = new WeakMap());
   let moving = false;
-  for (const a of document.getAnimations()) {
+  const animations = new Set(document.getAnimations());
+  if (window.stage && window.stage.root) for (const a of window.stage.root.getAnimations()) animations.add(a);
+  for (const a of animations) {
     let t0 = seen.get(a);
     if (t0 === undefined) { t0 = t; seen.set(a, t0); a.pause(); }
     const end = a.effect ? a.effect.getComputedTiming().endTime : 0;
@@ -127,6 +137,16 @@ const SYNC_ANIMATIONS = ([t, dt]) => {
     a.currentTime = Math.min(local, end);
     if (local < end + dt) moving = true;
   }
+  const seeks = [];
+  for (const v of document.querySelectorAll("video")) {
+    let t0 = seen.get(v);
+    if (t0 === undefined) { t0 = t; seen.set(v, t0); v.pause(); }
+    if (!(v.duration > 0)) continue;
+    moving = true;
+    v.currentTime = ((t - t0) / 1000) % v.duration;
+    seeks.push(new Promise(ok => { v.addEventListener("seeked", ok, { once: true }); setTimeout(ok, 1500); }));
+  }
+  await Promise.all(seeks);
   return moving;
 };
 
@@ -157,8 +177,10 @@ const ease = p => (p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);   
 const sine = p => -(Math.cos(Math.PI * p) - 1) / 2;                            // gentler, for long scrolls
 
 class Recorder {
-  constructor(page, site, ffmpeg) {
-    Object.assign(this, { page, site, ffmpeg });
+  constructor(page, site, ffmpeg, mountOverlay) {
+    Object.assign(this, { page, site, ffmpeg, mountOverlay });
+    this.direct = site === page.mainFrame();
+    this.shown = new Set(["intro"]);
     this.dt = 1000 / FPS;
     this.t = 0;
     this.frames = 0;
@@ -170,11 +192,9 @@ class Recorder {
 
   /* One output frame: settle the animations, screenshot if anything changed, write. */
   async tick() {
-    const moving = await Promise.all([
-      this.page.evaluate(SYNC_ANIMATIONS, [this.t, this.dt]),
-      this.site.evaluate(SYNC_ANIMATIONS, [this.t, this.dt]),
-    ]);
-    if (this.dirty || moving[0] || moving[1] || !this.last) {
+    const docs = this.direct ? [this.page] : [this.page, this.site];
+    const moving = await Promise.all(docs.map(d => d.evaluate(SYNC_ANIMATIONS, [this.t, this.dt])));
+    if (this.dirty || moving.includes(true) || !this.last) {
       this.last = await this.page.screenshot({ type: "png" });
       this.shots++;
     }
@@ -199,13 +219,16 @@ class Recorder {
 
   /* ----- panel and cards ----- */
   step(i, text) { return this.stage(([i, text]) => stage.step(i, text), [i, text]); }
-  card(id, on) { return this.stage(([id, on]) => stage.card(id, on), [id, on]); }
+  card(id, on) {
+    if (on) this.shown.add(id); else this.shown.delete(id);
+    return this.stage(([id, on]) => stage.card(id, on), [id, on]);
+  }
 
   /* ----- cursor ----- */
   async cursorOn(on) {
     if (on) await this.stage(([x, y]) => stage.cursor(x, y), [this.cx, this.cy]);
     await this.stage(on => stage.cursorOn(on), on);
-    if (!on) await this.page.mouse.move(200, 600);     // park the real mouse on the panel: no stray hover
+    if (!on) await this.page.mouse.move(...PARK);       // park the real mouse where it hovers nothing
   }
   async moveTo(x, y, sec = 0.9) {
     const x0 = this.cx, y0 = this.cy;
@@ -233,6 +256,7 @@ class Recorder {
     return b;
   }
   async frameOrigin() {
+    if (this.direct) return { x: 0, y: 0 };
     return this.page.evaluate(() => { const r = document.getElementById("site").getBoundingClientRect(); return { x: r.left, y: r.top }; });
   }
   /* Glide the cursor onto an element (at a fraction of its box). */
@@ -266,9 +290,57 @@ class Recorder {
   }
   async reloadSite() {
     await this.site.evaluate(() => { try { localStorage.clear(); } catch (e) { /* storage blocked */ } });
-    await this.site.goto(this.site.url());
+    await this.goto(this.site.url());
+  }
+  /* Another page of the site - behind a card. */
+  async goto(url) {
+    await this.site.goto(new URL(url, this.site.url()).href, { waitUntil: "load" });
     await siteReady(this.site);
+    if (this.direct) await this.mountOverlay([...this.shown]);
     this.dirty = true;
+  }
+  /* Off camera: run down the page once so lazy images and scroll-revealed
+     blocks are loaded before the camera gets there. */
+  async preload() {
+    await this.site.evaluate(async () => {
+      const pause = ms => new Promise(ok => setTimeout(ok, ms));
+      for (let y = 0; y < document.documentElement.scrollHeight; y += innerHeight * 0.7) {
+        window.scrollTo({ top: y, behavior: "instant" });
+        await pause(150);
+      }
+      await pause(500);
+      await Promise.all([...document.images].map(i => i.complete ? null
+        : new Promise(ok => { i.onload = i.onerror = ok; setTimeout(ok, 10000); })));
+      window.scrollTo({ top: 0, behavior: "instant" });
+    });
+    this.dirty = true;
+  }
+  /* The visit of a page: scroll it top to bottom, stopping on each heading
+     (placed at `place` of the window), and every ~0.9 window in between
+     when a section runs long. */
+  async tour({ css = "h1, h2", place = 0.18, pause = 2.2, speed = 380, min = 1.2 } = {}) {
+    const stops = await this.site.evaluate(([css, place]) => {
+      const vh = innerHeight, max = document.documentElement.scrollHeight - vh;
+      const ys = [...document.querySelectorAll(css)]
+        .filter(e => e.getClientRects().length && getComputedStyle(e).visibility !== "hidden")
+        .map(e => Math.round(e.getBoundingClientRect().top + scrollY - vh * place))
+        .map(y => Math.max(0, Math.min(max, y)))
+        .concat([0, max])
+        .sort((a, b) => a - b);
+      const out = [];
+      for (const y of ys) {
+        const last = out.length ? out[out.length - 1] : null;
+        if (last !== null && y - last < vh * 0.45) continue;
+        if (last !== null) for (let k = last + vh * 0.9; k < y - vh * 0.45; k += vh * 0.9) out.push(Math.round(k));
+        out.push(y);
+      }
+      return out;
+    }, [css, place]);
+    for (const y of stops) {
+      const y0 = await this.site.evaluate(() => window.scrollY);
+      if (Math.abs(y - y0) >= 1) await this.scrollTo(y, Math.max(min, Math.abs(y - y0) / speed), sine);
+      await this.wait(pause);
+    }
   }
 
   async scrollTo(y, sec = 1.2, curve = ease) {
@@ -291,7 +363,7 @@ class Recorder {
 }
 
 async function siteReady(frame) {
-  await frame.waitForFunction(() => document.getElementById("root")?.children.length > 0);
+  if (scenario.ready) await frame.waitForSelector(scenario.ready);
   await frame.evaluate(async () => {
     await document.fonts.ready;
     await Promise.all([...document.images].map(i => i.complete ? null : new Promise(ok => { i.onload = i.onerror = ok; })));
@@ -300,10 +372,20 @@ async function siteReady(frame) {
 
 /* ---------- run ---------- */
 
+const DIRECT = scenario.layout === "direct";
+/* Where the real mouse rests when the cursor is hidden: on the panel, or on the page's right edge. */
+const PARK = DIRECT ? [1279, 360] : [200, 600];
+const LOGO = "data:image/png;base64," + readFileSync(join(ROOT, "assets/hero/logo-salus.png")).toString("base64");
+const OVERLAY = readFileSync(join(HERE, "overlay.js"), "utf8");
+
 const server = await serve();
 const base = `http://127.0.0.1:${server.address().port}`;
+const siteUrl = new URL(opt("url", scenario.url), base + "/").href;
 const browser = await chromium.launch();
-const context = await browser.newContext({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 1.5, locale: scenario.lang || "fr-FR" });
+const context = await browser.newContext({
+  viewport: { width: 1280, height: 720 }, deviceScaleFactor: 1.5, locale: scenario.lang || "fr-FR",
+  bypassCSP: DIRECT,                              // the overlay's own styles and fonts, on someone else's page
+});
 
 await context.addInitScript(PICK);
 for (const [pattern, file] of VENDOR) {
@@ -317,20 +399,36 @@ if (scenario.tailwindCdn) {
 
 const page = await context.newPage();
 page.on("pageerror", e => console.error("\n[page error]", e.message));
-await page.goto(`${base}/build/video/stage.html`, { waitUntil: "load" });
-await page.evaluate(cfg => stage.init(cfg), { lang: scenario.lang, url: scenario.windowUrl, panel: scenario.panel, cards: scenario.cards });
-await page.evaluate(src => new Promise(ok => {
-  const f = document.getElementById("site");
-  f.addEventListener("load", ok, { once: true });
-  f.src = src;
-}), base + scenario.url);
-const site = page.frame({ name: "site" });
-await siteReady(site);
-await page.evaluate(async () => {
-  await document.fonts.ready;
-  await Promise.all([...document.images].map(i => i.complete ? null : new Promise(ok => { i.onload = i.onerror = ok; })));
-});
-await page.mouse.move(200, 600);
+let site;
+/* Direct layout: the overlay goes straight into the site's page, scrollbar hidden. */
+const mountOverlay = async (shown) => {
+  await page.evaluate(OVERLAY);
+  await page.addStyleTag({ content: "html{scrollbar-width:none}::-webkit-scrollbar{display:none}" + (scenario.css || "") });
+  await page.evaluate(([cards, logo, shown]) => { stage.cards(cards, logo, shown); return stage.ready; }, [scenario.cards, LOGO, shown]);
+};
+
+if (DIRECT) {
+  await page.goto(siteUrl, { waitUntil: "load" });
+  site = page.mainFrame();
+  await siteReady(site);
+  await mountOverlay(["intro"]);
+} else {
+  await page.goto(`${base}/build/video/stage.html`, { waitUntil: "load" });
+  await page.evaluate(cfg => stage.init(cfg), { lang: scenario.lang, url: scenario.windowUrl, panel: scenario.panel, cards: scenario.cards, logo: LOGO });
+  await page.evaluate(src => new Promise(ok => {
+    const f = document.getElementById("site");
+    f.addEventListener("load", ok, { once: true });
+    f.src = src;
+  }), siteUrl);
+  site = page.frame({ name: "site" });
+  await siteReady(site);
+  await page.evaluate(async () => {
+    await stage.ready;
+    await document.fonts.ready;
+    await Promise.all([...document.images].map(i => i.complete ? null : new Promise(ok => { i.onload = i.onerror = ok; })));
+  });
+}
+await page.mouse.move(...PARK);
 
 mkdirSync(dirname(OUT), { recursive: true });
 const ffmpeg = spawn("ffmpeg", [
@@ -344,7 +442,7 @@ const ffmpeg = spawn("ffmpeg", [
 const encoded = new Promise((ok, ko) => ffmpeg.on("close", c => (c === 0 ? ok() : ko(new Error("ffmpeg exited with " + c)))));
 
 console.log(`Recording "${name}" at ${FPS} fps -> ${relative(ROOT, OUT)}`);
-const rec = new Recorder(page, site, ffmpeg);
+const rec = new Recorder(page, site, ffmpeg, mountOverlay);
 try {
   await scenario.run(rec);
 } finally {

@@ -8,6 +8,7 @@
 
 export default {
   lang: "en",
+  ready: "#root > *",
   url: "/index.html",
   windowUrl: "configurator-salus-test.netlify.app",
 
@@ -122,7 +123,8 @@ export default {
     /* Outro, then back to the intro card: the loop point */
     await r.card("outro", true);
     await r.wait(5.5);
-    await r.card("intro", true);
+    await r.card("intro", true);             // under the outro: it shows only as the outro fades away
+    await r.wait(0.8);
     await r.card("outro", false);
     await r.wait(1.2);
   },

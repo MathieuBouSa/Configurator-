@@ -21,14 +21,14 @@ timer in the footer. Each group slide carries its own live-demo cue, so the deck
 The same deck is also committed as `Salus-Configurator-presentation.pptx`, for anyone who would rather
 project from PowerPoint - speaker notes included.
 
-**On a stand screen:** two silent 1920 x 1080 loops that scroll through the real pages, recorded from them -
-[video/r-system-salon.mp4](video/r-system-salon.mp4) (French, the R-System plenum configurator, one complete
-configuration down to the summary, about 1 min) and [video/configurator-salon.mp4](video/configurator-salon.mp4)
-(English, this configurator: the first questions, then the demo house's solution section by section, about
-1 min 20). Each one ends on its first frame, so a screen set to repeat plays it with no visible cut. Copy the
-MP4 to a USB stick for the TV's media player (H.264, plays on any screen), or open it full screen in a browser.
-To change one, edit its scenario in `build/video/` and re-record: `npm install --no-save playwright`, then
-`node build/video/record.mjs r-system` (or `configurator`) - ffmpeg needed, a few minutes per video.
+**On a stand screen:** `build/video/record.mjs` records a silent 1920 x 1080 loop that scrolls through a site,
+for a TV on a trade-show stand. `node build/video/record.mjs r-system-site` films the public site
+https://r-system-by-salus.com/ full screen, pausing on each section heading, between an intro and an outro card,
+into `video/r-system-site-salon.mp4`. The video ends on its first frame, so a screen set to repeat plays it with no
+visible cut. Copy the MP4 to a USB stick for the TV's media player (H.264, plays on any screen), or open it full
+screen in a browser. Two more scenarios walk through the configurators themselves (`r-system`, `configurator`),
+with a step panel beside the page. Needs `npm install --no-save playwright`, ffmpeg and network access to the
+site; a few minutes per video. The visit follows the page's headings, so re-recording picks up content changes.
 
 **Live demo:** https://configurator-salus-test.netlify.app/
 (Netlify auto-deploys `main`; every pull request gets a deploy preview at
@@ -92,8 +92,7 @@ js/app.js             Journey, landing, replacement, pre-visit, backstage
 assets/               Real product photos + logo (fixed paths - see VISUALS.md)
 vendor/               React, jsPDF, compiled Tailwind CSS, Iconify icon bundle
 build/                CSS recompilation, Iconify bundler, product photo pipeline
-build/video/          Trade-show video recorder: stage page, one scenario per video
-video/                The trade-show loops (1920 x 1080 MP4), recorded by build/video/record.mjs
+build/video/          Trade-show video recorder: stage page, overlay, one scenario per video
 tests/                Engine tests (plain node, no dependencies)
 ```
 
