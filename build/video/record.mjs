@@ -15,9 +15,10 @@
        node build/video/record.mjs configurator
 
    Scenarios live next to this file (build/video/<name>.mjs).
-   Output goes to video/<name>-salon.mp4.
+   Output goes to video/<name>-salon.mp4, or video/<name>-<lang>-salon.mp4.
 
    Options
+       --lang <fr|en|de>   the language, for a scenario that has several
        --out <file>     output path (default video/<name>-salon.mp4)
        --url <url>      record another page with the same scenario
        --root <dir>     serve the site from this folder (a local checkout)
@@ -64,7 +65,11 @@ if (!name || !existsSync(join(HERE, `${name}.mjs`))) {
 }
 const FPS = Number(opt("fps", 30));
 const CRF = String(opt("crf", 18));
-const OUT = join(ROOT, opt("out", `video/${name}-salon.mp4`));
+const module = (await import(pathToFileURL(join(HERE, `${name}.mjs`)).href)).default;
+/* A scenario in several languages is a function of the language. */
+const scenario = typeof module === "function" ? module(opt("lang", "fr")) : module;
+const LANG_TAG = typeof module === "function" && opt("lang", "fr") !== "fr" ? "-" + opt("lang") : "";
+const OUT = join(ROOT, opt("out", `video/${name}${LANG_TAG}-salon.mp4`));
 const STILLS = opt("stills", null) && resolve(ROOT, opt("stills"));   // a PNG of every visit stop, to check the framing
 /* --clip <key>=<file>, repeatable: the video files behind the scenario's clips. */
 const CLIP_FILES = Object.fromEntries(argv.flatMap((a, i) => a === "--clip" && argv[i + 1] ? [argv[i + 1].split(/=(.*)/s).slice(0, 2)] : [])
@@ -75,7 +80,6 @@ let chromium;
 try { ({ chromium } = require("playwright")); }
 catch { console.error("Playwright is missing: npm install --no-save playwright"); process.exit(1); }
 
-const scenario = (await import(pathToFileURL(join(HERE, `${name}.mjs`)).href)).default;
 
 /* ---------- local static server (the repository, as Netlify serves it) ----------
    --root serves another site (a local checkout of it); the stage itself
@@ -88,18 +92,23 @@ const MIME = {
 };
 
 const SITE_ROOT = resolve(ROOT, opt("root", "."));
+/* Pages served from memory instead of the disk: a translation (see translate()). */
+const MEMORY = {};
 
 function serve() {
   const srv = createServer((req, res) => {
     let p = decodeURIComponent(new URL(req.url, "http://local").pathname);
     if (p.endsWith("/")) p += "index.html";
+    if (MEMORY[p]) { res.writeHead(200, { "content-type": MIME[".html"] }); res.end(MEMORY[p]); return; }
     const root = p.startsWith("/build/video/") || p.startsWith("/assets/hero/") ? ROOT : SITE_ROOT;
     const file = normalize(join(root, p));
     if (relative(root, file).startsWith("..") || !existsSync(file) || statSync(file).isDirectory()) {
       res.writeHead(404); res.end(); return;
     }
     res.writeHead(200, { "content-type": MIME[extname(file)] || "application/octet-stream" });
-    res.end(readFileSync(file));
+    /* scenario.patch: { "/path/index.html": text => text }, a file changed as it is served */
+    const patch = root === SITE_ROOT && scenario.patch && scenario.patch[p];
+    res.end(patch ? patch(readFileSync(file, "utf8")) : readFileSync(file));
   });
   return new Promise(ok => srv.listen(0, "127.0.0.1", () => ok(srv)));
 }
@@ -559,6 +568,36 @@ async function siteReady(frame) {
   });
 }
 
+/* ---------- a page in a language the site does not have ----------
+   scenario.translate = { from, at, lang, texts, replace }: the page `from`
+   is loaded with its scripts off, each of its text nodes found in `texts`
+   (English -> other language, whitespace-normalised) is swapped, and the
+   result is served at `at`, before any script of the page runs. Markup,
+   counters and icons are untouched; `replace` lists [from, to] strings
+   changed in the HTML afterwards (an embedded page's ?lang=). */
+async function translate(browser, base, { from, at, lang, texts, replace = [] }) {
+  const ctx = await browser.newContext({ javaScriptEnabled: false });
+  const p = await ctx.newPage();
+  const res = await p.goto(new URL(from, base + "/").href);
+  if (!res.ok()) throw new Error(`translate: ${from} is missing (${res.status()}); is --root set?`);
+  const { html, missing } = await p.evaluate(([texts, lang]) => {
+    const missing = new Set();
+    const w = document.createTreeWalker(document.documentElement, NodeFilter.SHOW_TEXT);
+    for (let n; (n = w.nextNode());) {
+      if (n.parentElement.closest("script, style, noscript, template, title")) continue;
+      const t = n.nodeValue.replace(/\s+/g, " ").trim();
+      if (!t || !/[A-Za-z]/.test(t)) continue;
+      if (t in texts) n.nodeValue = n.nodeValue.replace(/\S[\s\S]*\S|\S/, texts[t]);
+      else missing.add(t);
+    }
+    document.documentElement.lang = lang;
+    return { html: "<!DOCTYPE html>\n" + document.documentElement.outerHTML, missing: [...missing] };
+  }, [texts, lang]);
+  await ctx.close();
+  if (missing.length) console.log(`translate: ${missing.length} texts left as they are:\n  ` + missing.join("\n  "));
+  MEMORY[at.endsWith("/") ? at + "index.html" : at] = replace.reduce((h, [a, b]) => h.split(a).join(b), html);
+}
+
 /* ---------- run ---------- */
 
 const DIRECT = scenario.layout === "direct";
@@ -576,6 +615,7 @@ const server = await serve();
 const base = `http://127.0.0.1:${server.address().port}`;
 const siteUrl = new URL(opt("url", scenario.url), base + "/").href;
 const browser = await chromium.launch();
+if (scenario.translate) await translate(browser, base, scenario.translate);
 const context = await browser.newContext({
   viewport: { width: 1280, height: 720 }, deviceScaleFactor: 1.5, locale: scenario.lang || "fr-FR",
   bypassCSP: DIRECT,                              // the overlay's own styles and fonts, on someone else's page
@@ -637,6 +677,7 @@ if (DIRECT) {
   }), siteUrl);
   site = page.frame({ name: "site" });
   await siteReady(site);
+  if (scenario.css) await site.addStyleTag({ content: scenario.css });
   await page.evaluate(async () => {
     await stage.ready;
     await document.fonts.ready;

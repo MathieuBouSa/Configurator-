@@ -37,6 +37,15 @@ thumbnail in a slow zoom, without the play button; given the video files (`--cli
 `--clip usine=<file>`), an excerpt of each plays in its place instead. `node build/video/join.mjs <out> <site> <configurator>`
 then joins the parts into one loop. A third scenario walks through the original configurator (`configurator`).
 
+**In English and German:** [video/r-system-salon-complet-en.mp4](video/r-system-salon-complet-en.mp4) and
+[video/r-system-salon-complet-de.mp4](video/r-system-salon-complet-de.mp4) are the same loop with the English landing
+(`en/`) and the site's own configurator (`configurateur/?lang=en`), recorded with `--lang en`
+(`r-system-site --root ../rsystem-landing --url /en/`, then `r-system-configurateur`). The site has no German
+version: `--lang de` serves the English landing translated text by text, and the configurator with a German text
+table added, as they are served, from `build/video/de/`. Nothing there is published, and the German texts have not
+been reviewed by a German speaker yet: have them read before the video goes on a stand. The German outro points to
+`r-system-by-salus.com/en`.
+
 **Live demo:** https://configurator-salus-test.netlify.app/
 (Netlify auto-deploys `main`; every pull request gets a deploy preview at
 `deploy-preview-<n>--configurator-salus-test.netlify.app`.)
