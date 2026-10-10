@@ -173,7 +173,7 @@ scene("usine", 22.5, 16, (el, s) => {
   const yearly = h("div", { style: "margin-top:36px" }, count, h("p", { class: "counter-label", style: "margin-top:8px" }, T.usine.countLabel));
   anim(yearly, FX.up, s + 1.0, 0.7);
   steps.style.marginTop = "40px";
-  el.append(h("div", { class: "copy right", style: "width:940px" }, heading(el, s + 0.4, { eyebrow: T.usine.eyebrow, lines: [[T.usine.l1]] }), yearly, steps));
+  el.append(h("div", { class: "copy right", style: "width:940px" }, heading(el, s + 0.4, { eyebrow: T.usine.eyebrow, size: "md", lines: [[T.usine.l1], [T.usine.thin, "thin accent"], [T.usine.thin2, "thin accent"]] }), yearly, steps));
 });
 
 /* 4 · Belimo actuators */
