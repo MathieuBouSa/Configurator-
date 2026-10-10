@@ -4,9 +4,9 @@
 window.TEXTS = {
   fr: {
     intro: { eyebrow: "SALUS Controls", l1: "Régulation multizone", l2: "pour climatisation", thin: "gainable.", chips: ["Garanti 5 ans", "Assemblé à Bordeaux", "Zigbee"] },
-    pose: { eyebrow: "Pièce par pièce", l1: "Une sortie par pièce.", l2: "Un thermostat", thin: "par zone.", text: "Jusqu'à huit zones sur une seule pompe à chaleur gainable." },
+    pose: { eyebrow: "SALUS Controls", l1: "Vous avez une minute\u202f?", thin: "On vous présente", thin2: "R-System." },
     plenum: { eyebrow: "01 · Le plénum", l1: "Assemblé à Bordeaux,", thin: "pensé pour durer.", text: "Dimensionné selon l'unité intérieure en place." },
-    usine: { eyebrow: "La preuve par l'usine", l1: "Machines de précision.", thin: "Coupes nettes, géométrie constante.",
+    usine: { eyebrow: "L'usine de Bordeaux", l1: "Spécialiste du plénum.", count: 35000, countLabel: "plénums par an",
       steps: ["Découpe laser Amada", "Pliage automatisé, angles réguliers", "Découpe de l'isolant au jet d'eau haute pression", "Assemblage"] },
     belimo: { eyebrow: "02 · Les servomoteurs", l1: "Belimo,", thin: "fabriqué en Suisse.", text: "Le registre est la pièce qui bouge tous les jours pendant quinze ans.", caption: "Chaque moteur est testé avant de partir" },
     boitier: { eyebrow: "03 · La régulation", l1: "Le boîtier de contrôle,", thin: "signé SALUS Controls.", text: "Livré entièrement précâblé. Huit zones et module Intesis, déjà raccordés.", closed: "Capot en place", open: "Capot retiré", count: 700000, suffix: "+", countLabel: "interfaces Intesis installées dans le monde" },

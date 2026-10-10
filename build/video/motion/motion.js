@@ -139,7 +139,7 @@ scene("intro", 0, 6, (el, s) => {
 /* 1 · On site: the installer at work, one outlet per room */
 scene("pose", 6, 12, (el, s) => {
   el.append(filmPanel("right", "pose", s, 0));
-  el.append(h("div", { class: "copy narrow" }, heading(el, s + 0.5, { eyebrow: T.pose.eyebrow, lines: [[T.pose.l1], [T.pose.l2], [T.pose.thin, "thin accent"]], text: T.pose.text })));
+  el.append(h("div", { class: "copy narrow" }, heading(el, s + 0.5, { eyebrow: T.pose.eyebrow, size: "xl", lines: [[T.pose.l1], [T.pose.thin, "thin accent"], [T.pose.thin2, "thin accent"]] })));
 });
 
 /* 2 · The plenum, assembled in Bordeaux */
@@ -167,7 +167,13 @@ scene("usine", 22.5, 16, (el, s) => {
     for (const [i, at] of lit) if (t >= at) on = i;
     [...steps.children].forEach((li, i) => li.classList.toggle("on", i === on));
   });
-  el.append(h("div", { class: "copy right", style: "width:940px" }, heading(el, s + 0.4, { eyebrow: T.usine.eyebrow, lines: [[T.usine.l1], [T.usine.thin, "thin"]] }), steps));
+  /* the factory's yearly output, counting up as the film starts */
+  const count = h("div", { class: "counter", style: "font-size:150px" });
+  counter(count, T.usine.count, s + 1.2, 2.4);
+  const yearly = h("div", { style: "margin-top:36px" }, count, h("p", { class: "counter-label", style: "margin-top:8px" }, T.usine.countLabel));
+  anim(yearly, FX.up, s + 1.0, 0.7);
+  steps.style.marginTop = "40px";
+  el.append(h("div", { class: "copy right", style: "width:940px" }, heading(el, s + 0.4, { eyebrow: T.usine.eyebrow, lines: [[T.usine.l1]] }), yearly, steps));
 });
 
 /* 4 · Belimo actuators */
