@@ -21,6 +21,39 @@ timer in the footer. Each group slide carries its own live-demo cue, so the deck
 The same deck is also committed as `Salus-Configurator-presentation.pptx`, for anyone who would rather
 project from PowerPoint - speaker notes included.
 
+**On a stand screen:** [video/r-system-salon-complet.mp4](video/r-system-salon-complet.mp4) is a silent 1920 x 1080
+loop of about 2 min 45: first the public R-System site, https://r-system-by-salus.com/ (repository
+`MathieuBouSa/rsystem-landing`), the installer landing full screen, scrolled top to bottom with a pause on each
+section between an intro and an outro card in the site's own look; then, through a navy fade, the R-System
+configurator filled in step by step. It ends on its first frame, so a screen set to repeat plays it with no visible
+cut. Copy the MP4 to a USB stick for the TV's media player (H.264, plays on any screen), or open it full screen in a
+browser. [video/r-system-site-salon.mp4](video/r-system-site-salon.mp4) is the site part alone (1 min 48).
+The parts are recorded by `build/video/record.mjs` (`npm install --no-save playwright`, ffmpeg, a few minutes each):
+`node build/video/record.mjs r-system-site` films the live site,
+`node build/video/record.mjs r-system-site --root ../rsystem-landing --url /` films a local checkout of the landing
+repository next to this one, offline, and `node build/video/record.mjs r-system` films the configurator. The site
+visit follows the page's sections, so re-recording picks up any change of content. The site's two films show their
+thumbnail in a slow zoom, without the play button; given the video files (`--clip presentation=<file>`,
+`--clip usine=<file>`), an excerpt of each plays in its place instead. `node build/video/join.mjs <out> <site> <configurator>`
+then joins the parts into one loop. A third scenario walks through the original configurator (`configurator`).
+
+**In English and German:** [video/r-system-salon-complet-en.mp4](video/r-system-salon-complet-en.mp4) and
+[video/r-system-salon-complet-de.mp4](video/r-system-salon-complet-de.mp4) are the same loop with the English landing
+(`en/`) and the site's own configurator (`configurateur/?lang=en`), recorded with `--lang en`
+(`r-system-site --root ../rsystem-landing --url /en/`, then `r-system-configurateur`). The site has no German
+version: `--lang de` serves the English landing translated text by text, and the configurator with a German text
+table added, as they are served, from `build/video/de/`. Nothing there is published, and the German texts have not
+been reviewed by a German speaker yet: have them read before the video goes on a stand. The German outro points to
+`r-system-by-salus.com/en`.
+
+**The stand film:** [video/r-system-film-salon.mp4](video/r-system-film-salon.mp4) is a 3-minute motion design loop
+for a stand screen, built from the landing's messages and photos, in the landing's order, and three films shot on
+site (installation, the Bordeaux factory, the app). One idea per scene, large type, the films in full-height panels.
+It is a page, `build/video/motion/index.html`, filmed frame by frame by `build/video/motion/render.mjs`
+(`--lang fr|en|de`, texts in `texts.js`). The photos come from a checkout of `rsystem-landing` next to this one, the
+films from `r-system-motion-design/assets/films/`, where they are versioned as masters. The configurator video (`r-system` scenario) follows the film, joined by `build/video/join.mjs`. Open the page through the
+renderer's server, or scrub it with `?t=<seconds>`.
+
 **Live demo:** https://configurator-salus-test.netlify.app/
 (Netlify auto-deploys `main`; every pull request gets a deploy preview at
 `deploy-preview-<n>--configurator-salus-test.netlify.app`.)
@@ -83,6 +116,8 @@ js/app.js             Journey, landing, replacement, pre-visit, backstage
 assets/               Real product photos + logo (fixed paths - see VISUALS.md)
 vendor/               React, jsPDF, compiled Tailwind CSS, Iconify icon bundle
 build/                CSS recompilation, Iconify bundler, product photo pipeline
+build/video/          Trade-show video recorder: stage page, overlay, one scenario per video; motion/ the stand film
+video/                The trade-show loops: R-System site + configurator, and the site alone (1920 x 1080 MP4)
 tests/                Engine tests (plain node, no dependencies)
 ```
 
