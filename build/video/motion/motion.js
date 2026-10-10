@@ -168,12 +168,12 @@ scene("usine", 22.5, 16, (el, s) => {
     [...steps.children].forEach((li, i) => li.classList.toggle("on", i === on));
   });
   /* the factory's yearly output, counting up as the film starts */
-  const count = h("div", { class: "counter", style: "font-size:150px" });
+  const count = h("div", { class: "counter", style: "font-size:130px" });
   counter(count, T.usine.count, s + 1.2, 2.4);
-  const yearly = h("div", { style: "margin-top:36px" }, count, h("p", { class: "counter-label", style: "margin-top:8px" }, T.usine.countLabel));
+  const yearly = h("div", { style: "margin-top:28px" }, count, h("p", { class: "counter-label", style: "margin-top:8px" }, T.usine.countLabel));
   anim(yearly, FX.up, s + 1.0, 0.7);
   steps.style.marginTop = "40px";
-  el.append(h("div", { class: "copy right", style: "width:940px" }, heading(el, s + 0.4, { eyebrow: T.usine.eyebrow, size: "md", lines: [[T.usine.l1], [T.usine.thin, "thin accent"], [T.usine.thin2, "thin accent"]] }), yearly, steps));
+  el.append(h("div", { class: "copy right", style: "width:940px" }, heading(el, s + 0.4, { eyebrow: T.usine.eyebrow, size: "md", lines: [[T.usine.l1], [T.usine.thin, "thin accent"], [T.usine.thin2, "thin accent"]], text: T.usine.note }), yearly, steps));
 });
 
 /* 4 · Belimo actuators */
