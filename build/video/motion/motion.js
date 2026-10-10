@@ -272,21 +272,59 @@ scene("geste", 76, 5, (el, s) => {
   el.append(ph, h("div", { class: "copy", style: "width:860px" }, heading(el, s + 0.4, { eyebrow: T.geste.eyebrow, lines: [[T.geste.l1], [T.geste.thin, "thin accent"]] })));
 });
 
-/* 11 · The app film: the premium thermostat is your own screen, then the dampers */
-scene("appli", 81, 15, (el, s) => {
+/* 11 · The app film: the premium thermostat is your own screen */
+scene("appli", 81, 14.5, (el, s) => {
   el.append(filmPanel("right", "appli", s, 0));
   const chips = h("div", { class: "chips" }, T.appli.chips.map(c => h("span", { class: "chip" }, c)));
-  [...chips.children].forEach((c, i) => anim(c, FX.up, s + 1.3 + i * 0.12, 0.6));
-  const a = h("div", { class: "copy narrow" }, heading(el, s + 0.5, { eyebrow: T.appli.eyebrow, lines: [[T.appli.l1], [T.appli.thin, "thin accent"]] }), chips);
-  anim(a, [{ opacity: 1 }, { opacity: 0 }], s + 7.2, 0.4);
-  const bHead = h("div", {});
-  const b = h("div", { class: "copy narrow" }, bHead);
-  bHead.append(...heading(el, s + 7.7, { eyebrow: T.appli.eyebrow, lines: [[T.appli.l1b], [T.appli.thinb, "thin accent"]], text: T.appli.textb }));
-  el.append(a, b);
+  [...chips.children].forEach((c, i) => anim(c, FX.up, s + 1.6 + i * 0.12, 0.6));
+  el.append(h("div", { class: "copy narrow" }, heading(el, s + 0.5, { eyebrow: T.appli.eyebrow, lines: [[T.appli.l1], [T.appli.thin, "thin accent"]], text: T.appli.text }), chips));
+});
+
+/* 12 · Dampers set remotely: the landing's own pictures and its animation,
+   a wave leaving the phone and the blade opening as it arrives (30 to 80 %) */
+scene("registres", 95.5, 6.5, (el, s) => {
+  const fig = (src, cap, w, style) => {
+    const f = h("figure", { style: "position:absolute; text-align:center; " + style }, img(SITE + src, { style: `display:block; width:${w}px; margin:0 auto` }), h("p", { class: "caption", style: "position:static; margin-top:18px; font-size:18px; line-height:1.4" }, cap));
+    return f;
+  };
+  const vue = fig("r-system-vue-registres.png", T.registres.vue, 440, "left:900px; top:290px; width:460px");
+  const ecran = fig("r-system-appli-registres.png", T.registres.ecran, 290, "left:1540px; top:150px; width:320px");
+  anim(vue, FX.up, s + 0.5, 0.9);
+  anim(ecran, FX.up, s + 0.8, 0.9);
+  const ns = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("viewBox", "0 0 48 48");
+  svg.setAttribute("style", "display:block; width:96px; height:96px; overflow:visible");
+  const body = document.createElementNS(ns, "circle");
+  for (const [k, v] of Object.entries({ cx: 24, cy: 24, r: 20, fill: "none", stroke: "rgba(255,255,255,.4)", "stroke-width": 2 })) body.setAttribute(k, v);
+  const blade = document.createElementNS(ns, "rect");
+  for (const [k, v] of Object.entries({ x: 9, y: 21.5, width: 30, height: 5, rx: 2.5, fill: "#00aeef" })) blade.setAttribute(k, v);
+  svg.append(body, blade);
+  const value = h("p", { style: "margin-top:14px; font-size:26px; font-weight:800; text-align:center; font-variant-numeric:tabular-nums" });
+  const dots = [0, 1, 2, 3, 4].map(() => h("b", { style: "display:block; width:16px; height:16px; border-radius:50%; background:var(--cyan)" }));
+  const flow = h("div", { style: "display:flex; gap:14px; align-items:center" }, dots);
+  const pilot = h("div", { style: "position:absolute; left:1372px; top:470px; display:flex; flex-direction:column; align-items:center; gap:30px" }, h("div", {}, svg, value), flow);
+  anim(pilot, FX.fade, s + 1.1, 0.6);
+  /* the landing's cycle, 3.2 s: dots light from the phone side, then the blade turns */
+  const smooth = p => p * p * (3 - 2 * p);
+  const span = (p, a, b) => smooth(clamp((p - a) / (b - a)));
+  tickers.push(t => {
+    const p = (((t - s - 1.4) % 3.2) + 3.2) % 3.2 / 3.2;
+    const open = t < s + 1.4 ? 0 : span(p, 0.24, 0.36) - span(p, 0.74, 0.88);
+    blade.setAttribute("transform", `rotate(${74 * open} 24 24)`);
+    value.textContent = (open > 0.5 ? "80" : "30") + "\u202f%";
+    dots.forEach((d, i) => {
+      const q = (((p - (4 - i) * 0.11 / 3.2) % 1) + 1) % 1;
+      const k = t < s + 1.4 ? 0 : q < 0.08 ? q / 0.08 : q < 0.22 ? 1 - (q - 0.08) / 0.14 : 0;
+      d.style.opacity = 0.3 + 0.7 * k;
+      d.style.transform = `scale(${1 + 0.7 * k})`;
+    });
+  });
+  el.append(vue, pilot, ecran, h("div", { class: "copy", style: "width:720px" }, heading(el, s + 0.3, { eyebrow: T.registres.eyebrow, size: "md", lines: [[T.registres.l1], [T.registres.l2], [T.registres.thin, "thin accent"], [T.registres.thin2, "thin accent"]], text: T.registres.text })));
 });
 
 /* 12 · The installer account */
-scene("compte", 96, 6, (el, s) => {
+scene("compte", 102, 6, (el, s) => {
   const pic = img(SITE + "r-system-appli-ensemble.png", { class: "product", style: "right:20px; top:180px; width:960px" });
   anim(pic, FX.right, s + 0.3, 1.0);
   const items = h("div", { class: "items" }, T.compte.items.map(([b, sp]) => h("div", { class: "item" }, h("b", {}, b), h("span", {}, sp))));
@@ -295,22 +333,22 @@ scene("compte", 96, 6, (el, s) => {
 });
 
 /* 13 · The SALUS ecosystem */
-scene("eco", 102, 6, (el, s) => {
+scene("eco", 108, 6, (el, s) => {
   const grid = h("div", { class: "eco" }, T.eco.items.map((it, i) => h("div", { html: ICONS.eco[i] }, h("b", {}, it))));
   [...grid.children].forEach((g, i) => anim(g, FX.pop, s + 1.2 + i * 0.14, 0.6));
   el.append(h("div", { class: "copy center" }, heading(el, s + 0.3, { eyebrow: T.eco.eyebrow, lines: [[T.eco.l1], [T.eco.thin, "thin accent"]] }), grid));
 });
 
 /* 14 · A free app */
-scene("gratuit", 108, 4.5, (el, s) => {
+scene("gratuit", 114, 4.5, (el, s) => {
   const ph = img(SITE + "r-system-appli-en-main.png", { class: "product", style: "right:70px; top:250px; width:720px" });
   anim(ph, FX.up, s + 0.4, 1.0);
   el.append(ph, h("div", { class: "copy", style: "width:960px" }, heading(el, s + 0.3, { eyebrow: T.gratuit.eyebrow, size: "xl", lines: [[T.gratuit.l1], [T.gratuit.thin, "thin accent"]], text: T.gratuit.text })));
 });
 
 /* 15 · Outro, then a plain navy beat: the loop point */
-const TOTAL = 120;
-scene("outro", 112.5, 6.6, (el, s) => {
+const TOTAL = 126;
+scene("outro", 118.5, 6.6, (el, s) => {
   const logo = img("/site/assets/logo/logo-r-system-navy-en-blanc.png", { class: "logo" });
   anim(logo, FX.fade, s + 0.2, 0.8);
   const url = h("p", { class: "url" }, T.outro.url);
