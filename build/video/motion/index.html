@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<!-- The R-System stand film: a 1920 x 1080 page that render.mjs films frame
+     by frame. Open it in a browser to scrub it: ?t=42 shows second 42,
+     ?play plays it in real time. Assets come from the landing checkout
+     (/site/) and from the clips' extracted frames (/clips/). -->
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>R-System, film de salon</title>
+<link rel="stylesheet" href="motion.css">
+</head>
+<body>
+<main id="film">
+  <svg id="rings" viewBox="0 0 1920 1080" aria-hidden="true">
+    <circle cx="1500" cy="540" r="380"/>
+    <circle cx="1500" cy="540" r="560"/>
+    <circle cx="1500" cy="540" r="760"/>
+  </svg>
+</main>
+<script src="texts.js"></script>
+<script src="motion.js"></script>
+</body>
+</html>

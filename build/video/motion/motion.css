@@ -1,0 +1,120 @@
+/* The stand film's look: the landing's live charter (SALUS corporate, Open
+   Sans 800 / 300, navy and cyan), flat colours, 1 px rules, no shadow, no
+   gradient. Sized for a 1920 x 1080 frame read from a few metres away. */
+
+@font-face{
+  font-family:'Open Sans'; font-style:normal; font-weight:300 800;
+  src:url(/site/vendor/salus/assets/fonts/open-sans-latin.woff2) format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face{
+  font-family:'Open Sans'; font-style:normal; font-weight:300 800;
+  src:url(/site/vendor/salus/assets/fonts/open-sans-latin-ext.woff2) format('woff2');
+  unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+1E00-1E9F,U+2020,U+20A0-20AB,U+20AD-20C0;
+}
+
+:root{
+  --navy:#1d2858;
+  --navy-deep:#151d44;
+  --cyan:#00aeef;
+  --white:#fff;
+  --soft:rgba(255,255,255,.78);
+  --mute:rgba(255,255,255,.5);
+  --rule:rgba(255,255,255,.16);
+  --margin:128px;
+  --panel:720px;
+}
+
+*{ box-sizing:border-box; margin:0; padding:0; }
+html,body{ width:1920px; height:1080px; overflow:hidden; background:var(--navy); }
+body{ font-family:'Open Sans',sans-serif; color:var(--white); -webkit-font-smoothing:antialiased; }
+
+#film{ position:relative; width:1920px; height:1080px; overflow:hidden; background:var(--navy); }
+#rings{ position:absolute; inset:0; width:100%; height:100%; }
+#rings circle{ fill:none; stroke:rgba(255,255,255,.07); stroke-width:1.5; }
+
+.scene{ position:absolute; inset:0; opacity:0; }
+
+/* ---------- type ---------- */
+.eyebrow{ display:flex; align-items:center; gap:20px; font-size:22px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:var(--cyan); }
+.eyebrow i{ display:block; width:56px; height:2px; background:var(--cyan); transform-origin:left; }
+.title{ margin-top:34px; font-size:80px; font-weight:800; line-height:1.04; letter-spacing:-.02em; }
+.title.xl{ font-size:112px; }
+.title.md{ font-size:72px; }
+.title .thin{ font-weight:300; }
+.title .accent{ color:var(--cyan); }
+.line{ display:block; overflow:hidden; padding-bottom:.06em; margin-bottom:-.06em; }
+.line > span{ display:inline-block; }
+.text{ margin-top:36px; max-width:760px; font-size:32px; font-weight:300; line-height:1.4; color:var(--soft); }
+.chips{ display:flex; flex-wrap:wrap; gap:16px; margin-top:48px; }
+.chip{ padding:14px 24px; border:1px solid rgba(255,255,255,.35); border-radius:2px; font-size:22px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; }
+
+/* ---------- layouts ---------- */
+.copy{ position:absolute; left:var(--margin); top:50%; transform:translateY(-50%); width:980px; }
+.copy.narrow{ width:1000px; }
+.copy.center{ left:0; right:0; width:auto; text-align:center; }
+.copy.center .eyebrow, .copy.center .chips{ justify-content:center; }
+.copy.center .text{ margin-left:auto; margin-right:auto; }
+.copy.right{ left:auto; right:var(--margin); }
+
+/* a vertical film, full height, on one side */
+.panel{ position:absolute; top:0; width:var(--panel); height:1080px; overflow:hidden; background:var(--navy-deep); }
+.panel.right{ right:0; }
+.panel.left{ left:0; }
+.panel img{ display:block; width:100%; height:100%; object-fit:cover; }
+.panel.right::before, .panel.left::before{ content:""; position:absolute; top:0; bottom:0; width:6px; background:var(--cyan); z-index:2; }
+.panel.right::before{ left:0; }
+.panel.left::before{ right:0; }
+.panel .tag{ position:absolute; left:32px; bottom:32px; z-index:3; padding:10px 18px; background:var(--navy); font-size:20px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; }
+
+/* a photo filling one side */
+.photo{ position:absolute; top:0; height:1080px; overflow:hidden; }
+.photo img{ display:block; width:100%; height:100%; object-fit:cover; }
+.photo.right{ right:0; }
+
+/* ---------- scene parts ---------- */
+.logo{ height:96px; }
+.product{ position:absolute; display:block; }
+
+.steps{ margin-top:52px; list-style:none; }
+.steps li{ display:flex; align-items:baseline; gap:28px; padding:20px 0; border-top:1px solid var(--rule); font-size:30px; font-weight:300; color:var(--mute); }
+.steps li:last-child{ border-bottom:1px solid var(--rule); }
+.steps b{ font-size:22px; font-weight:700; letter-spacing:.12em; }
+.steps li.on{ color:var(--white); }
+.steps li.on b{ color:var(--cyan); }
+
+.counter{ font-size:200px; font-weight:800; line-height:1; letter-spacing:-.03em; color:var(--cyan); font-variant-numeric:tabular-nums; }
+.counter.sm{ font-size:96px; }
+.counter-label{ margin-top:20px; font-size:36px; font-weight:300; color:var(--soft); }
+
+.stats{ display:flex; gap:56px; margin-top:64px; }
+.stat b{ display:block; white-space:nowrap; font-size:84px; font-weight:800; line-height:1; color:var(--cyan); letter-spacing:-.02em; }
+.stat span{ display:block; margin-top:14px; font-size:24px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--soft); }
+
+.modes{ display:flex; gap:24px; margin-top:56px; }
+.mode{ width:300px; padding:30px 28px; border:1px solid rgba(255,255,255,.3); border-radius:2px; }
+.mode svg{ width:44px; height:44px; fill:none; stroke:var(--cyan); stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+.mode b{ display:block; margin-top:22px; font-size:26px; font-weight:700; }
+
+.items{ margin-top:52px; display:grid; gap:20px; }
+.item{ padding:26px 30px; border-left:4px solid var(--cyan); background:rgba(255,255,255,.05); }
+.item b{ display:block; font-size:32px; font-weight:800; }
+.item span{ display:block; margin-top:8px; font-size:26px; font-weight:300; color:var(--soft); }
+
+.eco{ display:grid; grid-template-columns:repeat(6, 220px); gap:28px; justify-content:center; margin-top:72px; }
+.eco div{ display:flex; flex-direction:column; align-items:center; gap:22px; padding:36px 12px; border:1px solid rgba(255,255,255,.22); border-radius:2px; }
+.eco svg{ width:64px; height:64px; fill:none; stroke:var(--cyan); stroke-width:1.4; stroke-linecap:round; stroke-linejoin:round; }
+.eco b{ font-size:22px; font-weight:700; text-align:center; }
+
+.mesh{ position:absolute; right:120px; top:140px; width:800px; height:800px; }
+.mesh line{ stroke:var(--cyan); stroke-width:2.5; }
+.mesh circle{ fill:var(--navy); stroke:var(--white); stroke-width:3; }
+.mesh circle.hub{ fill:var(--cyan); stroke:var(--cyan); }
+
+.dim{ position:absolute; height:2px; background:var(--cyan); }
+.dim-label{ position:absolute; font-size:30px; font-weight:800; color:var(--cyan); }
+
+.wipe-line{ position:absolute; top:0; bottom:0; width:4px; background:var(--cyan); }
+.caption{ position:absolute; font-size:22px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--soft); }
+
+.url{ margin-top:44px; font-size:54px; font-weight:800; color:var(--cyan); letter-spacing:-.01em; }
