@@ -46,12 +46,12 @@ table added, as they are served, from `build/video/de/`. Nothing there is publis
 been reviewed by a German speaker yet: have them read before the video goes on a stand. The German outro points to
 `r-system-by-salus.com/en`.
 
-**The stand film:** [video/r-system-film-salon.mp4](video/r-system-film-salon.mp4) is a 2-minute motion design loop
+**The stand film:** [video/r-system-film-salon.mp4](video/r-system-film-salon.mp4) is a 3-minute motion design loop
 for a stand screen, built from the landing's messages and photos, in the landing's order, and three films shot on
 site (installation, the Bordeaux factory, the app). One idea per scene, large type, the films in full-height panels.
 It is a page, `build/video/motion/index.html`, filmed frame by frame by `build/video/motion/render.mjs`
 (`--lang fr|en|de`, texts in `texts.js`). The photos come from a checkout of `rsystem-landing` next to this one, the
-films from `r-system-motion-design/assets/films/`, where they are versioned as masters. Open the page through the
+films from `r-system-motion-design/assets/films/`, where they are versioned as masters. The configurator video (`r-system` scenario) follows the film, joined by `build/video/join.mjs`. Open the page through the
 renderer's server, or scrub it with `?t=<seconds>`.
 
 **Live demo:** https://configurator-salus-test.netlify.app/
