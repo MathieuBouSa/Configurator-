@@ -4,7 +4,7 @@
 window.TEXTS = {
   fr: {
     intro: { eyebrow: "SALUS Controls", l1: "Régulation multizone", l2: "pour climatisation", thin: "gainable.", chips: ["Garanti 5 ans", "Assemblé à Bordeaux", "Zigbee"] },
-    pose: { eyebrow: "SALUS Controls", l1: "Vous avez une minute\u202f?", thin: "On vous présente", thin2: "R-System." },
+    pose: { eyebrow: "SALUS Controls", l1: "Vous avez une minute\u202f?", thin: "On vous présente" },
     plenum: { eyebrow: "01 · Le plénum", l1: "Assemblé à Bordeaux,", thin: "pensé pour durer.", text: "Dimensionné selon l'unité intérieure en place." },
     usine: { eyebrow: "Spécialiste du plénum", l1: "Usine à Bordeaux,", thin: "réalisation du plénum", thin2: "motorisé.", note: "Hors électronique et servomoteurs.", count: 35000, countLabel: "plénums par an",
       steps: ["Découpe laser Amada", "Pliage automatisé, angles réguliers", "Découpe de l'isolant au jet d'eau haute pression", "Assemblage"] },

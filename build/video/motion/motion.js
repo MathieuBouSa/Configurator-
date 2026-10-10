@@ -139,7 +139,11 @@ scene("intro", 0, 6, (el, s) => {
 /* 1 · On site: the installer at work, one outlet per room */
 scene("pose", 6, 12, (el, s) => {
   el.append(filmPanel("right", "pose", s, 0));
-  el.append(h("div", { class: "copy narrow" }, heading(el, s + 0.5, { eyebrow: T.pose.eyebrow, size: "xl", lines: [[T.pose.l1], [T.pose.thin, "thin accent"], [T.pose.thin2, "thin accent"]] })));
+  /* "On vous présente" followed by the R-System logo itself, rising like a line */
+  const logo = img("/site/assets/logo/logo-r-system-navy-en-blanc.png", { style: "display:block; height:132px" });
+  const logoLine = h("span", { class: "line", style: "margin-top:30px; padding-bottom:4px" }, h("span", {}, logo));
+  anim(logoLine.firstChild, FX.rise, s + 0.5 + 0.15 + 2 * 0.12 + 0.2, 0.9);
+  el.append(h("div", { class: "copy narrow" }, heading(el, s + 0.5, { eyebrow: T.pose.eyebrow, size: "xl", lines: [[T.pose.l1], [T.pose.thin, "thin accent"]] }), logoLine));
 });
 
 /* 2 · The plenum, assembled in Bordeaux */
