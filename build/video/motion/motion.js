@@ -65,6 +65,7 @@ const img = (src, attrs = {}) => h("img", { src, alt: "", ...attrs });
 
 /* eyebrow + title lines + optional text, each line rising in turn */
 function heading(s, at, { eyebrow, lines, text, size = "" }) {
+  lines = lines.filter(([t]) => t && t.trim());                  // a language may leave a line empty
   const eb = h("p", { class: "eyebrow" }, h("i"), eyebrow);
   const title = h("h2", { class: "title " + size }, lines.map(([t, cls]) => line(t, cls)));
   const block = [eb, title];
@@ -261,12 +262,12 @@ scene("volume", 64, 5, (el, s) => {
 
 /* 9 · The slimmest thermostat */
 scene("thermostat", 69, 7, (el, s) => {
-  const front = img(SITE + "r-system-thermostat.png", { class: "product", style: "right:420px; top:270px; width:540px" });
-  const side = img(SITE + "r-system-thermostat-profil.png", { class: "product", style: "right:200px; top:250px; height:580px" });
+  const front = img(SITE + "r-system-thermostat.png", { class: "product", style: "right:360px; top:300px; width:470px" });
+  const side = img(SITE + "r-system-thermostat-profil.png", { class: "product", style: "right:170px; top:280px; height:520px" });
   anim(front, FX.up, s + 0.3, 1.0);
   anim(side, FX.right, s + 0.9, 1.0);
-  const dim = h("div", { class: "dim", style: "right:190px; top:860px; width:56px" });
-  const dl = h("p", { class: "dim-label", style: "right:150px; top:880px" }, "11 mm");
+  const dim = h("div", { class: "dim", style: "right:160px; top:830px; width:52px" });
+  const dl = h("p", { class: "dim-label", style: "right:122px; top:850px" }, "11 mm");
   anim(dim, FX.grow, s + 1.8, 0.5);
   anim(dl, FX.fade, s + 2.0, 0.5);
   const stats = h("div", { class: "stats" }, T.thermostat.stats.map(([b, sp]) => h("div", { class: "stat" }, h("b", {}, b), h("span", {}, sp))));

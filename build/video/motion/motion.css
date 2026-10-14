@@ -87,8 +87,8 @@ body{ font-family:'Open Sans',sans-serif; color:var(--white); -webkit-font-smoot
 .counter.sm{ font-size:96px; }
 .counter-label{ margin-top:20px; font-size:36px; font-weight:300; color:var(--soft); }
 
-.stats{ display:flex; gap:56px; margin-top:64px; }
-.stat b{ display:block; white-space:nowrap; font-size:84px; font-weight:800; line-height:1; color:var(--cyan); letter-spacing:-.02em; }
+.stats{ display:flex; gap:44px; margin-top:64px; }
+.stat b{ display:block; white-space:nowrap; font-size:68px; font-weight:800; line-height:1; color:var(--cyan); letter-spacing:-.02em; }
 .stat span{ display:block; margin-top:14px; font-size:24px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--soft); }
 
 .modes{ display:flex; gap:24px; margin-top:56px; }

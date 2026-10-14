@@ -5,8 +5,9 @@
    Ends on the intro card, so the video loops without a visible cut.
 
        node build/video/record.mjs r-system-configurateur --root ../rsystem-landing --lang en
-       --lang de   the configurator with a German text table added as it is
-                   served (build/video/de/): the site has no German version
+       --lang de, --lang es   the configurator with a German or Spanish text
+                   table added as it is served (build/video/de/, es/): the site
+                   has neither
 
    r-system.mjs films the earlier configurator of this repository, in
    French only. */
@@ -84,6 +85,30 @@ const LANGS = {
       "Ihre Lösung ist fertig: PDF, Angebotsanfrage, Dokumentation.",
     ],
   },
+  es: {
+    patch: { "/configurateur/index.html": de.configurateur },
+    panel: {
+      title: "Configurador del plénum motorizado",
+      steps: ["Marca de la bomba de calor", "Modelo de la unidad interior", "Plénum motorizado", "Termostatos inalámbricos", "Resumen"],
+      chips: ["Garantía de 5 años", "Montado en Burdeos", "Con o sin internet"],
+    },
+    intro: {
+      title: "Su plénum motorizado,<br>configurado en 4 pasos",
+      text: "Bomba de calor por conductos, una salida por estancia, un termostato inalámbrico por zona.",
+    },
+    outro: {
+      title: "Confort estancia por estancia,<br>con su sistema de conductos",
+      text: "Configuración en línea, resumen en PDF y solicitud de presupuesto en un clic.",
+      big: "r-system-by-salus.com/en",
+    },
+    captions: [
+      "Elija la marca de su bomba de calor por conductos.",
+      "Seleccione el modelo exacto de la unidad interior.",
+      "Elija el número de salidas: una por estancia.",
+      "Un termostato inalámbrico por zona, controlado con la app SALUS Premium Lite.",
+      "Su solución está lista: PDF, solicitud de presupuesto, documentación.",
+    ],
+  },
 };
 
 const tile = (attr, value) => ({ css: `button[${attr}="${value}"]` });
@@ -91,7 +116,7 @@ const action = name => ({ css: `button[data-action="${name}"]` });
 
 export default (lang) => {
   const L = LANGS[lang];
-  if (!L) throw new Error(`r-system-configurateur: no "${lang}" version (fr, en, de)`);
+  if (!L) throw new Error(`r-system-configurateur: no "${lang}" version (fr, en, de, es)`);
   const say = L.captions;
   return {
     lang,

@@ -17,14 +17,16 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 
 export const landing = JSON.parse(readFileSync(join(HERE, "landing.json"), "utf8"));
 
-const TABLE = readFileSync(join(HERE, "configurateur.js"), "utf8");
+/* The configurator's extra text tables: German here, Spanish in ../es/. */
+const TABLE = ["configurateur.js", "../es/configurateur.js"].map(f => readFileSync(join(HERE, f), "utf8").trimEnd()).join("\n");
 const PICK_EN = '.toLowerCase() === "en" ? "en" : "fr"';
-const PICK_ANY = '.toLowerCase().replace(/^(?!(?:en|de)$).*$/, "fr")';
+const PICK_ANY = '.toLowerCase().replace(/^(?!(?:en|de|es)$).*$/, "fr")';
 
-/* configurateur/index.html, served with ?lang=de understood. Throws if the
-   page changed shape, rather than recording a French configurator. */
+/* configurateur/index.html, served with ?lang=de and ?lang=es understood.
+   Throws if the page changed shape, rather than recording a French
+   configurator. */
 export function configurateur(html) {
   const end = html.indexOf("\n};\n\n/* Un identifiant de langue");
   if (end < 0 || !html.includes(PICK_EN)) throw new Error("de: configurateur/index.html changed, update build/video/de/index.mjs");
-  return (html.slice(0, end) + "\n" + TABLE.trimEnd() + html.slice(end)).replace(PICK_EN, PICK_ANY);
+  return (html.slice(0, end) + "\n" + TABLE + html.slice(end)).replace(PICK_EN, PICK_ANY);
 }
